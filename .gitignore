@@ -1,1 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
 .env
+kitesurf.db
+
+# Flutter
+kitesurf_app/.dart_tool/
+kitesurf_app/.flutter-plugins
+kitesurf_app/.flutter-plugins-dependencies
+kitesurf_app/build/
+kitesurf_app/.packages
+kitesurf_app/ios/Pods/
+kitesurf_app/ios/.symlinks/
+kitesurf_app/android/.gradle/
+kitesurf_app/android/local.properties
+kitesurf_app/android/app/debug/
+kitesurf_app/android/app/release/
+kitesurf_app/android/app/profile/
