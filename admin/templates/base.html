@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitesurf Agent Admin</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f4f8; color: #1a202c; }
+        nav { background: #0077b6; color: white; padding: 1rem 2rem; display: flex; align-items: center; gap: 2rem; }
+        nav h1 { font-size: 1.2rem; }
+        nav a { color: white; text-decoration: none; font-size: 0.95rem; opacity: 0.85; }
+        nav a:hover { opacity: 1; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: white; border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        h2 { font-size: 1.3rem; margin-bottom: 1rem; color: #0077b6; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 0.6rem 0.8rem; background: #f7fafc; border-bottom: 2px solid #e2e8f0; font-size: 0.85rem; color: #4a5568; }
+        td { padding: 0.7rem 0.8rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; vertical-align: top; }
+        tr:hover td { background: #f7fafc; }
+        .btn { display: inline-block; padding: 0.45rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; border: none; text-decoration: none; }
+        .btn-primary { background: #0077b6; color: white; }
+        .btn-primary:hover { background: #005f92; }
+        .btn-danger { background: #e53e3e; color: white; }
+        .btn-danger:hover { background: #c53030; }
+        .btn-secondary { background: #e2e8f0; color: #2d3748; }
+        .btn-secondary:hover { background: #cbd5e0; }
+        .tag { display: inline-block; background: #bee3f8; color: #2b6cb0; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin: 0.1rem; }
+        .tag.green { background: #c6f6d5; color: #276749; }
+        .tag.orange { background: #feebc8; color: #c05621; }
+        .flash { padding: 0.8rem 1rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .flash.success { background: #c6f6d5; color: #276749; }
+        .flash.error { background: #fed7d7; color: #c53030; }
+        form label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; color: #4a5568; }
+        form input, form textarea, form select { width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1rem; }
+        form textarea { min-height: 80px; resize: vertical; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .checkbox-group label { display: flex; align-items: center; gap: 0.3rem; font-weight: normal; background: #f7fafc; padding: 0.3rem 0.7rem; border-radius: 5px; border: 1px solid #e2e8f0; cursor: pointer; }
+        .checkbox-group input[type=checkbox] { width: auto; margin: 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .whatsapp-group { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 0.8rem; margin-bottom: 0.5rem; }
+        .whatsapp-group input { margin-bottom: 0.4rem; }
+        #add-whatsapp { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>🪁 Kitesurf Agent Admin</h1>
+        <a href="/admin/">Beaches</a>
+        <a href="/admin/beach/new">+ Add Beach</a>
+    </nav>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

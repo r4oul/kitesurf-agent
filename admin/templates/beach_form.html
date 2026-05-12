@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <h2>{{ "Edit" if beach else "Add" }} Beach</h2>
+    {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+
+    <form method="post">
+        <div class="grid-2">
+            <div>
+                <label>Beach Name *</label>
+                <input type="text" name="name" value="{{ beach.name if beach else '' }}" required placeholder="e.g. West Wittering">
+            </div>
+            <div></div>
+            <div>
+                <label>Latitude *</label>
+                <input type="number" step="0.0001" name="latitude" value="{{ beach.latitude if beach else '' }}" required placeholder="e.g. 50.7689">
+            </div>
+            <div>
+                <label>Longitude *</label>
+                <input type="number" step="0.0001" name="longitude" value="{{ beach.longitude if beach else '' }}" required placeholder="e.g. -0.9009">
+            </div>
+        </div>
+
+        <label>Works in these wind directions *</label>
+        <div class="checkbox-group">
+            {% for dir in ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] %}
+            <label>
+                <input type="checkbox" name="wind_directions" value="{{ dir }}"
+                    {{ "checked" if beach and dir in beach.wind_directions else "" }}>
+                {{ dir }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <label>Min wind speed (knots) *</label>
+                <input type="number" name="wind_speed_min" value="{{ beach.wind_speed_min if beach else '12' }}" required>
+            </div>
+            <div>
+                <label>Max wind speed (knots) *</label>
+                <input type="number" name="wind_speed_max" value="{{ beach.wind_speed_max if beach else '35' }}" required>
+            </div>
+        </div>
+
+        <label>Works at these tide states *</label>
+        <div class="checkbox-group">
+            {% for state in ["low", "mid", "high"] %}
+            <label>
+                <input type="checkbox" name="tide_states" value="{{ state }}"
+                    {{ "checked" if beach and state in beach.tide_states else "" }}>
+                {{ state }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <label>Works with these tide directions *</label>
+        <div class="checkbox-group">
+            {% for direction in ["incoming", "slack", "outgoing"] %}
+            <label>
+                <input type="checkbox" name="tide_directions" value="{{ direction }}"
+                    {{ "checked" if beach and direction in beach.tide_directions else "" }}>
+                {{ direction }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <label>Suitable for rider levels *</label>
+        <div class="checkbox-group">
+            {% for level in ["beginner", "intermediate", "advanced"] %}
+            <label>
+                <input type="checkbox" name="rider_levels" value="{{ level }}"
+                    {{ "checked" if beach and level in beach.rider_levels else "" }}>
+                {{ level }}
+            </label>
+            {% endfor %}
+        </div>
+
+        <label>Hazards</label>
+        <input type="text" name="hazards" value="{{ beach.hazards if beach else '' }}" placeholder="e.g. groynes on east side, swimmers near shore">
+
+        <label>Notes</label>
+        <textarea name="notes" placeholder="e.g. Flat water lagoon at high tide, choppy at low">{{ beach.notes if beach else '' }}</textarea>
+
+        <label>WhatsApp Groups</label>
+        <div id="whatsapp-groups">
+            {% if beach and beach.whatsapp_groups %}
+                {% for group in beach.whatsapp_groups %}
+                <div class="whatsapp-group">
+                    <label>Group Name</label>
+                    <input type="text" name="wa_name" value="{{ group.name }}" placeholder="e.g. West Wittering Kiters">
+                    <label>Invite Link</label>
+                    <input type="url" name="wa_link" value="{{ group.invite_link }}" placeholder="https://chat.whatsapp.com/...">
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="whatsapp-group">
+                    <label>Group Name</label>
+                    <input type="text" name="wa_name" placeholder="e.g. West Wittering Kiters">
+                    <label>Invite Link</label>
+                    <input type="url" name="wa_link" placeholder="https://chat.whatsapp.com/...">
+                </div>
+            {% endif %}
+        </div>
+        <button type="button" id="add-whatsapp" class="btn btn-secondary" onclick="addWhatsApp()">+ Add another WhatsApp group</button>
+
+        <div style="display:flex; gap:1rem; margin-top:0.5rem;">
+            <button type="submit" class="btn btn-primary">{{ "Save Changes" if beach else "Add Beach" }}</button>
+            <a href="/admin/" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+function addWhatsApp() {
+    const container = document.getElementById('whatsapp-groups');
+    const div = document.createElement('div');
+    div.className = 'whatsapp-group';
+    div.innerHTML = `
+        <label>Group Name</label>
+        <input type="text" name="wa_name" placeholder="e.g. Hayling Island Kiters">
+        <label>Invite Link</label>
+        <input type="url" name="wa_link" placeholder="https://chat.whatsapp.com/...">
+    `;
+    container.appendChild(div);
+}
+</script>
+{% endblock %}

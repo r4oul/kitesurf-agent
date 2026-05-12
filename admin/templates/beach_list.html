@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2>Beaches</h2>
+        <a href="/admin/beach/new" class="btn btn-primary">+ Add Beach</a>
+    </div>
+    {% if beaches %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Wind Directions</th>
+                <th>Wind (knots)</th>
+                <th>Tide States</th>
+                <th>Rider Levels</th>
+                <th>WhatsApp Groups</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for beach in beaches %}
+            <tr>
+                <td><strong>{{ beach.name }}</strong></td>
+                <td>{% for d in beach.wind_directions %}<span class="tag">{{ d }}</span>{% endfor %}</td>
+                <td>{{ beach.wind_speed_min }}–{{ beach.wind_speed_max }}</td>
+                <td>{% for t in beach.tide_states %}<span class="tag green">{{ t }}</span>{% endfor %}</td>
+                <td>{% for l in beach.rider_levels %}<span class="tag orange">{{ l }}</span>{% endfor %}</td>
+                <td>{{ beach.whatsapp_groups | length }}</td>
+                <td style="white-space:nowrap;">
+                    <a href="/admin/beach/{{ beach.id }}/edit" class="btn btn-secondary">Edit</a>
+                    <form method="post" action="/admin/beach/{{ beach.id }}/delete" style="display:inline;" onsubmit="return confirm('Delete {{ beach.name }}?')">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#718096;">No beaches yet. <a href="/admin/beach/new">Add your first beach →</a></p>
+    {% endif %}
+</div>
+{% endblock %}

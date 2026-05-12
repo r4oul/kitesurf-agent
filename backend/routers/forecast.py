@@ -1,0 +1,78 @@
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend.models.beach import Beach
+from backend.services.windy import get_wind_forecast
+from backend.services.tides import get_tides, get_tide_state
+from backend.services.recommender import recommend_beaches
+from backend.services.forecast_windows import get_beach_windows
+from datetime import datetime, timezone
+
+router = APIRouter(prefix="/forecast", tags=["forecast"])
+
+
+@router.get("/beach/{beach_id}")
+async def beach_forecast(
+    beach_id: int,
+    rider_level: str = Query("intermediate"),
+    db: Session = Depends(get_db),
+):
+    beach = db.query(Beach).filter(Beach.id == beach_id).first()
+    if not beach:
+        return {"error": "Beach not found"}
+
+    windows = await get_beach_windows(beach, rider_level)
+    tides = await get_tides(beach.latitude, beach.longitude)
+
+    return {
+        "beach_id": beach.id,
+        "beach_name": beach.name,
+        "windows": windows,
+        "tide_extremes": tides["extremes"][:12],
+    }
+
+
+@router.get("/recommend")
+async def get_recommendations(
+    rider_level: str = Query(..., description="beginner, intermediate, or advanced"),
+    db: Session = Depends(get_db),
+):
+    beaches = db.query(Beach).all()
+    if not beaches:
+        return {"recommendations": []}
+
+    # Use first beach coords as a central reference point for current conditions
+    # In practice we fetch per-beach but for recommendations we use current conditions
+    reference = beaches[len(beaches) // 2]  # Roughly central beach (Portland area)
+    wind_data = await get_wind_forecast(reference.latitude, reference.longitude)
+    tide_data = await get_tides(reference.latitude, reference.longitude)
+
+    if not wind_data:
+        return {"error": "Could not fetch wind forecast"}
+
+    now_utc = datetime.now(timezone.utc).isoformat()
+    current_wind = wind_data[0]
+    current_height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
+    tide_info = get_tide_state(current_height, tide_data["extremes"])
+
+    recommendations = recommend_beaches(
+        beaches=beaches,
+        wind_speed=current_wind["wind_speed_knots"],
+        wind_direction=current_wind["wind_direction"],
+        tide_state=tide_info["state"],
+        tide_direction=tide_info["direction"],
+        rider_level=rider_level,
+        top_n=len(beaches),
+    )
+
+    return {
+        "conditions": {
+            "wind_speed_knots": current_wind["wind_speed_knots"],
+            "wind_gust_knots": current_wind["wind_gust_knots"],
+            "wind_direction": current_wind["wind_direction"],
+            "tide_state": tide_info["state"],
+            "tide_direction": tide_info["direction"],
+            "fetched_at": now_utc,
+        },
+        "recommendations": recommendations,
+    }
