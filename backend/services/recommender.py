@@ -59,6 +59,7 @@ def score_beach(
 
     # --- Wind direction (25 points) ---
     neighbours = DIRECTION_NEIGHBOURS.get(wind_direction, [wind_direction])
+    direction_no_match = False
     if wind_direction in beach.wind_directions:
         score += 25
         reasons.append(f"Wind direction {wind_direction} is ideal")
@@ -66,6 +67,7 @@ def score_beach(
         score += 10
         reasons.append(f"Wind direction {wind_direction} is marginal")
     else:
+        direction_no_match = True
         warnings.append(f"Wind direction {wind_direction} not ideal for this beach")
 
     # --- Tide state (15 points) ---
@@ -89,9 +91,13 @@ def score_beach(
     else:
         warnings.append(f"Not recommended for {rider_level} riders")
 
-    # --- Hard cap: unrideable wind caps score at 25 ---
+    # --- Hard caps ---
+    # Unrideable wind speed: cap at 25 (Poor)
     if wind_too_light or wind_too_strong:
         score = min(score, 25)
+    # Wrong wind direction: cap at 40 (top of Marginal) — never "Good" with wrong direction
+    if direction_no_match:
+        score = min(score, 40)
 
     return {
         "beach_id": beach.id,
