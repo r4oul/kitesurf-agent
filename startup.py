@@ -5,12 +5,11 @@ from sqlalchemy.orm.attributes import flag_modified
 
 Base.metadata.create_all(bind=engine)
 
+import subprocess, sys
+print("Seeding beaches (skips existing)...")
+subprocess.run([sys.executable, "seed_beaches.py"])
+
 db = SessionLocal()
-if db.query(Beach).count() == 0:
-    print("Seeding beaches...")
-    import subprocess, sys
-    subprocess.run([sys.executable, "seed_beaches.py"])
-    db = SessionLocal()
 
 # One-time fix: remove W and NW from Exmouth's wind directions
 exmouth = db.query(Beach).filter(Beach.name == "Exmouth").first()
