@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
+import 'widgets/ckite_icon.dart';
 
 void main() {
   runApp(const KitesurfApp());
@@ -42,8 +43,8 @@ class _MainShellState extends State<MainShell> {
         foregroundColor: Colors.white,
         title: const Row(
           children: [
-            Text('🪁', style: TextStyle(fontSize: 20)),
-            SizedBox(width: 8),
+            CKiteIcon(size: 28, color: Colors.white),
+            SizedBox(width: 10),
             Text('South Coast Kitesurf', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),

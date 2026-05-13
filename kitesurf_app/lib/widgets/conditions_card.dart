@@ -16,7 +16,7 @@ class ConditionsCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Current Conditions', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0077B6))),
+            const Text('Current Conditions Where You Are', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0077B6))),
             const SizedBox(height: 12),
             Row(
               children: [
