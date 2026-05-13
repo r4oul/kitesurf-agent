@@ -5,7 +5,7 @@ from backend.database import get_db
 from backend.models.beach import Beach
 from backend.services.windy import get_wind_forecast
 from backend.services.tides import get_tides, get_tide_state
-from backend.services.recommender import score_beach
+from backend.services.recommender import recommend_beaches
 from backend.services.forecast_windows import get_beach_windows
 from datetime import datetime, timezone
 
@@ -33,33 +33,6 @@ async def beach_forecast(
     }
 
 
-async def _score_beach_with_local_weather(beach: Beach, rider_level: str) -> dict:
-    """Fetch weather at the beach's own coordinates and score it."""
-    wind_data, tide_data = await asyncio.gather(
-        get_wind_forecast(beach.latitude, beach.longitude),
-        get_tides(beach.latitude, beach.longitude),
-    )
-    if not wind_data:
-        return None
-
-    current_wind = wind_data[0]
-    current_height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
-    tide_info = get_tide_state(current_height, tide_data["extremes"])
-
-    result = score_beach(
-        beach=beach,
-        wind_speed=current_wind["wind_speed_knots"],
-        wind_direction=current_wind["wind_direction"],
-        tide_state=tide_info["state"],
-        tide_direction=tide_info["direction"],
-        rider_level=rider_level,
-    )
-    result["local_wind_speed_knots"] = current_wind["wind_speed_knots"]
-    result["local_wind_gust_knots"] = current_wind["wind_gust_knots"]
-    result["local_wind_direction"] = current_wind["wind_direction"]
-    return result
-
-
 @router.get("/recommend")
 async def get_recommendations(
     rider_level: str = Query(..., description="beginner, intermediate, or advanced"),
@@ -71,36 +44,36 @@ async def get_recommendations(
     if not beaches:
         return {"recommendations": []}
 
-    # Fetch user's local conditions for the header card
+    # Use user's location if provided, otherwise central beach (Portland area)
     if lat is not None and lon is not None:
         ref_lat, ref_lon = lat, lon
     else:
         reference = beaches[len(beaches) // 2]
         ref_lat, ref_lon = reference.latitude, reference.longitude
 
-    # Fetch user conditions first, then beaches in small batches to avoid rate limits
-    user_wind, user_tide = await asyncio.gather(
+    # Single wind + tide fetch for recommendations (GFS is 25km resolution anyway)
+    wind_data, tide_data = await asyncio.gather(
         get_wind_forecast(ref_lat, ref_lon),
         get_tides(ref_lat, ref_lon),
     )
 
-    beach_results = []
-    batch_size = 3
-    for i in range(0, len(beaches), batch_size):
-        batch = beaches[i:i + batch_size]
-        results = await asyncio.gather(*[_score_beach_with_local_weather(b, rider_level) for b in batch])
-        beach_results.extend(results)
-
-    if not user_wind:
+    if not wind_data:
         return {"error": "Could not fetch wind forecast"}
 
     now_utc = datetime.now(timezone.utc).isoformat()
-    current_wind = user_wind[0]
-    current_height = user_tide["heights"][0]["height_m"] if user_tide["heights"] else 1.5
-    tide_info = get_tide_state(current_height, user_tide["extremes"])
+    current_wind = wind_data[0]
+    current_height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
+    tide_info = get_tide_state(current_height, tide_data["extremes"])
 
-    recommendations = [r for r in beach_results if r is not None]
-    recommendations.sort(key=lambda x: x["score"], reverse=True)
+    recommendations = recommend_beaches(
+        beaches=beaches,
+        wind_speed=current_wind["wind_speed_knots"],
+        wind_direction=current_wind["wind_direction"],
+        tide_state=tide_info["state"],
+        tide_direction=tide_info["direction"],
+        rider_level=rider_level,
+        top_n=len(beaches),
+    )
 
     return {
         "conditions": {
