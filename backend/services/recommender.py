@@ -27,10 +27,19 @@ def score_beach(
     # --- Wind speed (50 points) — most important factor ---
     wind_too_light = False
     wind_too_strong = False
+    SWEET_SPOT_MIN = 15
+    SWEET_SPOT_MAX = 25
 
     if beach.wind_speed_min <= wind_speed <= beach.wind_speed_max:
-        score += 50
-        reasons.append(f"{wind_speed}kts is within ideal range ({beach.wind_speed_min}-{beach.wind_speed_max}kts)")
+        if SWEET_SPOT_MIN <= wind_speed <= SWEET_SPOT_MAX:
+            score += 50
+            reasons.append(f"{wind_speed}kts is in the sweet spot ({SWEET_SPOT_MIN}-{SWEET_SPOT_MAX}kts)")
+        elif wind_speed < SWEET_SPOT_MIN:
+            score += 35
+            reasons.append(f"{wind_speed}kts is in range but light — bigger kite needed")
+        else:
+            score += 40
+            reasons.append(f"{wind_speed}kts is in range but strong — smaller kite needed")
     elif wind_speed < beach.wind_speed_min:
         diff = beach.wind_speed_min - wind_speed
         if diff <= 3:
