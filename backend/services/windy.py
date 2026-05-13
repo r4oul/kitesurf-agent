@@ -48,13 +48,12 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
     }
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.post(WINDY_URL, json=payload)
-        if response.status_code == 429:
-            # Rate limited — return stale cache if available
+        if response.status_code != 200:
+            print(f"Windy API error {response.status_code}: {response.text[:200]}")
             if key in _cache:
                 _, forecasts = _cache[key]
                 return forecasts
             return []
-        response.raise_for_status()
         data = response.json()
 
     timestamps = data.get("ts", [])
