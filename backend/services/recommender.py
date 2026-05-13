@@ -36,10 +36,10 @@ def score_beach(
             reasons.append(f"{wind_speed}kts is in the sweet spot ({SWEET_SPOT_MIN}-{SWEET_SPOT_MAX}kts)")
         elif wind_speed < SWEET_SPOT_MIN:
             score += 35
-            reasons.append(f"{wind_speed}kts is in range but light — bigger kite needed")
+            reasons.append(f"{wind_speed}kts is in range but light - bigger kite needed")
         else:
             score += 40
-            reasons.append(f"{wind_speed}kts is in range but strong — smaller kite needed")
+            reasons.append(f"{wind_speed}kts is in range but strong - smaller kite needed")
     elif wind_speed < beach.wind_speed_min:
         diff = beach.wind_speed_min - wind_speed
         if diff <= 3:
