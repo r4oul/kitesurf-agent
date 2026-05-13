@@ -23,7 +23,7 @@
 
         <label>Works in these wind directions *</label>
         <div class="checkbox-group">
-            {% for dir in ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] %}
+            {% for dir in ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"] %}
             <label>
                 <input type="checkbox" name="wind_directions" value="{{ dir }}"
                     {{ "checked" if beach and dir in beach.wind_directions else "" }}>
