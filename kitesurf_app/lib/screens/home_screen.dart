@@ -4,6 +4,7 @@ import '../models/recommendation.dart';
 import '../services/api.dart';
 import '../widgets/conditions_card.dart';
 import '../widgets/recommendation_card.dart';
+import '../theme.dart';
 
 class HomeScreen extends StatefulWidget {
   final String riderLevel;
@@ -104,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Recommendations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF1A202C))),
+              const Text('Recommendations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
               TextButton.icon(
                 icon: Icon(_showAll ? Icons.expand_less : Icons.expand_more, size: 18),
                 label: Text(_showAll ? 'Top 5 only' : 'Show all beaches', style: const TextStyle(fontSize: 13)),

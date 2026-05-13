@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'widgets/ckite_icon.dart';
+import 'theme.dart';
 
 void main() {
   runApp(const KitesurfApp());
@@ -15,10 +16,7 @@ class KitesurfApp extends StatelessWidget {
     return MaterialApp(
       title: 'South Coast Kitesurf',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF0077B6)),
-        useMaterial3: true,
-      ),
+      theme: buildTheme(),
       home: const MainShell(),
     );
   }
@@ -39,36 +37,39 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0077B6),
-        foregroundColor: Colors.white,
+        backgroundColor: kAppBarColor,
+        foregroundColor: kTextPrimary,
+        elevation: 0,
         title: const Row(
           children: [
-            CKiteIcon(size: 28, color: Colors.white),
+            CKiteIcon(size: 28, color: kAccent),
             SizedBox(width: 10),
-            Text('South Coast Kitesurf', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text('South Coast Kitesurf',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
           ],
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: const Color(0xFF005F92),
+            color: kAppBarBottom,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             child: Row(
               children: [
-                const Text('I am a ', style: TextStyle(color: Colors.white70)),
+                const Text('I am a ', style: TextStyle(color: kTextSecondary)),
                 ...['beginner', 'intermediate', 'advanced'].map((level) {
                   final selected = _riderLevel == level;
                   return Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: ChoiceChip(
-                      label: Text(level, style: TextStyle(
-                        color: selected ? const Color(0xFF0077B6) : Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      )),
+                      label: Text(level,
+                          style: TextStyle(
+                            color: selected ? kChipSelectedText : kTextSecondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          )),
                       selected: selected,
-                      selectedColor: Colors.white,
-                      backgroundColor: Colors.white24,
+                      selectedColor: kChipSelected,
+                      backgroundColor: kChipUnselected,
                       onSelected: (_) => setState(() => _riderLevel = level),
                     ),
                   );

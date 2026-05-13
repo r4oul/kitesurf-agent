@@ -78,14 +78,18 @@ async def get_recommendations(
         reference = beaches[len(beaches) // 2]
         ref_lat, ref_lon = reference.latitude, reference.longitude
 
-    # Fetch user conditions + all beach conditions in parallel
-    user_wind_task = get_wind_forecast(ref_lat, ref_lon)
-    user_tide_task = get_tides(ref_lat, ref_lon)
-    beach_tasks = [_score_beach_with_local_weather(b, rider_level) for b in beaches]
-
-    user_wind, user_tide, *beach_results = await asyncio.gather(
-        user_wind_task, user_tide_task, *beach_tasks
+    # Fetch user conditions first, then beaches in small batches to avoid rate limits
+    user_wind, user_tide = await asyncio.gather(
+        get_wind_forecast(ref_lat, ref_lon),
+        get_tides(ref_lat, ref_lon),
     )
+
+    beach_results = []
+    batch_size = 3
+    for i in range(0, len(beaches), batch_size):
+        batch = beaches[i:i + batch_size]
+        results = await asyncio.gather(*[_score_beach_with_local_weather(b, rider_level) for b in batch])
+        beach_results.extend(results)
 
     if not user_wind:
         return {"error": "Could not fetch wind forecast"}

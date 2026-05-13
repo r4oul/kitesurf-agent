@@ -1,21 +1,43 @@
 import httpx
 import os
 import math
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 WINDY_URL = "https://api.windy.com/api/point-forecast/v2"
+CACHE_TTL_MINUTES = 30
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
+
+# In-memory cache: key = (lat, lon), value = (fetched_at, forecasts)
+_cache: dict = {}
+
+
+def _cache_key(lat: float, lon: float) -> str:
+    return f"{round(lat, 2)},{round(lon, 2)}"
+
+
+def _is_fresh(fetched_at: datetime) -> bool:
+    return datetime.now(timezone.utc) - fetched_at < timedelta(minutes=CACHE_TTL_MINUTES)
+
 
 def degrees_to_compass(degrees: float) -> str:
     index = round(degrees / 22.5) % 16
     return WIND_DIRECTIONS[index]
 
+
 def ms_to_knots(ms: float) -> float:
     return round(ms * 1.94384, 1)
 
+
 async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
+    key = _cache_key(lat, lon)
+
+    if key in _cache:
+        fetched_at, forecasts = _cache[key]
+        if _is_fresh(fetched_at):
+            return forecasts
+
     payload = {
         "lat": lat,
         "lon": lon,
@@ -26,6 +48,12 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
     }
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.post(WINDY_URL, json=payload)
+        if response.status_code == 429:
+            # Rate limited — return stale cache if available
+            if key in _cache:
+                _, forecasts = _cache[key]
+                return forecasts
+            return []
         response.raise_for_status()
         data = response.json()
 
@@ -51,4 +79,5 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             "wind_direction_degrees": round(direction_deg, 1),
         })
 
+    _cache[key] = (datetime.now(timezone.utc), forecasts)
     return forecasts

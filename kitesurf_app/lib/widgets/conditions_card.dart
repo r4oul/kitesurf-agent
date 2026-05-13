@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/recommendation.dart';
+import '../theme.dart';
 
 class ConditionsCard extends StatelessWidget {
   final Conditions conditions;
@@ -8,26 +9,45 @@ class ConditionsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Current Conditions Where You Are', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0077B6))),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                _stat('💨', '${conditions.windSpeedKnots}', 'knots'),
-                _stat('💥', '${conditions.windGustKnots}', 'gusts'),
-                _stat('🧭', conditions.windDirection, 'direction'),
-                _stat('🌊', conditions.tideState, conditions.tideDirection),
-              ],
-            ),
-          ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0A2540), Color(0xFF0D3B6E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kAccent.withOpacity(0.3), width: 1),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 3,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: kAccent,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Text('Current Conditions Where You Are',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: kAccent)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              _stat('💨', '${conditions.windSpeedKnots}', 'knots'),
+              _stat('💥', '${conditions.windGustKnots}', 'gusts'),
+              _stat('🧭', conditions.windDirection, 'direction'),
+              _stat('🌊', conditions.tideState, conditions.tideDirection),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -38,8 +58,9 @@ class ConditionsCard extends StatelessWidget {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          Text(value,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kTextPrimary)),
+          Text(label, style: const TextStyle(fontSize: 11, color: kTextSecondary)),
         ],
       ),
     );
