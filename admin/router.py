@@ -28,7 +28,6 @@ async def create_beach(
     db: Session = Depends(get_db),
 ):
     form = await request.form()
-    print("FORM DATA:", dict(form))
 
     try:
         name = form.get("name")
@@ -39,7 +38,6 @@ async def create_beach(
         hazards = form.get("hazards") or None
         notes = form.get("notes") or None
     except Exception as e:
-        print("FORM PARSE ERROR:", e)
         return templates.TemplateResponse("beach_form.html", {
             "request": request, "beach": None,
             "error": f"Form error: {e}"
