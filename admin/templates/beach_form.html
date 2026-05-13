@@ -4,7 +4,7 @@
     <h2>{{ "Edit" if beach else "Add" }} Beach</h2>
     {% if error %}<div class="flash error">{{ error }}</div>{% endif %}
 
-    <form method="post">
+    <form method="post" action="{{ '/admin/beach/' + beach.id|string + '/edit' if beach else '/admin/beach/new' }}">
         <div class="grid-2">
             <div>
                 <label>Beach Name *</label>
@@ -13,11 +13,11 @@
             <div></div>
             <div>
                 <label>Latitude *</label>
-                <input type="number" step="0.0001" name="latitude" value="{{ beach.latitude if beach else '' }}" required placeholder="e.g. 50.7689">
+                <input type="text" name="latitude" value="{{ beach.latitude if beach else '' }}" required placeholder="e.g. 50.7689">
             </div>
             <div>
                 <label>Longitude *</label>
-                <input type="number" step="0.0001" name="longitude" value="{{ beach.longitude if beach else '' }}" required placeholder="e.g. -0.9009">
+                <input type="text" name="longitude" value="{{ beach.longitude if beach else '' }}" required placeholder="e.g. -0.9009">
             </div>
         </div>
 
