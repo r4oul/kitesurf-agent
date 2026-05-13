@@ -33,10 +33,10 @@ class ApiService {
     throw Exception('Failed to load beach forecast');
   }
 
-  static Future<Map<String, dynamic>> getRecommendations(String riderLevel) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/forecast/recommend?rider_level=$riderLevel'),
-    );
+  static Future<Map<String, dynamic>> getRecommendations(String riderLevel, {double? lat, double? lon}) async {
+    var url = '$baseUrl/forecast/recommend?rider_level=$riderLevel';
+    if (lat != null && lon != null) url += '&lat=$lat&lon=$lon';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return {

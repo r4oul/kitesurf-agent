@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../models/recommendation.dart';
-import '../models/beach.dart';
 import '../services/api.dart';
 import '../widgets/recommendation_card.dart';
 
@@ -18,6 +17,7 @@ class _MapScreenState extends State<MapScreen> {
   List<Recommendation> _recommendations = [];
   bool _loading = true;
   Recommendation? _selected;
+  final MapController _mapController = MapController();
 
   @override
   void initState() {
@@ -53,9 +53,12 @@ class _MapScreenState extends State<MapScreen> {
           : Stack(
               children: [
                 FlutterMap(
+                  mapController: _mapController,
                   options: MapOptions(
                     initialCenter: const LatLng(50.65, -1.8),
                     initialZoom: 8.0,
+                    minZoom: 6.0,
+                    maxZoom: 15.0,
                     onTap: (_, __) => setState(() => _selected = null),
                   ),
                   children: [
@@ -91,16 +94,58 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   ],
                 ),
+                // Zoom controls
+                Positioned(
+                  right: 16,
+                  bottom: _selected != null ? 220 : 16,
+                  child: Column(
+                    children: [
+                      FloatingActionButton.small(
+                        heroTag: 'zoom_in',
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF0077B6),
+                        onPressed: () {
+                          _mapController.move(
+                            _mapController.camera.center,
+                            _mapController.camera.zoom + 1,
+                          );
+                        },
+                        child: const Icon(Icons.add),
+                      ),
+                      const SizedBox(height: 8),
+                      FloatingActionButton.small(
+                        heroTag: 'zoom_out',
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF0077B6),
+                        onPressed: () {
+                          _mapController.move(
+                            _mapController.camera.center,
+                            _mapController.camera.zoom - 1,
+                          );
+                        },
+                        child: const Icon(Icons.remove),
+                      ),
+                      const SizedBox(height: 8),
+                      FloatingActionButton.small(
+                        heroTag: 'zoom_reset',
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color(0xFF0077B6),
+                        onPressed: () {
+                          _mapController.move(const LatLng(50.65, -1.8), 8.0);
+                        },
+                        child: const Icon(Icons.my_location),
+                      ),
+                    ],
+                  ),
+                ),
                 if (_selected != null)
                   Positioned(
                     bottom: 16,
                     left: 16,
-                    right: 16,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        RecommendationCard(recommendation: _selected!),
-                      ],
+                    right: 72,
+                    child: RecommendationCard(
+                      recommendation: _selected!,
+                      riderLevel: widget.riderLevel,
                     ),
                   ),
               ],

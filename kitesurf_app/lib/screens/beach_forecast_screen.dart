@@ -47,6 +47,7 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
   Map<String, List<ForecastWindow>> _groupByDay() {
     final Map<String, List<ForecastWindow>> grouped = {};
     for (final w in _windows) {
+      if (w.time.hour < 6 || w.time.hour >= 21) continue;
       final day = DateFormat('EEEE d MMM').format(w.time);
       grouped.putIfAbsent(day, () => []).add(w);
     }
@@ -96,7 +97,10 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _tideExtremes.map<Widget>((e) {
+              children: _tideExtremes.where((e) {
+                final time = DateTime.parse(e['time']).toLocal();
+                return time.hour >= 6 && time.hour < 21;
+              }).map<Widget>((e) {
                 final isHigh = e['type'] == 'High';
                 final time = DateTime.parse(e['time']).toLocal();
                 return Container(

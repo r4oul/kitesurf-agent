@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../models/recommendation.dart';
 import '../services/api.dart';
 import '../widgets/conditions_card.dart';
@@ -37,7 +38,23 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _load() async {
     setState(() { _loading = true; _error = null; });
     try {
-      final data = await ApiService.getRecommendations(widget.riderLevel);
+      double? lat, lon;
+      try {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+          final pos = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
+          ).timeout(const Duration(seconds: 5));
+          lat = pos.latitude;
+          lon = pos.longitude;
+        }
+      } catch (_) {
+        // Location unavailable — fall back to central reference
+      }
+      final data = await ApiService.getRecommendations(widget.riderLevel, lat: lat, lon: lon);
       setState(() {
         _conditions = data['conditions'];
         _recommendations = data['recommendations'];

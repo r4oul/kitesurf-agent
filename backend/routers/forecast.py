@@ -35,17 +35,23 @@ async def beach_forecast(
 @router.get("/recommend")
 async def get_recommendations(
     rider_level: str = Query(..., description="beginner, intermediate, or advanced"),
+    lat: float = Query(None, description="User latitude"),
+    lon: float = Query(None, description="User longitude"),
     db: Session = Depends(get_db),
 ):
     beaches = db.query(Beach).all()
     if not beaches:
         return {"recommendations": []}
 
-    # Use first beach coords as a central reference point for current conditions
-    # In practice we fetch per-beach but for recommendations we use current conditions
-    reference = beaches[len(beaches) // 2]  # Roughly central beach (Portland area)
-    wind_data = await get_wind_forecast(reference.latitude, reference.longitude)
-    tide_data = await get_tides(reference.latitude, reference.longitude)
+    # Use user's location if provided, otherwise fall back to central beach
+    if lat is not None and lon is not None:
+        ref_lat, ref_lon = lat, lon
+    else:
+        reference = beaches[len(beaches) // 2]
+        ref_lat, ref_lon = reference.latitude, reference.longitude
+
+    wind_data = await get_wind_forecast(ref_lat, ref_lon)
+    tide_data = await get_tides(ref_lat, ref_lon)
 
     if not wind_data:
         return {"error": "Could not fetch wind forecast"}
