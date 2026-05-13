@@ -10,16 +10,16 @@ async def get_beach_windows(beach: Beach, rider_level: str) -> list[dict]:
     wind_forecast = await get_wind_forecast(beach.latitude, beach.longitude)
     tide_data = await get_tides(beach.latitude, beach.longitude, days=5)
 
-    # Build a lookup of tide height by timestamp
-    height_by_time = {h["time"]: h["height_m"] for h in tide_data["heights"]}
+    # Build a lookup of tide height by truncated timestamp (first 16 chars = YYYY-MM-DDTHH:MM)
+    height_by_time = {h["time"][:16]: h["height_m"] for h in tide_data["heights"]}
     extremes = tide_data["extremes"]
 
     windows = []
     for entry in wind_forecast:
         time_str = entry["time"]
-        height = height_by_time.get(time_str)
+        height = height_by_time.get(time_str[:16])
         if height is None:
-            continue
+            height = 1.5  # fallback mid-tide
 
         tide_info = get_tide_state(height, extremes)
         scored = score_beach(

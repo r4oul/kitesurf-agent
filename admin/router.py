@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from typing import List, Optional
 from backend.database import get_db
 from backend.models.beach import Beach
@@ -83,15 +84,24 @@ async def update_beach(
     beach_id: int,
     request: Request,
     db: Session = Depends(get_db),
-    name: str = Form(...),
-    latitude: float = Form(...),
-    longitude: float = Form(...),
-    wind_speed_min: int = Form(...),
-    wind_speed_max: int = Form(...),
-    hazards: Optional[str] = Form(None),
-    notes: Optional[str] = Form(None),
 ):
     form = await request.form()
+
+    try:
+        name = form.get("name")
+        latitude = float(form.get("latitude"))
+        longitude = float(form.get("longitude"))
+        wind_speed_min = int(form.get("wind_speed_min"))
+        wind_speed_max = int(form.get("wind_speed_max"))
+        hazards = form.get("hazards") or None
+        notes = form.get("notes") or None
+    except Exception as e:
+        beach = db.query(Beach).filter(Beach.id == beach_id).first()
+        return templates.TemplateResponse("beach_form.html", {
+            "request": request, "beach": beach,
+            "error": f"Form error: {e}"
+        })
+
     wind_directions = form.getlist("wind_directions")
     tide_states = form.getlist("tide_states")
     tide_directions = form.getlist("tide_directions")
@@ -103,18 +113,23 @@ async def update_beach(
     beach.name = name
     beach.latitude = latitude
     beach.longitude = longitude
-    beach.wind_directions = wind_directions
     beach.wind_speed_min = wind_speed_min
     beach.wind_speed_max = wind_speed_max
+    beach.hazards = hazards
+    beach.notes = notes
+    beach.wind_directions = wind_directions
     beach.tide_states = tide_states
     beach.tide_directions = tide_directions
     beach.rider_levels = rider_levels
-    beach.hazards = hazards
-    beach.notes = notes
     beach.whatsapp_groups = [
         {"name": n, "invite_link": l}
         for n, l in zip(wa_names, wa_links) if n.strip() and l.strip()
     ]
+    flag_modified(beach, "wind_directions")
+    flag_modified(beach, "tide_states")
+    flag_modified(beach, "tide_directions")
+    flag_modified(beach, "rider_levels")
+    flag_modified(beach, "whatsapp_groups")
     db.commit()
     return RedirectResponse("/admin/", status_code=303)
 
