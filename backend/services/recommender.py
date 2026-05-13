@@ -2,14 +2,22 @@ from backend.models.beach import Beach
 from backend.services.tides import get_tide_state
 
 DIRECTION_NEIGHBOURS = {
-    "N":  ["N", "NNE", "NNW", "NE", "NW"],
-    "NE": ["NE", "NNE", "ENE", "N", "E"],
-    "E":  ["E", "ENE", "ESE", "NE", "SE"],
-    "SE": ["SE", "ESE", "SSE", "E", "S"],
-    "S":  ["S", "SSE", "SSW", "SE", "SW"],
-    "SW": ["SW", "SSW", "WSW", "S", "W"],
-    "W":  ["W", "WSW", "WNW", "SW", "NW"],
-    "NW": ["NW", "WNW", "NNW", "W", "N"],
+    "N":   ["N",   "NNE", "NNW"],
+    "NNE": ["NNE", "N",   "NE"],
+    "NE":  ["NE",  "NNE", "ENE"],
+    "ENE": ["ENE", "NE",  "E"],
+    "E":   ["E",   "ENE", "ESE"],
+    "ESE": ["ESE", "E",   "SE"],
+    "SE":  ["SE",  "ESE", "SSE"],
+    "SSE": ["SSE", "SE",  "S"],
+    "S":   ["S",   "SSE", "SSW"],
+    "SSW": ["SSW", "S",   "SW"],
+    "SW":  ["SW",  "SSW", "WSW"],
+    "WSW": ["WSW", "SW",  "W"],
+    "W":   ["W",   "WSW", "WNW"],
+    "WNW": ["WNW", "W",   "NW"],
+    "NW":  ["NW",  "WNW", "NNW"],
+    "NNW": ["NNW", "NW",  "N"],
 }
 
 def score_beach(
