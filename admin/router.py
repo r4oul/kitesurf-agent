@@ -26,15 +26,24 @@ def new_beach_form(request: Request):
 async def create_beach(
     request: Request,
     db: Session = Depends(get_db),
-    name: str = Form(...),
-    latitude: float = Form(...),
-    longitude: float = Form(...),
-    wind_speed_min: int = Form(...),
-    wind_speed_max: int = Form(...),
-    hazards: Optional[str] = Form(None),
-    notes: Optional[str] = Form(None),
 ):
     form = await request.form()
+    print("FORM DATA:", dict(form))
+
+    try:
+        name = form.get("name")
+        latitude = float(form.get("latitude"))
+        longitude = float(form.get("longitude"))
+        wind_speed_min = int(form.get("wind_speed_min"))
+        wind_speed_max = int(form.get("wind_speed_max"))
+        hazards = form.get("hazards") or None
+        notes = form.get("notes") or None
+    except Exception as e:
+        print("FORM PARSE ERROR:", e)
+        return templates.TemplateResponse("beach_form.html", {
+            "request": request, "beach": None,
+            "error": f"Form error: {e}"
+        })
     wind_directions = form.getlist("wind_directions")
     tide_states = form.getlist("tide_states")
     tide_directions = form.getlist("tide_directions")
