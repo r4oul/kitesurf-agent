@@ -4,7 +4,7 @@ import '../models/beach.dart';
 import '../models/recommendation.dart';
 import '../models/forecast_window.dart';
 
-const String baseUrl = 'http://127.0.0.1:8000';
+const String baseUrl = 'https://web-production-7cfa1.up.railway.app';
 
 class ApiService {
   static Future<List<Beach>> getBeaches() async {

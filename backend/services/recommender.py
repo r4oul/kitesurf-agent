@@ -38,7 +38,7 @@ def score_beach(
     # Wind speed match
     if beach.wind_speed_min <= wind_speed <= beach.wind_speed_max:
         score += 30
-        reasons.append(f"{wind_speed}kts is within ideal range ({beach.wind_speed_min}–{beach.wind_speed_max}kts)")
+        reasons.append(f"{wind_speed}kts is within ideal range ({beach.wind_speed_min}-{beach.wind_speed_max}kts)")
     elif wind_speed < beach.wind_speed_min:
         diff = beach.wind_speed_min - wind_speed
         if diff <= 3:

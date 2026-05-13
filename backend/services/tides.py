@@ -16,7 +16,8 @@ async def get_tides(lat: float, lon: float, days: int = 5) -> dict:
     }
     async with httpx.AsyncClient() as client:
         response = await client.get(WORLDTIDES_URL, params=params)
-        response.raise_for_status()
+        if response.status_code != 200:
+            return {"extremes": [], "heights": []}
         data = response.json()
 
     extremes = []

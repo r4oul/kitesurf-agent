@@ -57,7 +57,7 @@ beaches = [
         "tide_directions": ["incoming", "slack"],
         "rider_levels": ["intermediate", "advanced"],
         "hazards": "Strong tidal currents, rocky areas at low tide",
-        "notes": "Open water with good chop. Watch tides carefully — current runs fast.",
+        "notes": "Open water with good chop. Watch tides carefully - current runs fast.",
         "whatsapp_groups": [],
     },
     {
@@ -182,7 +182,7 @@ beaches = [
         "tide_states": ["mid", "high"],
         "tide_directions": ["incoming", "slack"],
         "rider_levels": ["intermediate", "advanced"],
-        "hazards": "Nature reserve — no kiting in protected areas, sandbanks",
+        "hazards": "Nature reserve - no kiting in protected areas, sandbanks",
         "notes": "Good wave spot in SW. Check nature reserve boundaries before launching.",
         "whatsapp_groups": [],
     },
@@ -197,7 +197,7 @@ beaches = [
         "tide_directions": ["incoming", "slack"],
         "rider_levels": ["advanced"],
         "hazards": "River Avon mouth, strong tidal rip, rocks to south",
-        "notes": "Stunning location. Powerful waves in SW swell. Strong tidal currents — experienced riders only.",
+        "notes": "Stunning location. Powerful waves in SW swell. Strong tidal currents - experienced riders only.",
         "whatsapp_groups": [],
     },
 ]
@@ -214,4 +214,4 @@ for data in beaches:
 
 db.commit()
 db.close()
-print(f"Done — {added} beaches added ({len(existing)} already existed).")
+print(f"Done - {added} beaches added ({len(existing)} already existed).")
