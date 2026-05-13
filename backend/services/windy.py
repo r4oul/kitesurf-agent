@@ -1,9 +1,8 @@
 import httpx
-import os
 import math
 from datetime import datetime, timezone, timedelta
 
-WINDY_URL = "https://api.windy.com/api/point-forecast/v2"
+OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 CACHE_TTL_MINUTES = 30
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
@@ -26,8 +25,8 @@ def degrees_to_compass(degrees: float) -> str:
     return WIND_DIRECTIONS[index]
 
 
-def ms_to_knots(ms: float) -> float:
-    return round(ms * 1.94384, 1)
+def kmh_to_knots(kmh: float) -> float:
+    return round(kmh * 0.539957, 1)
 
 
 async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
@@ -38,42 +37,40 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
         if _is_fresh(fetched_at):
             return forecasts
 
-    payload = {
-        "lat": lat,
-        "lon": lon,
-        "model": "gfs",
-        "parameters": ["wind", "windGust"],
-        "levels": ["surface"],
-        "key": os.getenv("WINDY_API_KEY"),
+    params = {
+        "latitude": lat,
+        "longitude": lon,
+        "hourly": "windspeed_10m,winddirection_10m,windgusts_10m",
+        "windspeed_unit": "kmh",
+        "forecast_days": 5,
+        "timezone": "UTC",
     }
+
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(WINDY_URL, json=payload)
+        response = await client.get(OPEN_METEO_URL, params=params)
         if response.status_code != 200:
-            print(f"Windy API error {response.status_code}: {response.text[:200]}")
+            print(f"Open-Meteo error {response.status_code}: {response.text[:200]}")
             if key in _cache:
                 _, forecasts = _cache[key]
                 return forecasts
             return []
         data = response.json()
 
-    timestamps = data.get("ts", [])
-    u_values = data.get("wind_u-surface", [])
-    v_values = data.get("wind_v-surface", [])
-    gust_values = data.get("gust-surface", [])
+    times = data.get("hourly", {}).get("time", [])
+    speeds = data.get("hourly", {}).get("windspeed_10m", [])
+    directions = data.get("hourly", {}).get("winddirection_10m", [])
+    gusts = data.get("hourly", {}).get("windgusts_10m", [])
 
     forecasts = []
-    for i, ts in enumerate(timestamps):
-        u = u_values[i] if i < len(u_values) else 0
-        v = v_values[i] if i < len(v_values) else 0
-        gust = gust_values[i] if i < len(gust_values) else 0
-
-        speed_ms = math.sqrt(u**2 + v**2)
-        direction_deg = math.degrees(math.atan2(-u, -v)) % 360
+    for i, t in enumerate(times):
+        speed_kmh = speeds[i] if i < len(speeds) else 0
+        direction_deg = directions[i] if i < len(directions) else 0
+        gust_kmh = gusts[i] if i < len(gusts) else 0
 
         forecasts.append({
-            "time": datetime.utcfromtimestamp(ts / 1000).isoformat(),
-            "wind_speed_knots": ms_to_knots(speed_ms),
-            "wind_gust_knots": ms_to_knots(gust),
+            "time": t,  # already ISO format from Open-Meteo
+            "wind_speed_knots": kmh_to_knots(speed_kmh),
+            "wind_gust_knots": kmh_to_knots(gust_kmh),
             "wind_direction": degrees_to_compass(direction_deg),
             "wind_direction_degrees": round(direction_deg, 1),
         })

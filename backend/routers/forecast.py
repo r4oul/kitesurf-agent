@@ -1,5 +1,4 @@
 import asyncio
-import os
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
@@ -59,7 +58,7 @@ async def get_recommendations(
     )
 
     if not wind_data:
-        return {"error": "Could not fetch wind forecast", "debug": f"ref={ref_lat},{ref_lon} key={bool(os.getenv('WINDY_API_KEY'))}"}
+        return {"error": "Could not fetch wind forecast"}
 
     now_utc = datetime.now(timezone.utc).isoformat()
     current_wind = wind_data[0]
