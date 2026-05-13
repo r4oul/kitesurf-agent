@@ -218,14 +218,18 @@ beaches = [
 
 db = SessionLocal()
 
-# Skip beaches that already exist
 existing = {b.name for b in db.query(Beach.name).all()}
 added = 0
 for data in beaches:
     if data["name"] not in existing:
-        db.add(Beach(**data))
-        added += 1
+        try:
+            db.add(Beach(**data))
+            db.commit()
+            added += 1
+            print(f"Added: {data['name']}")
+        except Exception as e:
+            db.rollback()
+            print(f"Failed to add {data['name']}: {e}")
 
-db.commit()
 db.close()
 print(f"Done - {added} beaches added ({len(existing)} already existed).")
