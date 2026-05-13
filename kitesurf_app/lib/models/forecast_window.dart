@@ -33,8 +33,8 @@ class ForecastWindow {
   }
 
   int get scoreColor {
-    if (score >= 80) return 0xFF2E7D32;
-    if (score >= 60) return 0xFF558B2F;
+    if (score >= 88) return 0xFF2E7D32;
+    if (score >= 65) return 0xFF558B2F;
     if (score >= 40) return 0xFFF57F17;
     return 0xFFC62828;
   }

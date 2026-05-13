@@ -46,7 +46,7 @@ async def get_beach_windows(beach: Beach, rider_level: str) -> list[dict]:
 
 
 def _score_label(score: int) -> str:
-    if score >= 80: return "Excellent"
-    if score >= 60: return "Good"
+    if score >= 88: return "Excellent"
+    if score >= 65: return "Good"
     if score >= 40: return "Marginal"
     return "Poor"
