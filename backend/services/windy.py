@@ -44,7 +44,7 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
         "windspeed_unit": "kmh",
         "forecast_days": 5,
         "timezone": "UTC",
-        "models": "ukmo_seamless",
+        "models": "best_match",
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
