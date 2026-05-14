@@ -193,11 +193,11 @@ beaches = [
         "wind_directions": ["N", "NW", "NNW"],
         "wind_speed_min": 12,
         "wind_speed_max": 35,
-        "tide_states": ["high"],
+        "tide_states": ["high", "mid"],
         "tide_directions": ["incoming", "slack", "outgoing"],
         "rider_levels": ["beginner", "intermediate", "advanced"],
         "hazards": "Shallow lagoon. Empties quick on spring tides.",
-        "notes": "Flat water at high tide.",
+        "notes": "Flat water from 2hrs before to 2hrs after high tide. Drains quickly at springs.",
         "whatsapp_groups": [],
     },
     {
