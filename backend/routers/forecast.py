@@ -6,7 +6,7 @@ from backend.models.beach import Beach
 from backend.services.windy import get_wind_forecast
 import backend.services.windy as windy_service
 from backend.services.tides import get_tides, get_tide_state
-from backend.services.recommender import recommend_beaches
+from backend.services.recommender import score_beach
 from backend.services.forecast_windows import get_beach_windows
 from backend.services.sewage import get_sewage_status
 from datetime import datetime, timezone
@@ -50,36 +50,55 @@ async def get_recommendations(
     if not beaches:
         return {"recommendations": []}
 
-    # Use user's location if provided, otherwise central beach (Portland area)
+    # Reference location for the conditions card (user's position or midpoint)
     if lat is not None and lon is not None:
         ref_lat, ref_lon = lat, lon
     else:
         reference = beaches[len(beaches) // 2]
         ref_lat, ref_lon = reference.latitude, reference.longitude
 
-    # Single wind + tide fetch for recommendations (GFS is 25km resolution anyway)
-    wind_data, tide_data = await asyncio.gather(
-        get_wind_forecast(ref_lat, ref_lon),
-        get_tides(ref_lat, ref_lon),
+    # Fetch reference conditions + per-beach wind + per-beach tide — all in parallel.
+    # Tide is local harmonic computation (free). Wind is cached per location.
+    all_results = await asyncio.gather(
+        get_wind_forecast(ref_lat, ref_lon),                          # ref conditions card
+        get_tides(ref_lat, ref_lon),                                  # ref conditions card
+        *[get_wind_forecast(b.latitude, b.longitude) for b in beaches],
+        *[get_tides(b.latitude, b.longitude, constituents=b.tide_constituents) for b in beaches],
     )
 
-    if not wind_data:
+    ref_wind_data = all_results[0]
+    ref_tide_data = all_results[1]
+    n = len(beaches)
+    beach_wind_data = all_results[2:2 + n]
+    beach_tide_data = all_results[2 + n:]
+
+    if not ref_wind_data:
         return {"error": "Could not fetch wind forecast"}
 
     now_utc = datetime.now(timezone.utc).isoformat()
-    current_wind = wind_data[0]
-    current_height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
-    tide_info = get_tide_state(current_height, tide_data["extremes"])
+    ref_wind = ref_wind_data[0]
+    ref_height = ref_tide_data["heights"][0]["height_m"] if ref_tide_data["heights"] else 1.5
+    ref_tide_info = get_tide_state(ref_height, ref_tide_data["extremes"])
 
-    recommendations = recommend_beaches(
-        beaches=beaches,
-        wind_speed=current_wind["wind_speed_knots"],
-        wind_direction=current_wind["wind_direction"],
-        tide_state=tide_info["state"],
-        tide_direction=tide_info["direction"],
-        rider_level=rider_level,
-        top_n=len(beaches),
-    )
+    # Score each beach against its own local wind and tide
+    recommendations = []
+    for beach, wind_data, tide_data in zip(beaches, beach_wind_data, beach_tide_data):
+        if not wind_data:
+            continue
+        current_wind = wind_data[0]
+        height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
+        tide_info = get_tide_state(height, tide_data["extremes"])
+        rec = score_beach(
+            beach=beach,
+            wind_speed=current_wind["wind_speed_knots"],
+            wind_direction=current_wind["wind_direction"],
+            tide_state=tide_info["state"],
+            tide_direction=tide_info["direction"],
+            rider_level=rider_level,
+        )
+        recommendations.append(rec)
+
+    recommendations.sort(key=lambda x: x["score"], reverse=True)
 
     # Fetch sewage status for all beaches in parallel
     sewage_results = await asyncio.gather(
@@ -90,11 +109,11 @@ async def get_recommendations(
 
     return {
         "conditions": {
-            "wind_speed_knots": current_wind["wind_speed_knots"],
-            "wind_gust_knots": current_wind["wind_gust_knots"],
-            "wind_direction": current_wind["wind_direction"],
-            "tide_state": tide_info["state"],
-            "tide_direction": tide_info["direction"],
+            "wind_speed_knots": ref_wind["wind_speed_knots"],
+            "wind_gust_knots": ref_wind["wind_gust_knots"],
+            "wind_direction": ref_wind["wind_direction"],
+            "tide_state": ref_tide_info["state"],
+            "tide_direction": ref_tide_info["direction"],
             "fetched_at": now_utc,
             "wind_model": windy_service.wind_model_label,
         },
