@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.beach import Beach
-from backend.services.windy import get_wind_forecast, WIND_MODEL_LABEL
+from backend.services.windy import get_wind_forecast
+import backend.services.windy as windy_service
 from backend.services.tides import get_tides, get_tide_state
 from backend.services.recommender import recommend_beaches
 from backend.services.forecast_windows import get_beach_windows
@@ -95,7 +96,7 @@ async def get_recommendations(
             "tide_state": tide_info["state"],
             "tide_direction": tide_info["direction"],
             "fetched_at": now_utc,
-            "wind_model": WIND_MODEL_LABEL,
+            "wind_model": windy_service.wind_model_label,
         },
         "recommendations": recommendations,
     }

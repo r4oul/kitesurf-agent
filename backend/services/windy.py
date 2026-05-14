@@ -4,13 +4,16 @@ from datetime import datetime, timezone, timedelta
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 CACHE_TTL_MINUTES = 30
-WIND_MODEL = "best_match"
-WIND_MODEL_LABEL = "Open-Meteo best match (ECMWF blend)"
+
+PRIMARY_MODEL = "ecmwf_ifs025"
+PRIMARY_LABEL = "ECMWF IFS 0.25°"
+FALLBACK_MODEL = "gfs_seamless"
+FALLBACK_LABEL = "GFS (ECMWF unavailable)"
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
 
-# In-memory cache: key = (lat, lon), value = (fetched_at, forecasts)
+# In-memory cache: key = (lat, lon), value = (fetched_at, forecasts, model_label)
 _cache: dict = {}
 
 
@@ -31,14 +34,13 @@ def kmh_to_knots(kmh: float) -> float:
     return round(kmh * 0.539957, 1)
 
 
-async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
-    key = _cache_key(lat, lon)
+def _has_gusts(gusts: list) -> bool:
+    """Return True if the gust list contains at least some real values."""
+    return any(g is not None for g in gusts)
 
-    if key in _cache:
-        fetched_at, forecasts = _cache[key]
-        if _is_fresh(fetched_at):
-            return forecasts
 
+async def _fetch_model(lat: float, lon: float, model: str) -> tuple[list, bool]:
+    """Fetch from Open-Meteo for a given model. Returns (forecasts, success)."""
     params = {
         "latitude": lat,
         "longitude": lon,
@@ -46,40 +48,75 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
         "windspeed_unit": "kmh",
         "forecast_days": 5,
         "timezone": "UTC",
-        "models": WIND_MODEL,
+        "models": model,
     }
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.get(OPEN_METEO_URL, params=params)
-        if response.status_code != 200:
-            print(f"Open-Meteo error {response.status_code}: {response.text[:200]}")
-            if key in _cache:
-                _, forecasts = _cache[key]
-                return forecasts
-            return []
-        data = response.json()
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(OPEN_METEO_URL, params=params)
+            if response.status_code != 200:
+                print(f"Open-Meteo {model} error {response.status_code}: {response.text[:200]}")
+                return [], False
+            data = response.json()
+    except Exception as e:
+        print(f"Open-Meteo {model} exception: {e}")
+        return [], False
 
     times = data.get("hourly", {}).get("time", [])
     speeds = data.get("hourly", {}).get("windspeed_10m", [])
     directions = data.get("hourly", {}).get("winddirection_10m", [])
     gusts = data.get("hourly", {}).get("windgusts_10m", [])
 
+    if not times:
+        return [], False
+
+    # If gusts are all null (e.g. ECMWF IFS), treat as failure so we fall back
+    if not _has_gusts(gusts):
+        print(f"Open-Meteo {model}: no gust data, falling back")
+        return [], False
+
     forecasts = []
     for i, t in enumerate(times):
         speed_kmh = speeds[i] if i < len(speeds) else 0
         direction_deg = directions[i] if i < len(directions) else 0
         gust_kmh = gusts[i] if i < len(gusts) else None
-        # ECMWF IFS doesn't provide gusts — fall back to speed as minimum estimate
         if gust_kmh is None:
             gust_kmh = speed_kmh
 
         forecasts.append({
-            "time": t,  # already ISO format from Open-Meteo
+            "time": t,
             "wind_speed_knots": kmh_to_knots(speed_kmh),
             "wind_gust_knots": kmh_to_knots(gust_kmh),
             "wind_direction": degrees_to_compass(direction_deg),
             "wind_direction_degrees": round(direction_deg, 1),
         })
 
-    _cache[key] = (datetime.now(timezone.utc), forecasts)
+    return forecasts, True
+
+
+# Module-level label so the router can read which model is active
+wind_model_label: str = PRIMARY_LABEL
+
+
+async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
+    global wind_model_label
+    key = _cache_key(lat, lon)
+
+    if key in _cache:
+        fetched_at, forecasts, label = _cache[key]
+        if _is_fresh(fetched_at):
+            wind_model_label = label
+            return forecasts
+
+    # Try primary (ECMWF) first, fall back to GFS
+    forecasts, ok = await _fetch_model(lat, lon, PRIMARY_MODEL)
+    if ok:
+        label = PRIMARY_LABEL
+    else:
+        forecasts, ok = await _fetch_model(lat, lon, FALLBACK_MODEL)
+        label = FALLBACK_LABEL if ok else PRIMARY_LABEL
+
+    if forecasts:
+        _cache[key] = (datetime.now(timezone.utc), forecasts, label)
+
+    wind_model_label = label
     return forecasts
