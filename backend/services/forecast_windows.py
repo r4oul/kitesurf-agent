@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 async def get_beach_windows(beach: Beach, rider_level: str) -> list[dict]:
     """Return scored forecast windows for a beach over the next 5 days."""
     wind_forecast = await get_wind_forecast(beach.latitude, beach.longitude)
-    tide_data = await get_tides(beach.latitude, beach.longitude, days=5)
+    tide_data = await get_tides(beach.latitude, beach.longitude, days=5, constituents=beach.tide_constituents)
 
     # Build a lookup of tide height by truncated timestamp (first 16 chars = YYYY-MM-DDTHH:MM)
     height_by_time = {h["time"][:16]: h["height_m"] for h in tide_data["heights"]}

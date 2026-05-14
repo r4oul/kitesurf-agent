@@ -17,3 +17,5 @@ class Beach(Base):
     hazards = Column(String, nullable=True)
     notes = Column(String, nullable=True)
     whatsapp_groups = Column(JSON)        # e.g. [{"name": "...", "invite_link": "..."}]
+    tide_station = Column(String, nullable=True)   # nearest BODC reference station name
+    tide_constituents = Column(JSON, nullable=True) # harmonic constants for local prediction

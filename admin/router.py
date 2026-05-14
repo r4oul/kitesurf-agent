@@ -6,6 +6,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from typing import List, Optional
 from backend.database import get_db
 from backend.models.beach import Beach
+from backend.services.tidal_stations import find_nearest_station
 import os
 
 router = APIRouter(prefix="/admin")
@@ -61,12 +62,16 @@ async def create_beach(
         for n, l in zip(wa_names, wa_links) if n.strip() and l.strip()
     ]
 
+    station = find_nearest_station(latitude, longitude)
+
     beach = Beach(
         name=name, latitude=latitude, longitude=longitude,
         wind_directions=wind_directions, wind_speed_min=wind_speed_min,
         wind_speed_max=wind_speed_max, tide_states=tide_states,
         tide_directions=tide_directions, rider_levels=rider_levels,
-        hazards=hazards, notes=notes, whatsapp_groups=whatsapp_groups
+        hazards=hazards, notes=notes, whatsapp_groups=whatsapp_groups,
+        tide_station=station["name"],
+        tide_constituents=station["constituents"],
     )
     db.add(beach)
     db.commit()
@@ -121,6 +126,13 @@ async def update_beach(
     beach.tide_states = tide_states
     beach.tide_directions = tide_directions
     beach.rider_levels = rider_levels
+
+    # Re-derive tidal station if lat/lon changed
+    station = find_nearest_station(latitude, longitude)
+    beach.tide_station = station["name"]
+    beach.tide_constituents = station["constituents"]
+    flag_modified(beach, "tide_constituents")
+
     beach.whatsapp_groups = [
         {"name": n, "invite_link": l}
         for n, l in zip(wa_names, wa_links) if n.strip() and l.strip()
