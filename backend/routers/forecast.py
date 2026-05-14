@@ -7,6 +7,7 @@ from backend.services.windy import get_wind_forecast
 from backend.services.tides import get_tides, get_tide_state
 from backend.services.recommender import recommend_beaches
 from backend.services.forecast_windows import get_beach_windows
+from backend.services.sewage import get_sewage_status
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
@@ -22,14 +23,18 @@ async def beach_forecast(
     if not beach:
         return {"error": "Beach not found"}
 
-    windows = await get_beach_windows(beach, rider_level)
-    tides = await get_tides(beach.latitude, beach.longitude)
+    windows, tides, sewage = await asyncio.gather(
+        get_beach_windows(beach, rider_level),
+        get_tides(beach.latitude, beach.longitude),
+        get_sewage_status(beach.latitude, beach.longitude),
+    )
 
     return {
         "beach_id": beach.id,
         "beach_name": beach.name,
         "windows": windows,
         "tide_extremes": tides["extremes"][:12],
+        **sewage,
     }
 
 
@@ -74,6 +79,13 @@ async def get_recommendations(
         rider_level=rider_level,
         top_n=len(beaches),
     )
+
+    # Fetch sewage status for all beaches in parallel
+    sewage_results = await asyncio.gather(
+        *[get_sewage_status(r["latitude"], r["longitude"]) for r in recommendations]
+    )
+    for rec, sewage in zip(recommendations, sewage_results):
+        rec.update(sewage)
 
     return {
         "conditions": {

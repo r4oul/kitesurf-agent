@@ -22,6 +22,7 @@ class BeachForecastScreen extends StatefulWidget {
 class _BeachForecastScreenState extends State<BeachForecastScreen> {
   List<ForecastWindow> _windows = [];
   List<dynamic> _tideExtremes = [];
+  String _sewageStatus = 'unknown';
   bool _loading = true;
   String? _error;
 
@@ -37,6 +38,7 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
       setState(() {
         _windows = data['windows'];
         _tideExtremes = data['tide_extremes'];
+        _sewageStatus = data['sewage_status'] ?? 'unknown';
         _loading = false;
       });
     } catch (e) {
@@ -76,10 +78,34 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (_sewageStatus == 'discharging') _buildSewageBanner(),
         if (_tideExtremes.isNotEmpty) _buildTideCard(),
         const SizedBox(height: 16),
         ...grouped.entries.map((entry) => _buildDaySection(entry.key, entry.value)),
       ],
+    );
+  }
+
+  Widget _buildSewageBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFB71C1C),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Row(
+        children: [
+          Text('🚫', style: TextStyle(fontSize: 20)),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Sewage discharge active nearby — check before entering the water',
+              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

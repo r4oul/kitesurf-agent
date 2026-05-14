@@ -38,6 +38,8 @@ class Recommendation {
   final List<Map<String, dynamic>> whatsappGroups;
   final double latitude;
   final double longitude;
+  final String sewageStatus; // 'discharging', 'clear', 'offline', 'unknown'
+  final int? nearestOverflowM;
 
   Recommendation({
     required this.beachId,
@@ -50,6 +52,8 @@ class Recommendation {
     required this.whatsappGroups,
     required this.latitude,
     required this.longitude,
+    this.sewageStatus = 'unknown',
+    this.nearestOverflowM,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
@@ -64,6 +68,8 @@ class Recommendation {
       whatsappGroups: List<Map<String, dynamic>>.from(json['whatsapp_groups'] ?? []),
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      sewageStatus: json['sewage_status'] ?? 'unknown',
+      nearestOverflowM: json['nearest_overflow_m'],
     );
   }
 
