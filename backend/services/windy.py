@@ -66,7 +66,10 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
     for i, t in enumerate(times):
         speed_kmh = speeds[i] if i < len(speeds) else 0
         direction_deg = directions[i] if i < len(directions) else 0
-        gust_kmh = gusts[i] if i < len(gusts) else 0
+        gust_kmh = gusts[i] if i < len(gusts) else None
+        # ECMWF IFS doesn't provide gusts — fall back to speed as minimum estimate
+        if gust_kmh is None:
+            gust_kmh = speed_kmh
 
         forecasts.append({
             "time": t,  # already ISO format from Open-Meteo
