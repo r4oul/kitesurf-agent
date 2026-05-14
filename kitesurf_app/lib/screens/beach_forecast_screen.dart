@@ -78,11 +78,30 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
+        if (_sewageStatus == 'clear') _buildWaterClearBanner(),
         if (_sewageStatus == 'discharging') _buildSewageBanner(),
         if (_tideExtremes.isNotEmpty) _buildTideCard(),
         const SizedBox(height: 16),
         ...grouped.entries.map((entry) => _buildDaySection(entry.key, entry.value)),
       ],
+    );
+  }
+
+  Widget _buildWaterClearBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B5E20),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Row(
+        children: [
+          Text('🟢', style: TextStyle(fontSize: 18)),
+          SizedBox(width: 10),
+          Text('Water quality clear', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 

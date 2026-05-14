@@ -49,8 +49,13 @@ class ConditionsCard extends StatelessWidget {
           ),
           if (conditions.windModel.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text('Model: ${conditions.windModel}',
-                style: const TextStyle(fontSize: 10, color: kTextSecondary)),
+            Row(
+              children: [
+                const Text('🌐 ', style: TextStyle(fontSize: 11)),
+                Text('Wind model: ${conditions.windModel}',
+                    style: const TextStyle(fontSize: 11, color: kTextSecondary)),
+              ],
+            ),
           ],
         ],
       ),

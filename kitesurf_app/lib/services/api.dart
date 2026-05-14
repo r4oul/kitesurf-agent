@@ -28,6 +28,8 @@ class ApiService {
             .map((w) => ForecastWindow.fromJson(w))
             .toList(),
         'tide_extremes': data['tide_extremes'] as List,
+        'sewage_status': data['sewage_status'] ?? 'unknown',
+        'nearest_overflow_m': data['nearest_overflow_m'],
       };
     }
     throw Exception('Failed to load beach forecast');

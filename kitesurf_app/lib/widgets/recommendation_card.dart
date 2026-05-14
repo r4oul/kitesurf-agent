@@ -64,6 +64,8 @@ class RecommendationCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+          if (r.sewageStatus == 'clear')
+            _row('🟢', 'Water quality clear', const Color(0xFF4CAF50)),
           if (r.sewageStatus == 'discharging')
             _row('🚫', 'Sewage discharge active nearby', const Color(0xFFEF5350)),
           if (r.sewageStatus == 'offline')
