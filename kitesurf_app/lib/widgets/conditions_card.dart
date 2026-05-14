@@ -47,6 +47,11 @@ class ConditionsCard extends StatelessWidget {
               _stat('🌊', conditions.tideState, conditions.tideDirection),
             ],
           ),
+          if (conditions.windModel.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text('Model: ${conditions.windModel}',
+                style: const TextStyle(fontSize: 10, color: kTextSecondary)),
+          ],
         ],
       ),
     );

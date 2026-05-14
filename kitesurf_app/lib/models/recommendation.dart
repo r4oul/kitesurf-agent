@@ -5,6 +5,7 @@ class Conditions {
   final String tideState;
   final String tideDirection;
   final String fetchedAt;
+  final String windModel;
 
   Conditions({
     required this.windSpeedKnots,
@@ -13,6 +14,7 @@ class Conditions {
     required this.tideState,
     required this.tideDirection,
     required this.fetchedAt,
+    this.windModel = '',
   });
 
   factory Conditions.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class Conditions {
       tideState: json['tide_state'] ?? '',
       tideDirection: json['tide_direction'] ?? '',
       fetchedAt: json['fetched_at'] ?? '',
+      windModel: json['wind_model'] ?? '',
     );
   }
 }

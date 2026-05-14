@@ -4,6 +4,8 @@ from datetime import datetime, timezone, timedelta
 
 OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 CACHE_TTL_MINUTES = 30
+WIND_MODEL = "best_match"
+WIND_MODEL_LABEL = "Open-Meteo best match (ECMWF blend)"
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
@@ -44,7 +46,7 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
         "windspeed_unit": "kmh",
         "forecast_days": 5,
         "timezone": "UTC",
-        "models": "best_match",
+        "models": WIND_MODEL,
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
