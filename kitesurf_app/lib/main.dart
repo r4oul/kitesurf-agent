@@ -14,7 +14,7 @@ class KitesurfApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'South Coast Kitesurf',
+      title: 'West Coast Kitesurf',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       home: const MainShell(),
@@ -44,7 +44,7 @@ class _MainShellState extends State<MainShell> {
           children: [
             CKiteIcon(size: 28, color: kAccent),
             SizedBox(width: 10),
-            Text('South Coast Kitesurf',
+            Text('West Coast Kitesurf',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
           ],
         ),

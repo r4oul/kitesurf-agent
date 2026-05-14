@@ -79,10 +79,12 @@ def score_beach(
         warnings.append(f"Wind direction {wind_direction} not ideal for this beach")
 
     # --- Tide state (15 points) ---
+    tide_state_no_match = False
     if tide_state in beach.tide_states:
         score += 15
         reasons.append(f"Tide state ({tide_state}) is good")
     else:
+        tide_state_no_match = True
         warnings.append(f"Tide state ({tide_state}) not ideal")
 
     # --- Tide direction (7 points) ---
@@ -106,6 +108,9 @@ def score_beach(
     # Wrong wind direction: cap at 40 (top of Marginal) — never "Good" with wrong direction
     if direction_no_match:
         score = min(score, 40)
+    # Wrong tide state: cap at 64 (top of Marginal) — never "Good" on wrong tide
+    if tide_state_no_match:
+        score = min(score, 64)
 
     return {
         "beach_id": beach.id,

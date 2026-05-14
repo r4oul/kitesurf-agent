@@ -9,7 +9,7 @@ ENDPOINTS = {
 }
 
 CACHE_TTL_MINUTES = 10
-SEARCH_RADIUS_M = 3000  # only consider overflows within 3km of beach
+SEARCH_RADIUS_M = 4000  # only consider overflows within 4km of beach
 
 _cache: dict = {}
 

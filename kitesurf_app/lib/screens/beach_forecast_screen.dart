@@ -142,24 +142,24 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _tideExtremes.where((e) {
-                final time = DateTime.parse(e['time']).toLocal();
-                return time.hour >= 6 && time.hour < 21;
-              }).map<Widget>((e) {
+              children: _tideExtremes.map<Widget>((e) {
                 final isHigh = e['type'] == 'High';
                 final time = DateTime.parse(e['time']).toLocal();
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: isHigh ? const Color(0xFFBBDEFB) : const Color(0xFFE3F2FD),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: isHigh ? const Color(0xFF1565C0) : const Color(0xFF42A5F5)),
+                    color: isHigh ? const Color(0xFF0D3B6E) : const Color(0xFF8B6914),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
                     children: [
-                      Text(isHigh ? '🌊 High' : '🏖️ Low', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      Text(DateFormat('EEE HH:mm').format(time), style: const TextStyle(fontSize: 13)),
-                      Text('${e['height_m']}m', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                      Text(isHigh ? '🌊 High' : '🏖️ Low',
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white)),
+                      const SizedBox(height: 2),
+                      Text(DateFormat('EEE HH:mm').format(time),
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text('${e['height_m']}m',
+                          style: const TextStyle(fontSize: 12, color: Color(0xFFCCDDEE))),
                     ],
                   ),
                 );

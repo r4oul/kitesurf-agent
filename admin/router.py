@@ -1,5 +1,8 @@
-from fastapi import APIRouter, Depends, Request, Form
+import os
+import secrets
+from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
@@ -7,20 +10,35 @@ from typing import List, Optional
 from backend.database import get_db
 from backend.models.beach import Beach
 from backend.services.tidal_stations import find_nearest_station
-import os
+
+_security = HTTPBasic()
+
+def _require_admin(credentials: HTTPBasicCredentials = Depends(_security)):
+    correct_user = os.getenv("ADMIN_USERNAME", "admin")
+    correct_pass = os.getenv("ADMIN_PASSWORD", "changeme")
+    ok = (
+        secrets.compare_digest(credentials.username, correct_user) and
+        secrets.compare_digest(credentials.password, correct_pass)
+    )
+    if not ok:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorised",
+            headers={"WWW-Authenticate": "Basic"},
+        )
 
 router = APIRouter(prefix="/admin")
 templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
 
 
 @router.get("/", response_class=HTMLResponse)
-def admin_home(request: Request, db: Session = Depends(get_db)):
+def admin_home(request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beaches = db.query(Beach).all()
     return templates.TemplateResponse("beach_list.html", {"request": request, "beaches": beaches})
 
 
 @router.get("/beach/new", response_class=HTMLResponse)
-def new_beach_form(request: Request):
+def new_beach_form(request: Request, _=Depends(_require_admin)):
     return templates.TemplateResponse("beach_form.html", {"request": request, "beach": None})
 
 
@@ -28,6 +46,7 @@ def new_beach_form(request: Request):
 async def create_beach(
     request: Request,
     db: Session = Depends(get_db),
+    _=Depends(_require_admin),
 ):
     form = await request.form()
 
@@ -79,7 +98,7 @@ async def create_beach(
 
 
 @router.get("/beach/{beach_id}/edit", response_class=HTMLResponse)
-def edit_beach_form(beach_id: int, request: Request, db: Session = Depends(get_db)):
+def edit_beach_form(beach_id: int, request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beach = db.query(Beach).filter(Beach.id == beach_id).first()
     return templates.TemplateResponse("beach_form.html", {"request": request, "beach": beach})
 
@@ -89,6 +108,7 @@ async def update_beach(
     beach_id: int,
     request: Request,
     db: Session = Depends(get_db),
+    _=Depends(_require_admin),
 ):
     form = await request.form()
 
@@ -147,7 +167,7 @@ async def update_beach(
 
 
 @router.post("/beach/{beach_id}/delete")
-def delete_beach(beach_id: int, db: Session = Depends(get_db)):
+def delete_beach(beach_id: int, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beach = db.query(Beach).filter(Beach.id == beach_id).first()
     if beach:
         db.delete(beach)
