@@ -20,5 +20,13 @@ if exmouth and any(d in (exmouth.wind_directions or []) for d in ["W", "NW"]):
     db.commit()
     print("Fixed Exmouth wind directions.")
 
+# One-time fix: remove outgoing from Duckpond's tide_directions (lagoon drains on ebb)
+duckpond = db.query(Beach).filter(Beach.name == "Duckpond (Exmouth)").first()
+if duckpond and "outgoing" in (duckpond.tide_directions or []):
+    duckpond.tide_directions = [d for d in duckpond.tide_directions if d != "outgoing"]
+    flag_modified(duckpond, "tide_directions")
+    db.commit()
+    print("Fixed Duckpond tide directions.")
+
 db.close()
 print("Startup complete.")
