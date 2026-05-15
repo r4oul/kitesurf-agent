@@ -87,7 +87,7 @@ async def _fetch_model(lat: float, lon: float, model: str) -> tuple[list, bool]:
             gust_kmh = speed_kmh
 
         forecasts.append({
-            "time": t,
+            "time": t + "Z",
             "wind_speed_knots": kmh_to_knots(speed_kmh),
             "wind_gust_knots": kmh_to_knots(gust_kmh),
             "wind_direction": degrees_to_compass(direction_deg),
@@ -120,7 +120,7 @@ async def _fetch_metno(lat: float, lon: float) -> tuple[list, bool]:
 
     forecasts = []
     for entry in timeseries:
-        time_str = entry["time"][:16]  # "2026-05-14T12:00"
+        time_str = entry["time"][:16] + "Z"  # "2026-05-14T12:00Z"
         details = entry.get("data", {}).get("instant", {}).get("details", {})
         speed_ms = details.get("wind_speed", 0)
         direction_deg = details.get("wind_from_direction", 0)

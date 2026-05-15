@@ -67,7 +67,7 @@ def predict_heights(constituents: dict, start: datetime, days: int = 5, step_min
     t = start
     while t <= end:
         result.append({
-            "time": t.replace(tzinfo=None).isoformat(),
+            "time": t.replace(tzinfo=None).isoformat() + "Z",
             "height_m": predict_height(constituents, t),
         })
         t += step
@@ -92,13 +92,13 @@ def predict_extremes(constituents: dict, start: datetime, days: int = 5) -> list
         prev, curr, nxt = heights[i - 1], heights[i], heights[i + 1]
         if curr > prev and curr > nxt:
             extremes.append({
-                "time": times[i].replace(tzinfo=None).isoformat(),
+                "time": times[i].replace(tzinfo=None).isoformat() + "Z",
                 "type": "High",
                 "height_m": curr,
             })
         elif curr < prev and curr < nxt:
             extremes.append({
-                "time": times[i].replace(tzinfo=None).isoformat(),
+                "time": times[i].replace(tzinfo=None).isoformat() + "Z",
                 "type": "Low",
                 "height_m": curr,
             })

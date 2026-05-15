@@ -59,7 +59,7 @@ def get_tide_state(height_m: float, extremes: list[dict], at_time: datetime = No
 
     if at_time is None:
         at_time = datetime.now(timezone.utc)
-    ref_str = at_time.replace(tzinfo=None).isoformat()
+    ref_str = at_time.replace(tzinfo=None).isoformat() + "Z"
     future = [e for e in extremes if e["time"] > ref_str]
     if future:
         direction = "incoming" if future[0]["type"] == "High" else "outgoing"
