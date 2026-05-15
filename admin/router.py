@@ -70,10 +70,15 @@ async def create_beach(
     wa_names = form.getlist("wa_name")
     wa_links = form.getlist("wa_link")
 
-    if not wind_directions or not tide_states or not tide_directions or not rider_levels:
+    missing = []
+    if not wind_directions: missing.append("wind directions")
+    if not tide_states: missing.append("tide states")
+    if not tide_directions: missing.append("tide directions")
+    if not rider_levels: missing.append("rider levels")
+    if missing:
         return templates.TemplateResponse("beach_form.html", {
             "request": request, "beach": None,
-            "error": "Please select at least one option for wind directions, tide states, tide directions, and rider levels."
+            "error": f"Please tick at least one box for: {', '.join(missing)}."
         })
 
     whatsapp_groups = [
