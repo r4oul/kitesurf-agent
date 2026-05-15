@@ -88,10 +88,12 @@ def score_beach(
         warnings.append(f"Tide state ({tide_state}) not ideal")
 
     # --- Tide direction (7 points) ---
+    tide_direction_no_match = False
     if tide_direction in beach.tide_directions:
         score += 7
         reasons.append(f"Tide direction ({tide_direction}) is good")
     else:
+        tide_direction_no_match = True
         warnings.append(f"Tide direction ({tide_direction}) not ideal")
 
     # --- Rider level (3 points) ---
@@ -111,6 +113,9 @@ def score_beach(
     # Wrong tide state: cap at 64 (top of Marginal) — never "Good" on wrong tide
     if tide_state_no_match:
         score = min(score, 64)
+    # Wrong tide direction: cap at 50 (Marginal) — e.g. lagoon beaches on outgoing tide
+    if tide_direction_no_match:
+        score = min(score, 50)
 
     return {
         "beach_id": beach.id,
