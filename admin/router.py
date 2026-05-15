@@ -6,9 +6,12 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
+from sqlalchemy import func, cast, Date
+from datetime import datetime, timezone, timedelta
 from typing import List, Optional
 from backend.database import get_db
 from backend.models.beach import Beach
+from backend.models.event import ApiEvent
 from backend.services.tidal_stations import find_nearest_station
 
 _security = HTTPBasic()
@@ -34,7 +37,50 @@ templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "t
 @router.get("/", response_class=HTMLResponse)
 def admin_home(request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beaches = db.query(Beach).all()
-    return templates.TemplateResponse("beach_list.html", {"request": request, "beaches": beaches})
+
+    now = datetime.now(timezone.utc)
+    week_ago = now - timedelta(days=7)
+
+    total_requests = db.query(func.count(ApiEvent.id)).scalar() or 0
+    week_requests = db.query(func.count(ApiEvent.id)).filter(ApiEvent.created_at >= week_ago).scalar() or 0
+
+    top_beaches = (
+        db.query(ApiEvent.beach_name, func.count(ApiEvent.id).label("views"))
+        .filter(ApiEvent.event_type == "beach_forecast", ApiEvent.beach_name.isnot(None))
+        .group_by(ApiEvent.beach_name)
+        .order_by(func.count(ApiEvent.id).desc())
+        .limit(5)
+        .all()
+    )
+
+    rider_counts = (
+        db.query(ApiEvent.rider_level, func.count(ApiEvent.id).label("count"))
+        .filter(ApiEvent.rider_level.isnot(None))
+        .group_by(ApiEvent.rider_level)
+        .order_by(func.count(ApiEvent.id).desc())
+        .all()
+    )
+
+    # Daily counts for the last 7 days
+    daily = []
+    for i in range(6, -1, -1):
+        day = now - timedelta(days=i)
+        day_start = day.replace(hour=0, minute=0, second=0, microsecond=0)
+        day_end = day_start + timedelta(days=1)
+        count = db.query(func.count(ApiEvent.id)).filter(
+            ApiEvent.created_at >= day_start, ApiEvent.created_at < day_end
+        ).scalar() or 0
+        daily.append({"label": day_start.strftime("%-d %b"), "count": count})
+
+    stats = {
+        "total_requests": total_requests,
+        "week_requests": week_requests,
+        "top_beaches": top_beaches,
+        "rider_counts": rider_counts,
+        "daily": daily,
+    }
+
+    return templates.TemplateResponse("beach_list.html", {"request": request, "beaches": beaches, "stats": stats})
 
 
 @router.get("/beach/new", response_class=HTMLResponse)

@@ -1,5 +1,63 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% if stats %}
+<div class="card">
+    <h2>Usage</h2>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-value">{{ stats.total_requests }}</div>
+            <div class="stat-label">Total requests</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ stats.week_requests }}</div>
+            <div class="stat-label">Last 7 days</div>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stats-col">
+            <h3>Top beaches</h3>
+            {% if stats.top_beaches %}
+            <table class="mini-table">
+                {% for name, views in stats.top_beaches %}
+                <tr><td>{{ name }}</td><td class="count">{{ views }}</td></tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="empty">No data yet</p>
+            {% endif %}
+        </div>
+        <div class="stats-col">
+            <h3>Rider levels</h3>
+            {% if stats.rider_counts %}
+            <table class="mini-table">
+                {% for level, count in stats.rider_counts %}
+                <tr><td>{{ level }}</td><td class="count">{{ count }}</td></tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <p class="empty">No data yet</p>
+            {% endif %}
+        </div>
+        <div class="stats-col">
+            <h3>Last 7 days</h3>
+            <table class="mini-table">
+                {% for day in stats.daily %}
+                <tr>
+                    <td>{{ day.label }}</td>
+                    <td class="count">{{ day.count }}</td>
+                    <td>
+                        <div class="bar" style="width: {{ [day.count * 6, 120] | min }}px"></div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <h2>Beaches</h2>

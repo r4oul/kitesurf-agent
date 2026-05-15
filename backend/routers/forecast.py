@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.beach import Beach
+from backend.models.event import ApiEvent
 from backend.services.windy import get_wind_forecast
 import backend.services.windy as windy_service
 from backend.services.tides import get_tides, get_tide_state
@@ -23,6 +24,9 @@ async def beach_forecast(
     beach = db.query(Beach).filter(Beach.id == beach_id).first()
     if not beach:
         return {"error": "Beach not found"}
+
+    db.add(ApiEvent(event_type="beach_forecast", beach_id=beach.id, beach_name=beach.name, rider_level=rider_level))
+    db.commit()
 
     windows, tides, sewage = await asyncio.gather(
         get_beach_windows(beach, rider_level),
@@ -49,6 +53,9 @@ async def get_recommendations(
     beaches = db.query(Beach).all()
     if not beaches:
         return {"recommendations": []}
+
+    db.add(ApiEvent(event_type="recommend", rider_level=rider_level))
+    db.commit()
 
     # Reference location for the conditions card (user's position or midpoint)
     if lat is not None and lon is not None:
