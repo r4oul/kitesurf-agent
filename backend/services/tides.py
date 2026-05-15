@@ -18,16 +18,20 @@ async def get_tides(lat: float, lon: float, days: int = 5, constituents: dict = 
         station = find_nearest_station(lat, lon)
         constituents = station["constituents"]
 
-    now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    # Start from midnight UTC so heights align with wind forecast data (which starts at 00:00)
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
 
-    heights = predict_heights(constituents, now, days=days)
-    extremes = predict_extremes(constituents, now, days=days)
+    heights = predict_heights(constituents, today, days=days)
+    extremes = predict_extremes(constituents, today, days=days)
 
     return {"heights": heights, "extremes": extremes}
 
 
-def get_tide_state(height_m: float, extremes: list[dict]) -> dict:
-    """Given a current height and list of extremes, return tide state and direction."""
+def get_tide_state(height_m: float, extremes: list[dict], at_time: datetime = None) -> dict:
+    """
+    Given a height and list of extremes, return tide state and direction.
+    at_time: the forecast time to evaluate (defaults to now).
+    """
     if not extremes:
         return {"state": "unknown", "direction": "unknown"}
 
@@ -53,8 +57,10 @@ def get_tide_state(height_m: float, extremes: list[dict]) -> dict:
     else:
         state = "high"
 
-    now_str = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
-    future = [e for e in extremes if e["time"] > now_str]
+    if at_time is None:
+        at_time = datetime.now(timezone.utc)
+    ref_str = at_time.replace(tzinfo=None).isoformat()
+    future = [e for e in extremes if e["time"] > ref_str]
     if future:
         direction = "incoming" if future[0]["type"] == "High" else "outgoing"
     else:

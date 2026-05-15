@@ -77,7 +77,9 @@ async def get_recommendations(
 
     now_utc = datetime.now(timezone.utc).isoformat()
     ref_wind = ref_wind_data[0]
-    ref_height = ref_tide_data["heights"][0]["height_m"] if ref_tide_data["heights"] else 1.5
+    now_hour = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:00")
+    height_entry = next((h for h in ref_tide_data["heights"] if h["time"].startswith(now_hour)), None)
+    ref_height = height_entry["height_m"] if height_entry else 1.5
     ref_tide_info = get_tide_state(ref_height, ref_tide_data["extremes"])
 
     # Score each beach against its own local wind and tide
@@ -86,7 +88,8 @@ async def get_recommendations(
         if not wind_data:
             continue
         current_wind = wind_data[0]
-        height = tide_data["heights"][0]["height_m"] if tide_data["heights"] else 1.5
+        h_entry = next((h for h in tide_data["heights"] if h["time"].startswith(now_hour)), None)
+        height = h_entry["height_m"] if h_entry else 1.5
         tide_info = get_tide_state(height, tide_data["extremes"])
         rec = score_beach(
             beach=beach,
