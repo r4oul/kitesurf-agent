@@ -21,7 +21,11 @@ async def get_beach_windows(beach: Beach, rider_level: str) -> list[dict]:
         if height is None:
             height = 1.5  # fallback mid-tide
 
-        tide_info = get_tide_state(height, extremes)
+        try:
+            at_time = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+        except Exception:
+            at_time = None
+        tide_info = get_tide_state(height, extremes, at_time=at_time)
         scored = score_beach(
             beach=beach,
             wind_speed=entry["wind_speed_knots"],
