@@ -4,12 +4,12 @@ from datetime import datetime, timezone, timedelta
 
 ENDPOINTS = {
     "sww": "https://services-eu1.arcgis.com/OMdMOtfhATJPcHe3/arcgis/rest/services/NEH_outlets_PROD/FeatureServer/0/query",
-    "southern": "https://services-eu1.arcgis.com/XxS6FebPX29TRGDJ/arcgis/rest/services/Southern_Water_Storm_Overflow_Activity/FeatureServer/0/query",
+    "southern": "https://services-eu1.arcgis.com/6qJmARkS2dt2IjVA/arcgis/rest/services/SouthernWater_StormOverflowActivity_PROD_view/FeatureServer/0/query",
     "wessex": "https://services.arcgis.com/3SZ6e0uCvPROr4mS/arcgis/rest/services/Wessex_Water_Storm_Overflow_Activity/FeatureServer/0/query",
 }
 
 CACHE_TTL_MINUTES = 10
-SEARCH_RADIUS_M = 4000  # only consider overflows within 4km of beach
+SEARCH_RADIUS_M = 5000  # only consider overflows within 5km of beach
 
 _cache: dict = {}
 
