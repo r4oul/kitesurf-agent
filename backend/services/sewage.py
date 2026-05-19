@@ -1,5 +1,6 @@
 import httpx
 import math
+import json
 from datetime import datetime, timezone, timedelta
 
 ENDPOINTS = {
@@ -8,9 +9,12 @@ ENDPOINTS = {
     "wessex": "https://services.arcgis.com/3SZ6e0uCvPROr4mS/arcgis/rest/services/Wessex_Water_Storm_Overflow_Activity/FeatureServer/0/query",
 }
 
-CACHE_TTL_MINUTES = 10
-SEARCH_RADIUS_M = 5000  # only consider overflows within 5km of beach
+CACHE_TTL_MINUTES = 15
+SEARCH_RADIUS_M = 5000   # consider overflows within 5km of beach
+BBOX_DEG = 0.08          # ~8km bounding box half-width (fetched from ArcGIS)
+RECENT_HOURS = 48
 
+# Per-location cache keyed by (company, rounded_lat, rounded_lon)
 _cache: dict = {}
 
 
@@ -33,49 +37,59 @@ def _haversine_m(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 
 
 def _attr(attrs: dict, *keys):
-    """Try multiple key names to handle PascalCase vs camelCase differences."""
     for key in keys:
         if key in attrs:
             return attrs[key]
     return None
 
 
-async def _fetch_company(company: str) -> list:
+async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
+    """Fetch overflows within BBOX_DEG of the given location, with per-location caching."""
+    cache_key = (company, round(lat, 2), round(lon, 2))
     now = datetime.now(timezone.utc)
-    if company in _cache:
-        fetched_at, features = _cache[company]
+
+    if cache_key in _cache:
+        fetched_at, features = _cache[cache_key]
         if now - fetched_at < timedelta(minutes=CACHE_TTL_MINUTES):
             return features
 
+    bbox = {
+        "xmin": lon - BBOX_DEG,
+        "ymin": lat - BBOX_DEG,
+        "xmax": lon + BBOX_DEG,
+        "ymax": lat + BBOX_DEG,
+    }
     params = {
         "where": "1=1",
+        "geometry": json.dumps(bbox),
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
         "outFields": "status,Status,latitude,Latitude,longitude,Longitude,latestEventStart,LatestEventStart,latestEventEnd,LatestEventEnd",
         "f": "json",
         "returnGeometry": "false",
-        "resultRecordCount": 2000,
+        "resultRecordCount": 200,
     }
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             resp = await client.get(ENDPOINTS[company], params=params)
             if resp.status_code != 200:
-                return _cache.get(company, (None, []))[1] or []
+                return _cache.get(cache_key, (None, []))[1] or []
             data = resp.json()
         features = [f["attributes"] for f in data.get("features", [])]
-        _cache[company] = (now, features)
+        _cache[cache_key] = (now, features)
         return features
     except Exception as e:
-        print(f"Sewage fetch failed ({company}): {e}")
-        return _cache.get(company, (None, []))[1] or []
+        print(f"Sewage fetch failed ({company} near {lat},{lon}): {e}")
+        return _cache.get(cache_key, (None, []))[1] or []
 
 
 async def get_sewage_status(lat: float, lon: float) -> dict:
-    """Return sewage status for the nearest overflow point within 3km of the beach."""
+    """Return sewage status for overflows within 5km of the beach."""
     company = _water_company(lon)
-    features = await _fetch_company(company)
+    features = await _fetch_nearby(company, lat, lon)
 
-    RECENT_HOURS = 48
     now = datetime.now(timezone.utc)
-
     nearby = []
     for f in features:
         f_lat = _attr(f, "latitude", "Latitude")
@@ -92,7 +106,6 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
     nearby.sort(key=lambda x: x[0])
     nearest_dist = nearby[0][0]
 
-    # Check all nearby overflows — flag if any is actively discharging or had a recent spill
     active_discharge = False
     recent_spill = False
     discharge_started = None
@@ -108,7 +121,6 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
             if event_start:
                 discharge_started = datetime.fromtimestamp(event_start / 1000, tz=timezone.utc).isoformat()
         elif status == 0:
-            # Check if event ended within the last 48 hours
             ref_ts = event_end if event_end else event_start
             if ref_ts:
                 ref_dt = datetime.fromtimestamp(ref_ts / 1000, tz=timezone.utc)
