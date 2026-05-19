@@ -8,13 +8,16 @@ METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agen
 
 CACHE_TTL_MINUTES = 30
 
-PRIMARY_MODEL = "ukmo_seamless"
-PRIMARY_LABEL = "UK Met Office"
-FALLBACK_MODEL = "icon_eu"
-FALLBACK_LABEL = "DWD ICON EU"
-FALLBACK2_MODEL = "gfs_seamless"
-FALLBACK2_LABEL = "GFS"
-METNO_LABEL = "Met.no (GFS unavailable)"
+MODELS = [
+    ("ukmo_seamless", "UK Met Office"),
+    ("icon_eu",       "DWD ICON EU"),
+    ("gfs_seamless",  "GFS"),
+]
+METNO_LABEL = "Met.no"
+
+# Circuit breaker: tracks which Open-Meteo models are currently down
+# key = model name, value = datetime when failure was recorded
+_model_failures: dict = {}
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
                    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
@@ -139,8 +142,21 @@ async def _fetch_metno(lat: float, lon: float) -> tuple[list, bool]:
     return forecasts, True
 
 
+CIRCUIT_BREAKER_MINUTES = 30  # how long to skip a failed model
+
 # Module-level label so the router can read which model is active
-wind_model_label: str = PRIMARY_LABEL
+wind_model_label: str = MODELS[0][1]
+
+
+def _model_available(model: str) -> bool:
+    """Return False if this model failed recently (circuit breaker)."""
+    if model not in _model_failures:
+        return True
+    age = datetime.now(timezone.utc) - _model_failures[model]
+    if age > timedelta(minutes=CIRCUIT_BREAKER_MINUTES):
+        del _model_failures[model]
+        return True
+    return False
 
 
 async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
@@ -153,21 +169,22 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             wind_model_label = label
             return forecasts
 
-    # Try UKMO → ICON EU → GFS → Met.no
-    forecasts, ok = await _fetch_model(lat, lon, PRIMARY_MODEL)
-    if ok:
-        label = PRIMARY_LABEL
-    else:
-        forecasts, ok = await _fetch_model(lat, lon, FALLBACK_MODEL)
+    # Try Open-Meteo models in order, skipping any that are circuit-broken
+    forecasts, label = [], MODELS[0][1]
+    for model, model_label in MODELS:
+        if not _model_available(model):
+            continue
+        forecasts, ok = await _fetch_model(lat, lon, model)
         if ok:
-            label = FALLBACK_LABEL
+            label = model_label
+            break
         else:
-            forecasts, ok = await _fetch_model(lat, lon, FALLBACK2_MODEL)
-            if ok:
-                label = FALLBACK2_LABEL
-            else:
-                forecasts, ok = await _fetch_metno(lat, lon)
-                label = METNO_LABEL if ok else PRIMARY_LABEL
+            _model_failures[model] = datetime.now(timezone.utc)
+
+    # Fall back to Met.no if all Open-Meteo models failed
+    if not forecasts:
+        forecasts, ok = await _fetch_metno(lat, lon)
+        label = METNO_LABEL
 
     if forecasts:
         _cache[key] = (datetime.now(timezone.utc), forecasts, label)

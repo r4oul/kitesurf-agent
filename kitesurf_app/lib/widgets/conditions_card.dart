@@ -23,21 +23,8 @@ class ConditionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 3,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: kAccent,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 8),
-              const Text('Current Conditions Where You Are',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: kAccent)),
-            ],
-          ),
+          const Text('Current Conditions Where You Are',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: kAccent)),
           const SizedBox(height: 14),
           Row(
             children: [
