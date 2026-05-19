@@ -73,51 +73,64 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
     company = _water_company(lon)
     features = await _fetch_company(company)
 
-    best_dist = float("inf")
-    best_status = None
-    best_event_start = None
-    best_event_end = None
+    RECENT_HOURS = 48
+    now = datetime.now(timezone.utc)
 
+    nearby = []
     for f in features:
         f_lat = _attr(f, "latitude", "Latitude")
         f_lon = _attr(f, "longitude", "Longitude")
         if f_lat is None or f_lon is None:
             continue
         dist = _haversine_m(lat, lon, f_lat, f_lon)
-        if dist < best_dist:
-            best_dist = dist
-            best_status = _attr(f, "status", "Status")
-            best_event_start = _attr(f, "latestEventStart", "LatestEventStart")
-            best_event_end = _attr(f, "latestEventEnd", "LatestEventEnd")
+        if dist <= SEARCH_RADIUS_M:
+            nearby.append((dist, f))
 
-    if best_status is None or best_dist > SEARCH_RADIUS_M:
+    if not nearby:
         return {"sewage_status": "unknown"}
 
-    # Check for recent spill: if a discharge ended within the last 48 hours, warn
-    RECENT_HOURS = 48
-    recent_spill = False
-    if best_status == 0 and best_event_end:
-        end_dt = datetime.fromtimestamp(best_event_end / 1000, tz=timezone.utc)
-        if (datetime.now(timezone.utc) - end_dt) < timedelta(hours=RECENT_HOURS):
-            recent_spill = True
-    # If no end time but start was recent and status is now clear, also flag it
-    elif best_status == 0 and best_event_start:
-        start_dt = datetime.fromtimestamp(best_event_start / 1000, tz=timezone.utc)
-        if (datetime.now(timezone.utc) - start_dt) < timedelta(hours=RECENT_HOURS):
-            recent_spill = True
+    nearby.sort(key=lambda x: x[0])
+    nearest_dist = nearby[0][0]
 
-    status_map = {1: "discharging", 0: "clear", -1: "offline"}
-    sewage_status = "recent_spill" if recent_spill else status_map.get(best_status, "unknown")
+    # Check all nearby overflows — flag if any is actively discharging or had a recent spill
+    active_discharge = False
+    recent_spill = False
+    discharge_started = None
+    discharge_ended = None
+
+    for dist, f in nearby:
+        status = _attr(f, "status", "Status")
+        event_start = _attr(f, "latestEventStart", "LatestEventStart")
+        event_end = _attr(f, "latestEventEnd", "LatestEventEnd")
+
+        if status == 1:
+            active_discharge = True
+            if event_start:
+                discharge_started = datetime.fromtimestamp(event_start / 1000, tz=timezone.utc).isoformat()
+        elif status == 0:
+            # Check if event ended within the last 48 hours
+            ref_ts = event_end if event_end else event_start
+            if ref_ts:
+                ref_dt = datetime.fromtimestamp(ref_ts / 1000, tz=timezone.utc)
+                if (now - ref_dt) < timedelta(hours=RECENT_HOURS):
+                    recent_spill = True
+                    if event_end:
+                        discharge_ended = ref_dt.isoformat()
+
+    if active_discharge:
+        sewage_status = "discharging"
+    elif recent_spill:
+        sewage_status = "recent_spill"
+    else:
+        sewage_status = "clear"
 
     result = {
         "sewage_status": sewage_status,
-        "nearest_overflow_m": round(best_dist),
+        "nearest_overflow_m": round(nearest_dist),
     }
-    if best_status == 1 and best_event_start:
-        event_dt = datetime.fromtimestamp(best_event_start / 1000, tz=timezone.utc)
-        result["discharge_started"] = event_dt.isoformat()
-    if recent_spill and best_event_end:
-        end_dt = datetime.fromtimestamp(best_event_end / 1000, tz=timezone.utc)
-        result["discharge_ended"] = end_dt.isoformat()
+    if discharge_started and active_discharge:
+        result["discharge_started"] = discharge_started
+    if discharge_ended and recent_spill:
+        result["discharge_ended"] = discharge_ended
 
     return result
