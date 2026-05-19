@@ -80,6 +80,7 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
       children: [
         if (_sewageStatus == 'clear') _buildWaterClearBanner(),
         if (_sewageStatus == 'discharging') _buildSewageBanner(),
+        if (_sewageStatus == 'recent_spill') _buildRecentSpillBanner(),
         if (_tideExtremes.isNotEmpty) _buildTideCard(),
         const SizedBox(height: 16),
         ...grouped.entries.map((entry) => _buildDaySection(entry.key, entry.value)),
@@ -120,6 +121,29 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
           Expanded(
             child: Text(
               'Sewage discharge active nearby — check before entering the water',
+              style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentSpillBanner() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE65100),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Row(
+        children: [
+          Text('⚠️', style: TextStyle(fontSize: 20)),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Recent sewage spill nearby — avoid entering the water for 48hrs',
               style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ),

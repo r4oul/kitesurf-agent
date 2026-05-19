@@ -49,7 +49,7 @@ async def _fetch_company(company: str) -> list:
 
     params = {
         "where": "1=1",
-        "outFields": "status,Status,latitude,Latitude,longitude,Longitude,latestEventStart,LatestEventStart",
+        "outFields": "status,Status,latitude,Latitude,longitude,Longitude,latestEventStart,LatestEventStart,latestEventEnd,LatestEventEnd",
         "f": "json",
         "returnGeometry": "false",
         "resultRecordCount": 2000,
@@ -76,6 +76,7 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
     best_dist = float("inf")
     best_status = None
     best_event_start = None
+    best_event_end = None
 
     for f in features:
         f_lat = _attr(f, "latitude", "Latitude")
@@ -87,17 +88,36 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
             best_dist = dist
             best_status = _attr(f, "status", "Status")
             best_event_start = _attr(f, "latestEventStart", "LatestEventStart")
+            best_event_end = _attr(f, "latestEventEnd", "LatestEventEnd")
 
     if best_status is None or best_dist > SEARCH_RADIUS_M:
         return {"sewage_status": "unknown"}
 
+    # Check for recent spill: if a discharge ended within the last 48 hours, warn
+    RECENT_HOURS = 48
+    recent_spill = False
+    if best_status == 0 and best_event_end:
+        end_dt = datetime.fromtimestamp(best_event_end / 1000, tz=timezone.utc)
+        if (datetime.now(timezone.utc) - end_dt) < timedelta(hours=RECENT_HOURS):
+            recent_spill = True
+    # If no end time but start was recent and status is now clear, also flag it
+    elif best_status == 0 and best_event_start:
+        start_dt = datetime.fromtimestamp(best_event_start / 1000, tz=timezone.utc)
+        if (datetime.now(timezone.utc) - start_dt) < timedelta(hours=RECENT_HOURS):
+            recent_spill = True
+
     status_map = {1: "discharging", 0: "clear", -1: "offline"}
+    sewage_status = "recent_spill" if recent_spill else status_map.get(best_status, "unknown")
+
     result = {
-        "sewage_status": status_map.get(best_status, "unknown"),
+        "sewage_status": sewage_status,
         "nearest_overflow_m": round(best_dist),
     }
     if best_status == 1 and best_event_start:
         event_dt = datetime.fromtimestamp(best_event_start / 1000, tz=timezone.utc)
         result["discharge_started"] = event_dt.isoformat()
+    if recent_spill and best_event_end:
+        end_dt = datetime.fromtimestamp(best_event_end / 1000, tz=timezone.utc)
+        result["discharge_ended"] = end_dt.isoformat()
 
     return result

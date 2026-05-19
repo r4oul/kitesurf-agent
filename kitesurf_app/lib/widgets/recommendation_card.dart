@@ -68,6 +68,8 @@ class RecommendationCard extends StatelessWidget {
             _row('🟢', 'Water quality clear', const Color(0xFF4CAF50)),
           if (r.sewageStatus == 'discharging')
             _row('🚫', 'Sewage discharge active nearby', const Color(0xFFEF5350)),
+          if (r.sewageStatus == 'recent_spill')
+            _row('⚠️', 'Recent sewage spill — avoid water for 48hrs', const Color(0xFFFF9800)),
           if (r.sewageStatus == 'offline')
             _row('📡', 'Sewage monitor offline', const Color(0xFF9E9E9E)),
           if (r.reasons.isNotEmpty)
