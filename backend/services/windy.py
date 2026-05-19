@@ -8,10 +8,12 @@ METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agen
 
 CACHE_TTL_MINUTES = 30
 
-PRIMARY_MODEL = "icon_eu"
-PRIMARY_LABEL = "DWD ICON EU"
-FALLBACK_MODEL = "gfs_seamless"
-FALLBACK_LABEL = "GFS (ICON unavailable)"
+PRIMARY_MODEL = "ukmo_seamless"
+PRIMARY_LABEL = "UK Met Office"
+FALLBACK_MODEL = "icon_eu"
+FALLBACK_LABEL = "DWD ICON EU"
+FALLBACK2_MODEL = "gfs_seamless"
+FALLBACK2_LABEL = "GFS"
 METNO_LABEL = "Met.no (GFS unavailable)"
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
@@ -151,7 +153,7 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             wind_model_label = label
             return forecasts
 
-    # Try ECMWF → GFS → Met.no
+    # Try UKMO → ICON EU → GFS → Met.no
     forecasts, ok = await _fetch_model(lat, lon, PRIMARY_MODEL)
     if ok:
         label = PRIMARY_LABEL
@@ -160,8 +162,12 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
         if ok:
             label = FALLBACK_LABEL
         else:
-            forecasts, ok = await _fetch_metno(lat, lon)
-            label = METNO_LABEL if ok else PRIMARY_LABEL
+            forecasts, ok = await _fetch_model(lat, lon, FALLBACK2_MODEL)
+            if ok:
+                label = FALLBACK2_LABEL
+            else:
+                forecasts, ok = await _fetch_metno(lat, lon)
+                label = METNO_LABEL if ok else PRIMARY_LABEL
 
     if forecasts:
         _cache[key] = (datetime.now(timezone.utc), forecasts, label)
