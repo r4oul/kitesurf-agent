@@ -8,10 +8,10 @@ METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agen
 
 CACHE_TTL_MINUTES = 30
 
-PRIMARY_MODEL = "ecmwf_ifs025"
-PRIMARY_LABEL = "ECMWF IFS 0.25°"
+PRIMARY_MODEL = "icon_eu"
+PRIMARY_LABEL = "DWD ICON EU"
 FALLBACK_MODEL = "gfs_seamless"
-FALLBACK_LABEL = "GFS (ECMWF unavailable)"
+FALLBACK_LABEL = "GFS (ICON unavailable)"
 METNO_LABEL = "Met.no (GFS unavailable)"
 
 WIND_DIRECTIONS = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
