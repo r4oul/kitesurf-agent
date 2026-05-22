@@ -7,8 +7,16 @@ import '../theme.dart';
 class RecommendationCard extends StatelessWidget {
   final Recommendation recommendation;
   final String riderLevel;
+  final bool isPinned;
+  final VoidCallback? onTogglePin;
 
-  const RecommendationCard({super.key, required this.recommendation, this.riderLevel = 'intermediate'});
+  const RecommendationCard({
+    super.key,
+    required this.recommendation,
+    this.riderLevel = 'intermediate',
+    this.isPinned = false,
+    this.onTogglePin,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +25,10 @@ class RecommendationCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: kCardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF1E3A50), width: 1),
+        border: Border.all(
+          color: isPinned ? kAccent.withOpacity(0.6) : const Color(0xFF1E3A50),
+          width: isPinned ? 1.5 : 1,
+        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -60,6 +71,17 @@ class RecommendationCard extends StatelessWidget {
                         color: Color(r.scoreColor),
                         fontWeight: FontWeight.bold,
                         fontSize: 13)),
+              ),
+              IconButton(
+                onPressed: onTogglePin,
+                icon: Icon(
+                  isPinned ? Icons.bookmark : Icons.bookmark_border,
+                  color: isPinned ? kAccent : kTextSecondary,
+                  size: 22,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                tooltip: isPinned ? 'Remove from My Spots' : 'Add to My Spots',
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/recommendation.dart';
 import '../services/api.dart';
+import '../services/spots_service.dart';
 import '../widgets/conditions_card.dart';
 import '../widgets/recommendation_card.dart';
 import '../theme.dart';
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Conditions? _conditions;
   List<Recommendation> _recommendations = [];
   String? _lastLoadedLevel;
+  Set<int> _pinnedIds = {};
 
   @override
   void didUpdateWidget(HomeScreen oldWidget) {
@@ -34,7 +36,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadPins();
+    _load(); // ignore: unawaited_futures
+  }
+
+  void _loadPins() {
+    setState(() => _pinnedIds = SpotsService.getPinnedIds());
+  }
+
+  void _togglePin(int beachId) {
+    setState(() {
+      if (_pinnedIds.contains(beachId)) {
+        _pinnedIds = {..._pinnedIds}..remove(beachId);
+      } else {
+        _pinnedIds = {..._pinnedIds, beachId};
+      }
+    });
+    SpotsService.saveIds(_pinnedIds);
   }
 
   Future<void> _load() async {
@@ -95,8 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildContent() {
+    final pinned = _recommendations.where((r) => _pinnedIds.contains(r.beachId)).toList();
+    final others = _recommendations.where((r) => !_pinnedIds.contains(r.beachId)).toList();
+    final displayedOthers = _showAll ? others : others.take(5).toList();
 
-    final displayed = _showAll ? _recommendations : _recommendations.take(5).toList();
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
@@ -106,21 +126,48 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 12),
           _GuideBanner(),
           const SizedBox(height: 16),
+
+          if (pinned.isNotEmpty) ...[
+            Row(
+              children: const [
+                Icon(Icons.bookmark, color: kAccent, size: 18),
+                SizedBox(width: 6),
+                Text('My Spots', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...pinned.map((r) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: RecommendationCard(
+                recommendation: r,
+                riderLevel: widget.riderLevel,
+                isPinned: true,
+                onTogglePin: () => _togglePin(r.beachId),
+              ),
+            )),
+            const Divider(color: Color(0xFF1E3A50), height: 24),
+          ],
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Recommendations', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
+              const Text('All Beaches', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
               TextButton.icon(
                 icon: Icon(_showAll ? Icons.expand_less : Icons.expand_more, size: 18),
-                label: Text(_showAll ? 'Top 5 only' : 'Show all beaches', style: const TextStyle(fontSize: 13)),
+                label: Text(_showAll ? 'Top 5 only' : 'Show all', style: const TextStyle(fontSize: 13)),
                 onPressed: () => setState(() => _showAll = !_showAll),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          ...displayed.map((r) => Padding(
+          ...displayedOthers.map((r) => Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: RecommendationCard(recommendation: r, riderLevel: widget.riderLevel),
+            child: RecommendationCard(
+              recommendation: r,
+              riderLevel: widget.riderLevel,
+              isPinned: false,
+              onTogglePin: () => _togglePin(r.beachId),
+            ),
           )),
         ],
       ),
