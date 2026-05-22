@@ -44,8 +44,16 @@ class _MainShellState extends State<MainShell> {
           children: [
             CKiteIcon(size: 28, color: kAccent),
             SizedBox(width: 10),
-            Text('South West Kitesurf',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('South West Kitesurf',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: kTextPrimary)),
+                Text('Developed by Kitesurfers for Kitesurfers',
+                    style: TextStyle(fontSize: 10, color: kTextSecondary, fontWeight: FontWeight.normal)),
+              ],
+            ),
           ],
         ),
         bottom: PreferredSize(

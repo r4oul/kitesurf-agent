@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/recommendation.dart';
 import '../services/api.dart';
 import '../widgets/conditions_card.dart';
@@ -94,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildContent() {
+
     final displayed = _showAll ? _recommendations : _recommendations.take(5).toList();
     return RefreshIndicator(
       onRefresh: _load,
@@ -101,6 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           if (_conditions != null) ConditionsCard(conditions: _conditions!),
+          const SizedBox(height: 12),
+          _GuideBanner(),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,6 +123,49 @@ class _HomeScreenState extends State<HomeScreen> {
             child: RecommendationCard(recommendation: r, riderLevel: widget.riderLevel),
           )),
         ],
+      ),
+    );
+  }
+}
+
+class _GuideBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(
+        Uri.parse('https://southwestkitesurf.co.uk/guide/'),
+        mode: LaunchMode.externalApplication,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0A2540), Color(0xFF0D3B6E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: kAccent.withOpacity(0.3), width: 1),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.menu_book_rounded, color: kAccent, size: 22),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Beach Guides',
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: kTextPrimary)),
+                  SizedBox(height: 2),
+                  Text('Spot guides, gear tips & local knowledge',
+                      style: TextStyle(fontSize: 12, color: kTextSecondary)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, size: 20, color: kAccent),
+          ],
+        ),
       ),
     );
   }

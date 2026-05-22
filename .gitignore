@@ -19,3 +19,6 @@ kitesurf_app/android/local.properties
 kitesurf_app/android/app/debug/
 kitesurf_app/android/app/release/
 kitesurf_app/android/app/profile/
+
+# Local Netlify folder
+.netlify
