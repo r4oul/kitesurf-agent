@@ -103,7 +103,7 @@
             <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-red">Advanced</span></div></div>
         </div>
                 <h2>Live Conditions</h2>
-        <div id="marine-conditions"><div class="marine-grid"><div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">–</div></div></div></div>
+        <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div><div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">–</div></div></div></div>
         <h2>About this spot</h2>
         <p>A tight, technically demanding spot at the western edge of the Jurassic Coast. The Cobb harbour wall, limited launch area and powerful south-westerly swell make this strictly one for experienced riders. When it works, it really works — but it punishes complacency.</p>
         <h2>Hazards</h2>
@@ -125,28 +125,33 @@
 <script>
 (function(){
   var LAT=50.722,LON=-2.936;
-  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
   var el=document.getElementById('marine-conditions');
   if(!el)return;
-  fetch(url).then(function(r){return r.json();}).then(function(d){
+  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
+  fetch(url).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(d){
+    if(!d.hourly||!d.hourly.time)throw new Error('no data');
     var now=new Date();
     var h=now.toISOString().slice(0,13);
     var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
-    if(idx===-1)return;
+    if(idx===-1){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';return;}
     var wh=d.hourly.wave_height[idx];
     var wp=d.hourly.wave_period[idx];
     var wd=d.hourly.wave_direction[idx];
     var wt=d.hourly.sea_surface_temperature[idx];
     var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'—';
+    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'--';
     el.innerHTML='<div class="marine-grid">'
-      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'—')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'--')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'--')+'</div></div>'
       +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'°C':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'C':'--')+'</div></div>'
       +'</div>';
-  }).catch(function(){});
+  }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
 })();
 </script>
+
 </body>
 </html>

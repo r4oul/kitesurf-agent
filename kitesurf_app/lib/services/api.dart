@@ -30,6 +30,10 @@ class ApiService {
         'tide_extremes': data['tide_extremes'] as List,
         'sewage_status': data['sewage_status'] ?? 'unknown',
         'nearest_overflow_m': data['nearest_overflow_m'],
+        'wave_height_m': data['wave_height_m'],
+        'wave_period_s': data['wave_period_s'],
+        'wave_direction': data['wave_direction'],
+        'water_temp_c': data['water_temp_c'],
       };
     }
     throw Exception('Failed to load beach forecast');

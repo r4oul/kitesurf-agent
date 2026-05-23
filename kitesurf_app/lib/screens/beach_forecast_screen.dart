@@ -23,6 +23,10 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
   List<ForecastWindow> _windows = [];
   List<dynamic> _tideExtremes = [];
   String _sewageStatus = 'unknown';
+  double? _waveHeightM;
+  int? _wavePeriodS;
+  String? _waveDirection;
+  double? _waterTempC;
   bool _loading = true;
   String? _error;
 
@@ -39,6 +43,10 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
         _windows = data['windows'];
         _tideExtremes = data['tide_extremes'];
         _sewageStatus = data['sewage_status'] ?? 'unknown';
+        _waveHeightM = (data['wave_height_m'] as num?)?.toDouble();
+        _wavePeriodS = data['wave_period_s'] as int?;
+        _waveDirection = data['wave_direction'] as String?;
+        _waterTempC = (data['water_temp_c'] as num?)?.toDouble();
         _loading = false;
       });
     } catch (e) {
@@ -81,10 +89,52 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
         if (_sewageStatus == 'clear') _buildWaterClearBanner(),
         if (_sewageStatus == 'discharging') _buildSewageBanner(),
         if (_sewageStatus == 'recent_spill') _buildRecentSpillBanner(),
+        if (_waveHeightM != null || _waterTempC != null) _buildMarineCard(),
         if (_tideExtremes.isNotEmpty) _buildTideCard(),
         const SizedBox(height: 16),
         ...grouped.entries.map((entry) => _buildDaySection(entry.key, entry.value)),
       ],
+    );
+  }
+
+  Widget _buildMarineCard() {
+    final parts = <Widget>[];
+    if (_waveHeightM != null) {
+      var label = '${_waveHeightM!.toStringAsFixed(1)}m';
+      if (_wavePeriodS != null) label += ' · ${_wavePeriodS}s';
+      if (_waveDirection != null) label += ' · $_waveDirection';
+      parts.add(_marineChip('🌊', label));
+    }
+    if (_waterTempC != null) {
+      parts.add(_marineChip('🌡️', '${_waterTempC!.toStringAsFixed(1)}°C'));
+    }
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF132236),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFF1E3A50)),
+      ),
+      child: Row(
+        children: [
+          const Text('Current conditions', style: TextStyle(fontSize: 13, color: Color(0xFF00D4FF), fontWeight: FontWeight.w600)),
+          const SizedBox(width: 12),
+          ...parts,
+        ],
+      ),
+    );
+  }
+
+  Widget _marineChip(String emoji, String text) {
+    return Container(
+      margin: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E3A50),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text('$emoji $text', style: const TextStyle(fontSize: 12, color: Color(0xFFB0BEC5))),
     );
   }
 
