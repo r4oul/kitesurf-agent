@@ -3,171 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitesurfing Exmouth: A Field Guide | South West Kitesurf</title>
-    <meta name="description" content="Complete guide to kitesurfing at Exmouth, Devon. Flat-water estuary, best wind directions, tide conditions, hazards and local tips. Check live forecasts.">
+    <title>Kitesurfing at Exmouth | South West Kitesurf Guide</title>
+    <meta name="description" content="Guide to kitesurfing at Exmouth, Devon. Wind directions, tide conditions, Sideshore launch, hazards and local tips. Check live forecasts.">
     <link rel="canonical" href="https://southwestkitesurf.co.uk/guide/exmouth">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --bg:             #0D1B2A;
-            --bg-dark:        #0A1520;
-            --card:           #132236;
-            --accent:         #00D4FF;
-            --accent-text:    #0D1B2A;
-            --text:           #ffffff;
-            --text-secondary: #B0BEC5;
-            --chip-unsel:     #1E3A50;
-            --divider:        #1E3A50;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        /* ── Nav ── */
-        nav {
-            background: var(--bg-dark);
-            padding: 1rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--divider);
-        }
+        :root { --bg: #0D1B2A; --bg-dark: #0A1520; --card: #132236; --accent: #00D4FF; --accent-text: #0D1B2A; --text: #ffffff; --text-secondary: #B0BEC5; --chip-unsel: #1E3A50; --divider: #1E3A50; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+        nav { background: var(--bg-dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid var(--divider); }
         nav .logo { text-decoration: none; display: flex; align-items: center; gap: 10px; }
         .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
         .logo-title { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
         .logo-tag { font-size: 0.65rem; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.02em; }
         nav a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; }
         nav a:hover { color: var(--accent); }
-
-        /* ── Layout ── */
         .container { max-width: 820px; margin: 2rem auto; padding: 0 1.5rem; }
-
         .breadcrumb { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
         .breadcrumb a { color: var(--accent); text-decoration: none; }
         .breadcrumb a:hover { text-decoration: underline; }
-
-        .card {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 1.8rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--divider);
-        }
-
-        /* ── Hero ── */
-        .hero-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--accent);
-            margin-bottom: 0.25rem;
-            line-height: 1.2;
-        }
-        .hero-subtitle {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            font-style: italic;
-            margin-bottom: 1.2rem;
-        }
+        .card { background: var(--card); border-radius: 12px; padding: 1.8rem; margin-bottom: 1.5rem; border: 1px solid var(--divider); }
+        .hero-title { font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.25rem; line-height: 1.2; }
         .region { color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.5rem; letter-spacing: 0.04em; text-transform: uppercase; }
-
-        /* ── Fact chips ── */
         .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem; }
         .fact { background: var(--bg); border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid var(--divider); }
         .fact-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
         .fact-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-
         .chip { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.78rem; margin-right: 3px; font-weight: 600; }
         .chip-cyan { background: rgba(0,212,255,0.15); color: var(--accent); }
-        .chip-red  { background: rgba(252,129,129,0.15); color: #fc8181; }
-
-        /* ── Article text ── */
+        .chip-red { background: rgba(252,129,129,0.15); color: #fc8181; }
         h2 { font-size: 1.15rem; color: var(--accent); margin: 1.6rem 0 0.6rem; font-weight: 700; }
         h2:first-child { margin-top: 0; }
-
         p { color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem; margin-bottom: 0.85rem; }
         p:last-child { margin-bottom: 0; }
-        p em { color: var(--text); font-style: italic; }
-
-        .hazard {
-            background: rgba(252,129,129,0.08);
-            border-left: 3px solid #fc8181;
-            padding: 0.8rem 1rem;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.9rem;
-            color: #fc8181;
-            margin-top: 0.5rem;
-        }
-
-        a.il { color: var(--accent); text-decoration: none; font-weight: 600; }
-        a.il:hover { text-decoration: underline; }
-
-        hr { border: none; border-top: 1px solid var(--divider); margin: 1.4rem 0; }
-
-        /* ── Gear block ── */
-        .gear-block {
-            background: var(--bg);
-            border-radius: 10px;
-            padding: 1.2rem 1.5rem;
-            margin-top: 1.6rem;
-            border: 1px solid var(--divider);
-        }
+        .hazard { background: rgba(252,129,129,0.08); border-left: 3px solid #fc8181; padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #fc8181; margin-top: 0.5rem; }
+        .note { background: rgba(0,212,255,0.06); border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.8rem; }
+        .gear-block { background: var(--bg); border-radius: 10px; padding: 1.2rem 1.5rem; margin-top: 1.6rem; border: 1px solid var(--divider); }
         .gear-block h2 { margin-top: 0; margin-bottom: 0.8rem; }
-
-        .btn {
-            display: inline-block;
-            padding: 0.5rem 1.2rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.88rem;
-            margin-right: 0.5rem;
-            margin-bottom: 0.5rem;
-            transition: opacity 0.15s;
-        }
+        .btn { display: inline-block; padding: 0.5rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.88rem; margin-right: 0.5rem; margin-bottom: 0.5rem; transition: opacity 0.15s; }
         .btn:hover { opacity: 0.82; }
-        .btn-primary   { background: var(--accent); color: var(--accent-text); }
+        .btn-primary { background: var(--accent); color: var(--accent-text); }
         .btn-secondary { background: var(--chip-unsel); color: var(--text); }
-        .btn-large     { padding: 0.8rem 2.2rem; font-size: 1rem; border-radius: 8px; }
-
-        /* ── App CTA ── */
+        .btn-large { padding: 0.8rem 2.2rem; font-size: 1rem; border-radius: 8px; }
         .app-cta { text-align: center; padding: 2.5rem 1.8rem; }
         .app-cta h2 { margin-top: 0; margin-bottom: 0.5rem; }
         .app-cta > p { margin-bottom: 1.8rem; }
-
-        .app-screenshot {
-            display: block;
-            max-width: 300px;
-            width: 100%;
-            border-radius: 18px;
-            margin: 0 auto 1.8rem;
-            border: 2px solid var(--divider);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-        }
-
-        @media (max-width: 600px) {
-            .hero-title { font-size: 1.55rem; }
-            nav { padding: 0.8rem 1rem; }
-            .card { padding: 1.2rem; }
-        }
-        .disclosure {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-            background: var(--bg-dark);
-            border: 1px solid var(--divider);
-            border-radius: 8px;
-            padding: 0.7rem 1rem;
-            margin-bottom: 1.5rem;
-        }
+        .app-screenshot { display: block; max-width: 300px; width: 100%; border-radius: 18px; margin: 0 auto 1.8rem; border: 2px solid var(--divider); box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+        @media (max-width: 600px) { .hero-title { font-size: 1.55rem; } nav { padding: 0.8rem 1rem; } .card { padding: 1.2rem; } }
+        .disclosure { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-dark); border: 1px solid var(--divider); border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1.5rem; }
+        a.il { color: var(--accent); text-decoration: none; font-weight: 600; }
+        a.il:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-
 <nav>
     <a href="https://southwestkitesurf.co.uk" class="logo">
         <svg viewBox="0 0 100 100" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -186,79 +73,31 @@
     <a href="https://southwestkitesurf.co.uk">Live Forecast App</a>
     <a href="https://southwestkitesurf.co.uk/guide/">Beach Guide</a>
 </nav>
-
 <div class="container">
     <p class="disclosure">This post contains affiliate links. If you buy something through them I earn a small commission, at no extra cost to you — it goes straight into the kite repair fund.</p>
     <p class="breadcrumb"><a href="https://southwestkitesurf.co.uk/guide/">Beach Guide</a> › Exmouth</p>
-
-    <!-- Quick-facts hero -->
     <div class="card">
         <div class="hero-title">Kitesurfing at Exmouth</div>
-        <div class="hero-subtitle">A field guide for the damp and hopeful</div>
         <div class="region">Devon · Exe Estuary</div>
-
         <div class="facts">
-            <div class="fact">
-                <div class="fact-label">Best wind</div>
-                <div class="fact-value">S, SW, W, NW</div>
-            </div>
-            <div class="fact">
-                <div class="fact-label">Tide</div>
-                <div class="fact-value">Mid &amp; High</div>
-            </div>
-            <div class="fact">
-                <div class="fact-label">Wind range</div>
-                <div class="fact-value">12–35 knots</div>
-            </div>
-            <div class="fact">
-                <div class="fact-label">Rider level</div>
-                <div class="fact-value">
-                    <span class="chip chip-cyan">Beginner</span>
-                    <span class="chip chip-cyan">Intermediate</span>
-                    <span class="chip chip-red">Advanced</span>
-                </div>
-            </div>
+            <div class="fact"><div class="fact-label">Best wind</div><div class="fact-value">SE, S</div></div>
+            <div class="fact"><div class="fact-label">Tide</div><div class="fact-value">Mid &amp; High</div></div>
+            <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">12–35 knots</div></div>
+            <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-cyan">Intermediate</span><span class="chip chip-red">Advanced</span></div></div>
         </div>
-
+        <h2>About this spot</h2>
+        <p>Exmouth sits at the mouth of the Exe estuary on Devon's south coast, with the main kitesurf launch at Sideshore on Queen's Drive. The beach is backed by the wide, shallow estuary on one side and faces open sea on the other — which gives it a split personality depending on tide and conditions. At mid to high tide it offers a proper stretch of working water with reasonable swell; at low tide exposed sandbanks shrink the usable area significantly.</p>
+        <p><a href="https://www.edgewatersports.com/" class="il" target="_blank" rel="noopener">Edge Watersports</a> is the local school and shop based at Sideshore — they're the people to talk to for lessons, kit hire, or local knowledge.</p>
+        <h2>Wind</h2>
+        <p>SE is the best direction — cross-shore from the east, giving clean runs along the beach with a good angle. S is workable, slightly more onshore but manageable in lighter swell. SW and W push too far onshore for the main beach; when those winds are forecast, the Duckpond on the estuary side is a better option.</p>
+        <h2>Tide</h2>
+        <p>Mid to high tide only. At low water the sandbanks dominate and the jet ski zone becomes active — there simply isn't enough navigable space. Check the tide table and plan to launch on the flood. The best sessions are typically two hours either side of high water.</p>
         <h2>Hazards</h2>
-        <div class="hazard">Jet ski zone &nbsp;·&nbsp; Sandbanks at low tide &nbsp;·&nbsp; Exe estuary tidal flow</div>
-    </div>
-
-    <!-- Field guide article -->
-    <div class="card">
-
-        <h2>Why kiters love it (and quietly lie about loving it)</h2>
-        <p>Exmouth, Devon, is what happens when geography forgets it's supposed to make hard choices. The Exe estuary spreads out flat and shallow, the open sea lurks beyond a long sand spit, and the wind, when it remembers, arrives from whichever direction will most inconvenience you.</p>
-        <p>It is, against all evidence, one of the best places to kitesurf in the UK.</p>
-        <p>At low tide the estuary becomes a vast, waist-deep flat-water lagoon — sandy-bottomed, sheltered from the worst of the swell, and just shallow enough that when you crash you rediscover the finite nature of human dignity. At high tide it becomes proper sea. If you're lucky the wind has remembered to come along too.</p>
-        <p>Beginners get the kind of forgiving water that rich people pay to fly to. Experienced riders get cross-shore winds, long working tides, and an audience of dog walkers who are genuinely convinced you're about to die.</p>
-
-        <hr>
-
-        <h2>A brief warning about the weather</h2>
-        <p>You will, at some point, drive an hour in hope. The forecast will have promised 18 knots gusting 25 from the southwest. You will arrive to find a glassy estuary and a single seagull standing on it, laughing. Welcome.</p>
-        <p>The flip side: when Exmouth is on, it is <em>on</em>. Autumn and winter deliver the goods more reliably than summer, which is why you want a proper winter wetsuit and not the optimistic 3/2 your wife bought you in Spain. Something like an <a href="https://www.waterworldsports.co.uk/collections/wetsuits" rel="nofollow sponsored" target="_blank" class="il">O'Neill Psycho Tech 5/4</a> or <a href="https://www.waterworldsports.co.uk/collections/wetsuits" rel="nofollow sponsored" target="_blank" class="il">Xcel Drylock 5/4</a> will keep you alive between November and April. Yes, they cost money. So does hypothermia.</p>
-
-        <hr>
-
-        <h2>What to bring (and what to leave at home)</h2>
-        <p>Bring layers. Bring spare socks. Bring a flask of something hot and a <a href="https://www.waterworldsports.co.uk/collections/accessories" rel="nofollow sponsored" target="_blank" class="il">Dryrobe</a> — yes, the cliché is real, and yes, you'll feel quietly smug wearing one in the Sideshore car park while everyone else changes behind a Vauxhall Astra with a towel clamped between their teeth.</p>
-        <p>Bring an inflatable SUP for the days the wind doesn't show. A <a href="https://www.waterworldsports.co.uk/collections/kitesurfing" rel="nofollow sponsored" target="_blank" class="il">Red Paddle Co 10'6"</a> or similar will save your weekend more times than you'd like to admit. The Exe is a beautiful place to paddle when the kite stays in the bag, and there will be more of those days than the forecast websites suggest.</p>
-        <p>Leave at home: ego, white trainers, and any belief that you can outsmart a Devon tide.</p>
-
-        <hr>
-
-        <h2>Where to actually go</h2>
-        <p>Most riders launch from Queen's Drive, down by Sideshore. <a href="https://www.edgewatersports.com/" class="il" target="_blank" rel="noopener">Edge Watersports</a> is the local school and shop and the unofficial heart of the scene — Eric and Steph Bridge have forgotten more about kiting than most of us will ever know, and they're the people to talk to if you're starting out, hiring kit, or need a bar re-lined before the next front comes through.</p>
-        <p>After the session, Sideshore itself has decent coffee and excellent chips. The Grove on the seafront does proper beer. If you're staying overnight, you've got everything from camping at Devon Cliffs to slightly damp B&Bs that smell of someone else's holiday.</p>
-
-        <hr>
-
-        <h2>The honest truth</h2>
-        <p>Exmouth will frustrate you. It will give you blank-windless weekends, biblical squalls in February, and a recurring suspicion that the forecast websites are run by a hostile foreign power. But on the days when the wind is in, the tide is right and the light goes gold across the dunes — you'll understand why people move here and never quite leave.</p>
-        <p>Pack the <a href="https://www.waterworldsports.co.uk/collections/wetsuits" rel="nofollow sponsored" target="_blank" class="il">winter wetsuit</a>. Charge the <a href="https://www.waterworldsports.co.uk/collections/accessories" rel="nofollow sponsored" target="_blank" class="il">Dryrobe</a>. Check the forecast, then ignore it, then check it again. We'll see you on the water.</p>
-
-        <!-- Gear affiliate block -->
+        <div class="hazard">Jet ski zone active at mid–high tide · Sandbanks expose at low water · Exe estuary tidal flow on the inside · Ferry crossing channel</div>
+        <h2>Local notes</h2>
+        <div class="note">Autumn and winter deliver the best winds — the SW coast of Devon is rarely short of a front in November through March. A good 5/4 wetsuit is not optional. For flat-water freestyle and beginner sessions, the Duckpond on the estuary side is the better choice when N or NW winds are forecast.</div>
+        <h2>Parking</h2>
+        <p>The main car park for Sideshore is right above the launch on Queen's Drive — large vehicles and campervans have space here. East Devon District Council (EDDC) manage several seafront car parks with long-stay options. Check current charges and overnight campervan availability on the <a href="https://www.eastdevon.gov.uk/parking/" class="il" target="_blank" rel="noopener">EDDC parking page</a>.</p>
         <div class="gear-block">
             <h2>Gear for this spot</h2>
             <a href="https://www.waterworldsports.co.uk/collections/kitesurfing" rel="nofollow sponsored" target="_blank" class="btn btn-primary">Shop kitesurf gear →</a>
@@ -267,16 +106,12 @@
             <a href="https://www.waterworldsports.co.uk/collections/kitesurfing" rel="nofollow sponsored" target="_blank" class="btn btn-secondary">Water World Sports →</a>
         </div>
     </div>
-
-    <!-- App CTA with screenshot -->
     <div class="card app-cta">
         <h2>Check live conditions at Exmouth</h2>
         <p>Wind, tide and forecast — updated every hour</p>
-        <!-- Add a screenshot of the app home screen at web/app-screenshot.png -->
         <img src="../app-screenshot.png" alt="South West Kitesurf app — live conditions" class="app-screenshot">
         <a href="https://southwestkitesurf.co.uk" class="btn btn-primary btn-large">Open live forecast →</a>
     </div>
 </div>
-
 </body>
 </html>
