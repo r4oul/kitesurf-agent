@@ -10,6 +10,7 @@ from backend.services.tides import get_tides, get_tide_state
 from backend.services.recommender import score_beach
 from backend.services.forecast_windows import get_beach_windows
 from backend.services.sewage import get_sewage_status
+from backend.services.marine import get_marine
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/forecast", tags=["forecast"])
@@ -28,10 +29,11 @@ async def beach_forecast(
     db.add(ApiEvent(event_type="beach_forecast", beach_id=beach.id, beach_name=beach.name, rider_level=rider_level))
     db.commit()
 
-    windows, tides, sewage = await asyncio.gather(
+    windows, tides, sewage, marine = await asyncio.gather(
         get_beach_windows(beach, rider_level),
         get_tides(beach.latitude, beach.longitude),
         get_sewage_status(beach.latitude, beach.longitude),
+        get_marine(beach.latitude, beach.longitude),
     )
 
     return {
@@ -40,6 +42,7 @@ async def beach_forecast(
         "windows": windows,
         "tide_extremes": tides["extremes"][:12],
         **sewage,
+        **marine,
     }
 
 
@@ -71,13 +74,15 @@ async def get_recommendations(
         get_tides(ref_lat, ref_lon),                                  # ref conditions card
         *[get_wind_forecast(b.latitude, b.longitude) for b in beaches],
         *[get_tides(b.latitude, b.longitude, constituents=b.tide_constituents) for b in beaches],
+        *[get_marine(b.latitude, b.longitude) for b in beaches],
     )
 
     ref_wind_data = all_results[0]
     ref_tide_data = all_results[1]
     n = len(beaches)
-    beach_wind_data = all_results[2:2 + n]
-    beach_tide_data = all_results[2 + n:]
+    beach_wind_data  = all_results[2:2 + n]
+    beach_tide_data  = all_results[2 + n:2 + 2 * n]
+    beach_marine_data = all_results[2 + 2 * n:]
 
     if not ref_wind_data:
         return {"error": "Could not fetch wind forecast"}
@@ -91,7 +96,7 @@ async def get_recommendations(
 
     # Score each beach against its own local wind and tide
     recommendations = []
-    for beach, wind_data, tide_data in zip(beaches, beach_wind_data, beach_tide_data):
+    for beach, wind_data, tide_data, marine_data in zip(beaches, beach_wind_data, beach_tide_data, beach_marine_data):
         if not wind_data:
             continue
         current_wind = wind_data[0]
@@ -106,6 +111,7 @@ async def get_recommendations(
             tide_direction=tide_info["direction"],
             rider_level=rider_level,
         )
+        rec.update(marine_data)
         recommendations.append(rec)
 
     recommendations.sort(key=lambda x: x["score"], reverse=True)

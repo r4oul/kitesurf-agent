@@ -86,6 +86,25 @@ class RecommendationCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
+          if (r.waterTempC != null || r.waveHeightM != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  if (r.waterTempC != null)
+                    _marinechip('🌡️', '${r.waterTempC!.toStringAsFixed(1)}°C'),
+                  if (r.waveHeightM != null) ...[
+                    _marinechip('🌊', [
+                      '${r.waveHeightM!.toStringAsFixed(1)}m',
+                      if (r.wavePeriodS != null) '${r.wavePeriodS}s',
+                      if (r.waveDirection != null) r.waveDirection!,
+                    ].join(' · ')),
+                  ],
+                ],
+              ),
+            ),
           if (r.sewageStatus == 'clear')
             _row('🟢', 'Water quality clear', const Color(0xFF4CAF50)),
           if (r.sewageStatus == 'discharging')
@@ -128,6 +147,18 @@ class RecommendationCard extends StatelessWidget {
           Expanded(child: Text(text, style: TextStyle(fontSize: 13, color: color))),
         ],
       ),
+    );
+  }
+
+  Widget _marinechip(String emoji, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E3A50),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text('$emoji $text',
+          style: const TextStyle(fontSize: 12, color: kTextSecondary)),
     );
   }
 

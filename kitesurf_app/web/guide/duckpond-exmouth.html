@@ -58,6 +58,11 @@
         .disclosure { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-dark); border: 1px solid var(--divider); border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1.5rem; }
         a.il { color: var(--accent); text-decoration: none; font-weight: 600; }
         a.il:hover { text-decoration: underline; }
+    
+        .marine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
+        .marine-item { background: var(--bg); border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid var(--divider); }
+        .marine-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+        .marine-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
     </style>
 </head>
 <body>
@@ -91,6 +96,8 @@
             <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">12–35 knots</div></div>
             <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-green">Beginner</span><span class="chip chip-cyan">Intermediate</span><span class="chip chip-red">Advanced</span></div></div>
         </div>
+                <h2>Live Conditions</h2>
+        <div id="marine-conditions"><div class="marine-grid"><div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">–</div></div></div></div>
         <h2>About this spot</h2>
         <p>The Duckpond is the flat-water estuary lagoon that forms on the landward side of the Exmouth sand spit — sheltered, shallow, and sand-bottomed. When the mid-tide window arrives it becomes one of the best freestyle and beginner spots in the South West: butter-flat water, forgiving depth, and a long working fetch. It drains away as the tide drops, so you need to be on it at the right time.</p>
         <p>Intermediates use it to nail transitions and toeside; advanced riders use it for high-performance freestyle. On bigger N or NW days it can get properly powered with clean flat water all the way across.</p>
@@ -124,5 +131,31 @@
         <a href="https://southwestkitesurf.co.uk" class="btn btn-primary btn-large">Open live forecast →</a>
     </div>
 </div>
+<script>
+(function(){
+  var LAT=50.62274,LON=-3.41796;
+  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
+  var el=document.getElementById('marine-conditions');
+  if(!el)return;
+  fetch(url).then(function(r){return r.json();}).then(function(d){
+    var now=new Date();
+    var h=now.toISOString().slice(0,13);
+    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
+    if(idx===-1)return;
+    var wh=d.hourly.wave_height[idx];
+    var wp=d.hourly.wave_period[idx];
+    var wd=d.hourly.wave_direction[idx];
+    var wt=d.hourly.sea_surface_temperature[idx];
+    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'—';
+    el.innerHTML='<div class="marine-grid">'
+      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'°C':'—')+'</div></div>'
+      +'</div>';
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>

@@ -43,6 +43,10 @@ class Recommendation {
   final double longitude;
   final String sewageStatus; // 'discharging', 'clear', 'offline', 'unknown'
   final int? nearestOverflowM;
+  final double? waveHeightM;
+  final int? wavePeriodS;
+  final String? waveDirection;
+  final double? waterTempC;
 
   Recommendation({
     required this.beachId,
@@ -57,6 +61,10 @@ class Recommendation {
     required this.longitude,
     this.sewageStatus = 'unknown',
     this.nearestOverflowM,
+    this.waveHeightM,
+    this.wavePeriodS,
+    this.waveDirection,
+    this.waterTempC,
   });
 
   factory Recommendation.fromJson(Map<String, dynamic> json) {
@@ -73,6 +81,10 @@ class Recommendation {
       longitude: (json['longitude'] as num).toDouble(),
       sewageStatus: json['sewage_status'] ?? 'unknown',
       nearestOverflowM: json['nearest_overflow_m'],
+      waveHeightM: (json['wave_height_m'] as num?)?.toDouble(),
+      wavePeriodS: json['wave_period_s'] as int?,
+      waveDirection: json['wave_direction'] as String?,
+      waterTempC: (json['water_temp_c'] as num?)?.toDouble(),
     );
   }
 

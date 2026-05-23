@@ -49,6 +49,11 @@
         .app-screenshot { display: block; max-width: 300px; width: 100%; border-radius: 18px; margin: 0 auto 1.8rem; border: 2px solid var(--divider); box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
         @media (max-width: 600px) { .hero-title { font-size: 1.55rem; } nav { padding: 0.8rem 1rem; } .card { padding: 1.2rem; } }
         .disclosure { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-dark); border: 1px solid var(--divider); border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1.5rem; }
+    
+        .marine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
+        .marine-item { background: var(--bg); border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid var(--divider); }
+        .marine-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+        .marine-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
     </style>
 </head>
 <body>
@@ -82,6 +87,8 @@
             <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">15–35 knots</div></div>
             <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-red">Advanced</span></div></div>
         </div>
+                <h2>Live Conditions</h2>
+        <div id="marine-conditions"><div class="marine-grid"><div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">–</div></div><div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">–</div></div></div></div>
         <h2>About this spot</h2>
         <p>Praa Sands sits midway between Penzance and Helston on the south coast of Cornwall, facing southwest into Mount's Bay. It has a reputation as one of the most high-performance beach breaks in the UK — when the banks are right and the swell is running, it produces fast, hollow waves that demand respect. Many kiters use Praa as a stepping stone before tackling Porthleven.</p>
         <p>The spot is small and only holds around four kites comfortably. If there are already riders out, check conditions first and only launch if there's genuine room. Stay well clear of surfers at all times.</p>
@@ -105,5 +112,31 @@
         <a href="https://southwestkitesurf.co.uk" class="btn btn-primary btn-large">Open live forecast →</a>
     </div>
 </div>
+<script>
+(function(){
+  var LAT=50.0929,LON=-5.3847;
+  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
+  var el=document.getElementById('marine-conditions');
+  if(!el)return;
+  fetch(url).then(function(r){return r.json();}).then(function(d){
+    var now=new Date();
+    var h=now.toISOString().slice(0,13);
+    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
+    if(idx===-1)return;
+    var wh=d.hourly.wave_height[idx];
+    var wp=d.hourly.wave_period[idx];
+    var wd=d.hourly.wave_direction[idx];
+    var wt=d.hourly.sea_surface_temperature[idx];
+    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'—';
+    el.innerHTML='<div class="marine-grid">'
+      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'—')+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
+      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'°C':'—')+'</div></div>'
+      +'</div>';
+  }).catch(function(){});
+})();
+</script>
 </body>
 </html>
