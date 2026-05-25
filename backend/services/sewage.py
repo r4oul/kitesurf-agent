@@ -10,7 +10,7 @@ ENDPOINTS = {
 }
 
 CACHE_TTL_MINUTES = 15
-SEARCH_RADIUS_M = 5000   # consider overflows within 5km of beach
+SEARCH_RADIUS_M = 2000   # consider overflows within 2km of beach
 BBOX_DEG = 0.08          # ~8km bounding box half-width (fetched from ArcGIS)
 RECENT_HOURS = 48
 
