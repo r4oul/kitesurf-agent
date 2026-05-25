@@ -10,7 +10,8 @@ ENDPOINTS = {
 }
 
 CACHE_TTL_MINUTES = 15
-SEARCH_RADIUS_M = 2000   # consider overflows within 2km of beach
+SEARCH_RADIUS_M = 5000   # fetch overflows within 5km (for coverage + nearest_overflow_m)
+FLAG_RADIUS_M   = 2000   # only raise discharging/recent_spill alerts within 2km
 BBOX_DEG = 0.08          # ~8km bounding box half-width (fetched from ArcGIS)
 RECENT_HOURS = 48
 
@@ -85,7 +86,15 @@ async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
 
 
 async def get_sewage_status(lat: float, lon: float) -> dict:
-    """Return sewage status for overflows within 5km of the beach."""
+    """Return sewage status for overflows near the beach.
+
+    Uses a two-tier radius:
+    - SEARCH_RADIUS_M (5km): finds monitors to confirm coverage exists.
+    - FLAG_RADIUS_M (2km): only raises discharging/recent_spill within this
+      tighter radius, avoiding false positives from inland streams 2-5km away.
+    - 'clear'   = monitors found within 5km, none flagged within 2km.
+    - 'unknown' = no monitors at all within 5km (no data for this area).
+    """
     company = _water_company(lon)
     features = await _fetch_nearby(company, lat, lon)
 
@@ -112,6 +121,8 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
     discharge_ended = None
 
     for dist, f in nearby:
+        if dist > FLAG_RADIUS_M:
+            continue  # outside alert zone — counts for coverage but not for flagging
         status = _attr(f, "status", "Status")
         event_start = _attr(f, "latestEventStart", "LatestEventStart")
         event_end = _attr(f, "latestEventEnd", "LatestEventEnd")
