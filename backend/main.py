@@ -47,3 +47,15 @@ app.include_router(admin_router)
 @app.get("/")
 def root():
     return {"status": "ok", "message": "South Coast Kitesurf Agent API"}
+
+@app.get("/_ea_test")
+async def ea_test():
+    """Temporary: check if Railway can reach the EA bathing water API."""
+    import httpx
+    url = "https://environment.data.gov.uk/doc/bathing-water-quality/advice-against-bathing/situations.json?_limit=3"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            r = await client.get(url, headers={"User-Agent": "Mozilla/5.0"})
+            return {"status": r.status_code, "body_preview": r.text[:500]}
+    except Exception as e:
+        return {"error": str(e)}
