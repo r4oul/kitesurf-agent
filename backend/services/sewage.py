@@ -10,9 +10,10 @@ ENDPOINTS = {
 }
 
 CACHE_TTL_MINUTES = 15
-SEARCH_RADIUS_M = 5000   # fetch overflows within 5km (for coverage + nearest_overflow_m)
-FLAG_RADIUS_M   = 2000   # only raise discharging/recent_spill alerts within 2km
-BBOX_DEG = 0.08          # ~8km bounding box half-width (fetched from ArcGIS)
+SEARCH_RADIUS_M       = 8000  # find monitors within 8km (for coverage + nearest_overflow_m)
+FLAG_RADIUS_ACTIVE_M  = 8000  # raise 'discharging' alert for active (status=1) within 8km
+FLAG_RADIUS_RECENT_M  = 2000  # raise 'recent_spill' alert for stopped (status=0) within 2km only
+BBOX_DEG = 0.08               # ~8km bounding box half-width (fetched from ArcGIS)
 RECENT_HOURS = 48
 
 # Per-location cache keyed by (company, rounded_lat, rounded_lon)
@@ -88,12 +89,14 @@ async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
 async def get_sewage_status(lat: float, lon: float) -> dict:
     """Return sewage status for overflows near the beach.
 
-    Uses a two-tier radius:
-    - SEARCH_RADIUS_M (5km): finds monitors to confirm coverage exists.
-    - FLAG_RADIUS_M (2km): only raises discharging/recent_spill within this
-      tighter radius, avoiding false positives from inland streams 2-5km away.
-    - 'clear'   = monitors found within 5km, none flagged within 2km.
-    - 'unknown' = no monitors at all within 5km (no data for this area).
+    Three-tier radius system:
+    - SEARCH_RADIUS_M (8km): finds monitors to confirm coverage exists.
+    - FLAG_RADIUS_ACTIVE_M (8km): raises 'discharging' for any status=1 within 8km.
+      Active discharges affect water quality over a wide area via tidal/river flow.
+    - FLAG_RADIUS_RECENT_M (2km): raises 'recent_spill' for stopped status=0 within 2km only.
+      Tight radius avoids false positives from inland streams 2-5km away.
+    - 'clear'   = monitors found within 8km, none flagged.
+    - 'unknown' = no monitors at all within 8km (no data for this area).
     """
     company = _water_company(lon)
     features = await _fetch_nearby(company, lat, lon)
@@ -121,17 +124,15 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
     discharge_ended = None
 
     for dist, f in nearby:
-        if dist > FLAG_RADIUS_M:
-            continue  # outside alert zone — counts for coverage but not for flagging
         status = _attr(f, "status", "Status")
         event_start = _attr(f, "latestEventStart", "LatestEventStart")
         event_end = _attr(f, "latestEventEnd", "LatestEventEnd")
 
-        if status == 1:
+        if status == 1 and dist <= FLAG_RADIUS_ACTIVE_M:
             active_discharge = True
             if event_start:
                 discharge_started = datetime.fromtimestamp(event_start / 1000, tz=timezone.utc).isoformat()
-        elif status == 0:
+        elif status == 0 and dist <= FLAG_RADIUS_RECENT_M:
             ref_ts = event_end if event_end else event_start
             if ref_ts:
                 ref_dt = datetime.fromtimestamp(ref_ts / 1000, tz=timezone.utc)
