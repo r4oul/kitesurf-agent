@@ -73,7 +73,8 @@ async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
         "resultRecordCount": 200,
     }
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
+        headers = {"User-Agent": "Mozilla/5.0 (compatible; SouthWestKitesurf/1.0; +https://southwestkitesurf.co.uk)"}
+        async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
             resp = await client.get(ENDPOINTS[company], params=params)
             if resp.status_code != 200:
                 return _cache.get(cache_key, (None, []))[1] or []
