@@ -16,6 +16,12 @@ from datetime import datetime, timezone
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
 
+@router.get("/sewage/location")
+async def sewage_by_location(lat: float = Query(...), lon: float = Query(...)):
+    """Return sewage status for a single lat/lon — used by individual beach guide pages."""
+    return await get_sewage_status(lat, lon)
+
+
 @router.get("/sewage")
 async def all_sewage(db: Session = Depends(get_db)):
     """Return sewage status for all beaches in a single parallel request."""
