@@ -16,6 +16,17 @@ from datetime import datetime, timezone
 router = APIRouter(prefix="/forecast", tags=["forecast"])
 
 
+@router.get("/sewage")
+async def all_sewage(db: Session = Depends(get_db)):
+    """Return sewage status for all beaches in a single parallel request."""
+    beaches = db.query(Beach).all()
+    results = await asyncio.gather(*[get_sewage_status(b.latitude, b.longitude) for b in beaches])
+    return [
+        {"id": b.id, "sewage_status": r.get("sewage_status"), "nearest_overflow_m": r.get("nearest_overflow_m")}
+        for b, r in zip(beaches, results)
+    ]
+
+
 @router.get("/beach/{beach_id}")
 async def beach_forecast(
     beach_id: int,
