@@ -22,7 +22,7 @@ async def all_sewage(db: Session = Depends(get_db)):
     beaches = db.query(Beach).all()
     results = await asyncio.gather(*[get_sewage_status(b.latitude, b.longitude) for b in beaches])
     return [
-        {"id": b.id, "sewage_status": r.get("sewage_status"), "nearest_overflow_m": r.get("nearest_overflow_m")}
+        {"id": b.id, "name": b.name, "sewage_status": r.get("sewage_status"), "nearest_overflow_m": r.get("nearest_overflow_m")}
         for b, r in zip(beaches, results)
     ]
 
