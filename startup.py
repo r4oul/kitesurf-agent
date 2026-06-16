@@ -76,5 +76,25 @@ if calshot and "W" in (calshot.wind_directions or []):
     db.commit()
     print("Fixed Calshot data.")
 
+# One-time fix: correct Bantham tide states — low & mid, not mid & high
+bantham = db.query(Beach).filter(Beach.name == "Bantham").first()
+if bantham and "high" in (bantham.tide_states or []):
+    bantham.tide_states = ["low", "mid"]
+    bantham.hazards = "River Avon mouth rip — strong tidal current on ebb · High tide shrinks beach, avoid last 2hrs of flood · Rocks to south of bay · No lifeguard cover"
+    bantham.notes = "Expert wave spot. Low to mid tide essential — at high water the beach narrows and river mouth becomes turbulent. SW 20-30kt with 2-3ft swell produces excellent right-handers. Check tide tables carefully."
+    flag_modified(bantham, "tide_states")
+    db.commit()
+    print("Fixed Bantham tide states.")
+
+# One-time fix: correct Dawlish Warren wind directions — W, NW, N only (not SW or S)
+dawlish = db.query(Beach).filter(Beach.name == "Dawlish Warren").first()
+if dawlish and any(d in (dawlish.wind_directions or []) for d in ["SW", "S"]):
+    dawlish.wind_directions = ["W", "NW", "N"]
+    dawlish.hazards = "National Nature Reserve SSSI — kite only in designated zone, no launching over dune vegetation · Sandbanks dry at low tide · Strong tidal current in Exe channel · Ferries cross estuary mouth"
+    dawlish.notes = "NW funnelled by Exe estuary gives clean side-shore conditions. W and N also work. Best 2hrs either side of high tide. Quieter and less crowded than Exmouth beach."
+    flag_modified(dawlish, "wind_directions")
+    db.commit()
+    print("Fixed Dawlish Warren wind directions.")
+
 db.close()
 print("Startup complete.")

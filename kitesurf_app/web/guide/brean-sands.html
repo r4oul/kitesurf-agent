@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitesurfing at Lyme Regis | South West Kitesurf Guide</title>
-    <meta name="description" content="Guide to kitesurfing at Lyme Regis, Dorset. Wind directions, tide conditions, hazards and local tips. Live water quality and sewage alerts. Check live forecasts.">
-    <link rel="canonical" href="https://southwestkitesurf.co.uk/guide/lyme-regis">
+    <title>Kitesurfing at Brean Sands | South West Kitesurf Guide</title>
+    <meta name="description" content="Guide to kitesurfing at Brean Sands, Somerset. Long exposed beach on the Bristol Channel. Wind directions, tide window, hazards and local tips. Live water quality and sewage alerts. Check live forecasts.">
+    <link rel="canonical" href="https://southwestkitesurf.co.uk/guide/brean-sands">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root {
-            --bg: #0D1B2A; --bg-dark: #0A1520; --card: #132236;
-            --accent: #00D4FF; --accent-text: #0D1B2A;
-            --text: #ffffff; --text-secondary: #B0BEC5;
-            --chip-unsel: #1E3A50; --divider: #1E3A50;
-        }
+        :root { --bg: #0D1B2A; --bg-dark: #0A1520; --card: #132236; --accent: #00D4FF; --accent-text: #0D1B2A; --text: #ffffff; --text-secondary: #B0BEC5; --chip-unsel: #1E3A50; --divider: #1E3A50; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
         nav { background: var(--bg-dark); padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid var(--divider); }
         nav .logo { text-decoration: none; display: flex; align-items: center; gap: 10px; }
@@ -34,17 +29,16 @@
         .fact-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
         .fact-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
         .chip { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 0.78rem; margin-right: 3px; font-weight: 600; }
-        .chip-green { background: rgba(72,199,142,0.15); color: #48c78e; }
-        .chip-cyan  { background: rgba(0,212,255,0.15); color: var(--accent); }
-        .chip-red   { background: rgba(252,129,129,0.15); color: #fc8181; }
+        .chip-cyan { background: rgba(0,212,255,0.15); color: var(--accent); }
+        .chip-red { background: rgba(252,129,129,0.15); color: #fc8181; }
         h2 { font-size: 1.15rem; color: var(--accent); margin: 1.6rem 0 0.6rem; font-weight: 700; }
         h2:first-child { margin-top: 0; }
         p { color: var(--text-secondary); line-height: 1.8; font-size: 0.95rem; margin-bottom: 0.85rem; }
         p:last-child { margin-bottom: 0; }
         .hazard { background: rgba(252,129,129,0.08); border-left: 3px solid #fc8181; padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: #fc8181; margin-top: 0.5rem; }
+        .note { background: rgba(0,212,255,0.06); border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.8rem; }
         .gear-block { background: var(--bg); border-radius: 10px; padding: 1.2rem 1.5rem; margin-top: 1.6rem; border: 1px solid var(--divider); }
         .gear-block h2 { margin-top: 0; margin-bottom: 0.8rem; }
-        .gear-block p { font-size: 0.88rem; margin-bottom: 0.8rem; }
         .btn { display: inline-block; padding: 0.5rem 1.2rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.88rem; margin-right: 0.5rem; margin-bottom: 0.5rem; transition: opacity 0.15s; }
         .btn:hover { opacity: 0.82; }
         .btn-primary { background: var(--accent); color: var(--accent-text); }
@@ -55,16 +49,9 @@
         .app-cta > p { margin-bottom: 1.8rem; }
         .app-screenshot { display: block; max-width: 300px; width: 100%; border-radius: 18px; margin: 0 auto 1.8rem; border: 2px solid var(--divider); box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
         @media (max-width: 600px) { .hero-title { font-size: 1.55rem; } nav { padding: 0.8rem 1rem; } .card { padding: 1.2rem; } }
-        .disclosure {
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-            background: var(--bg-dark);
-            border: 1px solid var(--divider);
-            border-radius: 8px;
-            padding: 0.7rem 1rem;
-            margin-bottom: 1.5rem;
-        }
-
+        .disclosure { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-dark); border: 1px solid var(--divider); border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1.5rem; }
+        a.il { color: var(--accent); text-decoration: none; font-weight: 600; }
+        a.il:hover { text-decoration: underline; }
         .marine-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; }
         .marine-item { background: var(--bg); border-radius: 8px; padding: 0.75rem 1rem; border: 1px solid var(--divider); }
         .marine-label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
@@ -75,29 +62,24 @@
 {
   "@context": "https://schema.org",
   "@type": "TouristAttraction",
-  "name": "Kitesurfing at Lyme Regis",
-  "description": "Guide to kitesurfing at Lyme Regis, Dorset. Wind directions, tide conditions, hazards and local tips. Check live forecasts.",
-  "url": "https://southwestkitesurf.co.uk/guide/lyme-regis",
+  "name": "Kitesurfing at Brean Sands",
+  "description": "Guide to kitesurfing at Brean Sands, Somerset. Long exposed beach on the Bristol Channel. Wind directions, tide window, hazards and local tips. Check live forecasts.",
+  "url": "https://southwestkitesurf.co.uk/guide/brean-sands",
   "geo": {
     "@type": "GeoCoordinates",
-    "latitude": 50.722,
-    "longitude": -2.936
+    "latitude": 51.2655,
+    "longitude": -3.0012
   },
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "Lyme Regis",
-    "addressRegion": "Dorset",
+    "addressLocality": "Brean",
+    "addressRegion": "Somerset",
     "addressCountry": "GB"
   },
-  "touristType": [
-    "Kitesurfer",
-    "Windsurfer",
-    "Watersports enthusiast"
-  ],
+  "touristType": ["Kitesurfer", "Windsurfer", "Watersports enthusiast"],
   "publicAccess": true
 }
 </script>
-
 
 <script type="application/ld+json">
 {
@@ -106,50 +88,50 @@
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "What wind direction is best for kitesurfing at Lyme Regis?",
+      "name": "What wind direction is best for kitesurfing at Brean Sands?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Lyme Regis works best in south to south-westerly winds, which blow cross-onshore across Town Beach to the west of the Cobb. A pure westerly is workable but introduces a degree of offshore component and increases gustiness due to the surrounding cliffs and hills — treat any W in the wind with extra caution here. Southerly is the cleanest angle. SW with swell running produces the best wave conditions."
+        "text": "E and NE are the best directions at Brean Sands, blowing cross-shore off the Somerset levels. SW and WSW off the Bristol Channel are also good. N and NNE work as a side-shore option. Brean Down at the north end of the beach can disrupt wind flow in NW conditions."
       }
     },
     {
       "@type": "Question",
-      "name": "What tide is best for kitesurfing at Lyme Regis?",
+      "name": "What tide conditions are best for kitesurfing at Brean Sands?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Mid to high tide is best at Lyme Regis. The launch area at Town Beach is severely restricted at low tide — if the tide drops below about 1.1m, very little usable beach remains and the rocky reef near East Cliff becomes exposed. Riders should aim to be launching and riding between mid tide and high water for the most space and safest conditions."
+        "text": "Mid to high tide only. The Bristol Channel has one of the world's largest tidal ranges — at low water the sea retreats a long way and the beach becomes a mixture of sand and mudflat with no usable water. Aim to launch on the incoming tide and plan to be off before the water drops away."
       }
     },
     {
       "@type": "Question",
-      "name": "Is Lyme Regis suitable for beginner kitesurfers?",
+      "name": "Is Brean Sands suitable for beginner kitesurfers?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No. Lyme Regis is for advanced, experienced kitesurfers only. The confined launch area, proximity of the Cobb harbour wall, rocky reef to the east, gusty wind flow from the surrounding cliffs, and the effect of a westerly going offshore all combine to make this a spot that demands excellent kite control and solid water skills. Beginners should go to Portland Harbour instead."
+        "text": "Brean Sands is best suited to intermediate and advanced kitesurfers. The extreme Bristol Channel tidal range creates a real stranding risk, strong tidal currents run in the channel, and the beach can become very crowded with holiday-makers in summer. Weston-super-Mare, a few miles north, has more facilities and a kite school nearby."
       }
     },
     {
       "@type": "Question",
-      "name": "Are there kitesurf lessons available at Lyme Regis?",
+      "name": "How does Brean Sands compare to Weston-super-Mare for kitesurfing?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "There is no dedicated kitesurf school operating at Lyme Regis itself. For lessons in the Dorset area, CS Boardsports at Portland Harbour is the nearest BKSA-recognised school. Lyme Regis is not a suitable venue for tuition given its technical nature and restricted launch area."
+        "text": "Brean is quieter and gives significantly more room to set up and launch — Weston's main beach gets very busy and restricted in summer. The wind and tide dynamics are similar for both (Bristol Channel, large tidal range, E/NE cross-shore or SW). Brean is better for riders who want space; Weston is better if you need facilities or a lesson."
       }
     },
     {
       "@type": "Question",
-      "name": "When is the best time of year to kitesurf at Lyme Regis?",
+      "name": "Is there parking at Brean Sands?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Autumn and winter produce the most consistent south and south-westerly winds with Atlantic swell — the conditions that make Lyme Regis worthwhile. Spring can also be productive. Summer southerly sea breezes can work on Town Beach but the bay becomes congested with tourists and small craft. The Cobb can produce a clean wave on a falling tide in any season when a good SW swell is running."
+        "text": "There is a large privately operated beach car park at Brean with direct access to the sand — charges apply seasonally. The road through Brean village also has some roadside parking. The postcode for the main beach access is TA8 2RS."
       }
     },
     {
       "@type": "Question",
-      "name": "What are the main hazards at Lyme Regis?",
+      "name": "Is there a kite school at Brean Sands?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The main hazards are: The Cobb harbour wall to the east of Town Beach — a hard stone structure you must never drift towards; a rocky reef off East Cliff where jumping at mid to low tide over shallow rocks is extremely dangerous; very limited launch and landing space on both beaches; gusty and variable wind due to cliffs and hills, especially with any W in the wind; and an offshore wind component in westerly winds. This is an expert-only spot."
+        "text": "There is no dedicated kite school operating on Brean Sands beach. The nearest school is in the Weston-super-Mare area. Brean is a self-sufficient spot — come with your own equipment, a buddy, and a solid understanding of the Bristol Channel tide tables."
       }
     }
   ]
@@ -177,46 +159,48 @@
 </nav>
 <div class="container">
     <p class="disclosure">This post contains affiliate links. If you buy something through them I earn a small commission, at no extra cost to you — it goes straight into the kite repair fund.</p>
-    <p class="breadcrumb"><a href="https://southwestkitesurf.co.uk/guide/">Beach Guide</a> › Lyme Regis</p>
+    <p class="breadcrumb"><a href="https://southwestkitesurf.co.uk/guide/">Beach Guide</a> › Brean Sands</p>
     <div class="card">
-        <div class="hero-title">Kitesurfing at Lyme Regis</div>
-        <div class="region">Dorset · Lyme Bay</div>
+        <div class="hero-title">Kitesurfing at Brean Sands</div>
+        <div class="region">Somerset · Bristol Channel</div>
         <div class="facts">
-            <div class="fact"><div class="fact-label">Best wind</div><div class="fact-value">S, SW, W</div></div>
+            <div class="fact"><div class="fact-label">Best wind</div><div class="fact-value">E, NE, SW</div></div>
             <div class="fact"><div class="fact-label">Tide</div><div class="fact-value">Mid &amp; High</div></div>
-            <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">18–40 knots</div></div>
-            <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-red">Advanced</span></div></div>
+            <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">12–35 knots</div></div>
+            <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-cyan">Intermediate</span><span class="chip chip-red">Advanced</span></div></div>
         </div>
-                <h2>Live Conditions</h2>
+        <h2>Live Conditions</h2>
         <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div>
         <h2>About this spot</h2>
-        <p>Lyme Regis sits at the western end of Dorset's Jurassic Coast, where the land curves sharply into Lyme Bay and the cliffs of Black Ven and Church Cliffs tower above the seafront. There are two beaches either side of the <strong>Cobb</strong> — the famous medieval harbour wall that projects into the bay. Most kiters use <strong>Town Beach</strong> to the west of the Cobb, which is less exposed to gusts and has the most usable launching space.</p>
-        <p>The spot works in south and south-westerly winds, which blow cross-onshore across Town Beach. A pure southerly is the cleanest angle and, combined with Atlantic swell, can produce excellent wave conditions. The westerly component is where it gets complicated — any W in the wind introduces gusts rolling off the surrounding cliffs and hills, makes conditions noticeably less consistent, and starts to add an offshore component. Watch the forecast carefully: a SW can shift to W quickly, and what was cross-shore becomes partially offshore.</p>
-        <p>Tides are critical here. Below roughly 1.1m on the tide gauge there is very little usable beach remaining and the rocky reef off East Cliff starts to appear near the surface. The best window is mid tide rising to high water, when the beach deepens and the launch zone opens up. The Cobb itself can throw up a small, steep wave on a falling tide in strong SW swell — experienced wave riders know to look for this, but the wall is always there and must never be forgotten as a downwind hazard.</p>
-        <p>This is strictly an advanced spot. The confined launch area, proximity of the Cobb, shallow reef, gusty wind, and the offshore risk in westerly conditions all demand high competence. If you are not fully self-sufficient and confident in these conditions, Portland Harbour or Weymouth Bay are the appropriate alternatives.</p>
+        <p>Brean Sands is a long exposed beach on the Somerset coast, a few miles south of Weston-super-Mare. It offers more space and fewer crowds than the main town beach, with a straight three-mile stretch that works well in E and NE winds. Like all Bristol Channel spots, the governing factor is the tide — the range here is among the largest in the world, and sessions must be built tightly around the mid to high water window.</p>
+        <p>Brean Down, the striking limestone headland at the north end of the beach, is worth knowing about — it can accelerate and funnel wind in certain directions, particularly from the N and NW, and creates confused conditions close inshore at its base.</p>
+        <h2>Wind</h2>
+        <p>E and NE are the best directions — cross-shore from the Somerset levels, giving clean runs along the beach. SW and WSW off the channel are also solid and often more consistent. N and NNE can work as a sideshore option but watch for turbulence off Brean Down at the northern end. Avoid W and NW which push onshore.</p>
+        <h2>Tide</h2>
+        <p>Mid to high tide only. The Bristol Channel tidal range reaches up to 12 metres here — at low water the sea retreats a very long way and the exposed beach becomes a mix of sand and mud with no workable water. Launch on the incoming tide, aim to session around high water, and have a plan to exit before the water drops away from you.</p>
         <h2>Hazards</h2>
-        <div class="hazard">The Cobb harbour wall — hard stone structure immediately downwind in certain conditions, never drift towards it · Rocky reef off East Cliff — shallow rocks exposed from mid tide downwards; jumping here at low/mid tide is extremely dangerous · Very limited launch and landing area on both beaches · Gusty and variable wind flow due to cliffs and surrounding hills, especially with any W component · Westerly winds introduce an offshore component — exercise extreme caution · Busy harbour with small craft and fishing boats</div>
-
-
-        <h2>Getting there &amp; parking</h2>
-        <p>Lyme Regis is reached from the A35 via the A3052 or B3165. The town centre is compact and walking distance from the beach. Several car parks are managed by Lyme Regis Town Council and Dorset Council within a short walk of the seafront. Peak season rates (April–October): 30 mins £1.50, 1 hr £3, 2 hrs £4.50, 4 hrs £7.50, 10 hrs £15. Pay by coin, card or JustPark. See the <a href="https://www.lymeregistowncouncil.gov.uk/car-parks" class="il" target="_blank" rel="noopener">Lyme Regis Town Council car parks page</a> for a full list and current charges.</p>
-
-        <h2>Nearby spots</h2>
-        <p>Also worth checking: <a href="https://southwestkitesurf.co.uk/guide/chesil-beach" class="il">Chesil Beach</a> (20 miles east, powerful open-ocean exposure for advanced riders), <a href="https://southwestkitesurf.co.uk/guide/portland-harbour" class="il">Portland Harbour</a> (25 miles east, flat-water venue suitable for all levels), and <a href="https://southwestkitesurf.co.uk/guide/bantham" class="il">Bantham</a> (30 miles west into Devon, another advanced wave spot at the mouth of the River Avon).</p>
+        <div class="hazard">Extreme tidal range — stranding risk on falling tide · Strong tidal currents in the channel · Brean Down headland creates wind turbulence at north end · Quicksand patches exposed at low water · Beach vehicles on sand at low tide</div>
+        <h2>Local notes</h2>
+        <div class="note">Brean is quieter than Weston and gives more room to set up and launch safely. The beach is popular with campers and holiday-makers in summer — weekday sessions are far better than weekends in July and August. Autumn and winter are the best seasons, with consistent SW winds and a near-empty beach.</div>
+        <h2>Parking</h2>
+        <p>There is a large beach car park at Brean with direct access to the sand. Operated privately — charges apply seasonally. The road through Brean village also has some roadside parking for smaller vehicles.</p>
 
         <h2>Water quality</h2>
         <div id="wq-live" style="margin-bottom:0.7rem;font-size:0.92rem;color:#B0BEC5;">Checking water quality…</div>
-        <p>Storm overflow data for Lyme Regis is monitored in real time by Wessex Water via their telemetry network. Current water quality status — including active sewage discharges and recent spill alerts — updates automatically in the <a href="https://southwestkitesurf.co.uk" class="il">live forecast app</a>.</p>
+        <p>Storm overflow data for Brean Sands is monitored in real time by South West Water via their telemetry network. Current water quality status — including active sewage discharges and recent spill alerts — updates automatically in the <a href="https://southwestkitesurf.co.uk" class="il">live forecast app</a>.</p>
+
+        <h2>Nearby spots</h2>
+        <p><a href="/guide/weston-super-mare" class="il">Weston-super-Mare</a> is a few miles north on the same Bristol Channel coast — catches identical wind and tide conditions, more facilities but busier in summer. For a very different experience in E or NE winds, <a href="/guide/exmouth" class="il">Exmouth</a> on the South Devon coast is worth considering once the wind swings further south.</p>
 
         <div class="gear-block">
             <h2>Gear for this spot</h2>
             <a href="https://www.waterworldsports.co.uk/collections/kitesurfing" rel="nofollow sponsored" target="_blank" class="btn btn-primary">Shop kitesurf gear →</a>
             <a href="https://www.waterworldsports.co.uk/collections/wetsuits" rel="nofollow sponsored" target="_blank" class="btn btn-secondary">Winter wetsuits →</a>
-            <a href="https://www.waterworldsports.co.uk/collections/kitesurfing" rel="nofollow sponsored" target="_blank" class="btn btn-secondary">Water World Sports →</a>
+            <a href="https://www.waterworldsports.co.uk/collections/accessories" rel="nofollow sponsored" target="_blank" class="btn btn-secondary">Dryrobes →</a>
         </div>
     </div>
     <div class="card app-cta">
-        <h2>Check live conditions at Lyme Regis</h2>
+        <h2>Check live conditions at Brean Sands</h2>
         <p>Wind, tide and forecast — updated every hour</p>
         <img src="../app-screenshot.png" alt="South West Kitesurf app — live conditions" class="app-screenshot">
         <a href="https://southwestkitesurf.co.uk" class="btn btn-primary btn-large">Open live forecast →</a>
@@ -224,7 +208,7 @@
 </div>
 <script>
 (function(){
-  var LAT=50.722,LON=-2.936;
+  var LAT=51.2655,LON=-3.0012;
   var el=document.getElementById('marine-conditions');
   if(!el)return;
   var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
@@ -252,12 +236,11 @@
   }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
 })();
 </script>
-
 <script>
 (function(){
   var el=document.getElementById('wq-live');
   if(!el)return;
-  fetch('https://web-production-7cfa1.up.railway.app/forecast/sewage/location?lat=50.722&lon=-2.936')
+  fetch('https://web-production-7cfa1.up.railway.app/forecast/sewage/location?lat=51.2655&lon=-3.0012')
     .then(function(r){return r.json();})
     .then(function(d){
       var s=d.sewage_status;
