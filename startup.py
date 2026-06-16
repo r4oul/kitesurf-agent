@@ -42,6 +42,14 @@ if hayling and set(hayling.tide_states or []) == {"mid", "high"}:
     db.commit()
     print("Fixed Hayling Island data.")
 
+# Follow-up fix: ensure 'mid' is present in Hayling Island tide_states
+# (previous patch was skipped if tides had already been partially changed via admin)
+if hayling and "mid" not in (hayling.tide_states or []):
+    hayling.tide_states = ["low", "mid"]
+    flag_modified(hayling, "tide_states")
+    db.commit()
+    print("Fixed Hayling Island: added missing 'mid' tide state.")
+
 # One-time fix: correct West Wittering wind/tide/level data based on research
 west_wittering = db.query(Beach).filter(Beach.name == "West Wittering").first()
 if west_wittering and set(west_wittering.tide_states or []) == {"mid", "high"}:
