@@ -1,0 +1,25 @@
+## Cache strategy for Flutter web app
+## main.dart.js and canvaskit assets are immutable per Flutter version —
+## serve with long TTLs; the flutter_bootstrap.js version string invalidates
+## the app on update.
+
+/main.dart.js
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/flutter_bootstrap.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/canvaskit/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/assets/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/guide/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
