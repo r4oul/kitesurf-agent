@@ -97,10 +97,12 @@ def score_beach(
         warnings.append(f"Tide direction ({tide_direction}) not ideal")
 
     # --- Rider level (3 points) ---
+    level_no_match = False
     if rider_level in beach.rider_levels:
         score += 3
         reasons.append(f"Suitable for {rider_level} riders")
     else:
+        level_no_match = True
         warnings.append(f"Not recommended for {rider_level} riders")
 
     # --- Hard caps ---
@@ -116,6 +118,10 @@ def score_beach(
     # Wrong tide direction: cap at 50 (Marginal) — e.g. lagoon beaches on outgoing tide
     if tide_direction_no_match:
         score = min(score, 50)
+    # Wrong rider level: cap at 15 — unsuitable beaches must never outrank suitable ones.
+    # A beginner should never see an advanced-only beach ahead of a suitable one.
+    if level_no_match:
+        score = min(score, 15)
 
     return {
         "beach_id": beach.id,
