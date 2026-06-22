@@ -13,6 +13,7 @@ from backend.database import get_db
 from backend.models.beach import Beach
 from backend.models.event import ApiEvent
 from backend.services.tidal_stations import find_nearest_station
+from backend.limiter import limiter
 
 _security = HTTPBasic()
 
@@ -35,6 +36,7 @@ templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "t
 
 
 @router.get("/", response_class=HTMLResponse)
+@limiter.limit("20/minute")
 def admin_home(request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beaches = db.query(Beach).all()
 
@@ -84,11 +86,13 @@ def admin_home(request: Request, db: Session = Depends(get_db), _=Depends(_requi
 
 
 @router.get("/beach/new", response_class=HTMLResponse)
+@limiter.limit("20/minute")
 def new_beach_form(request: Request, _=Depends(_require_admin)):
     return templates.TemplateResponse("beach_form.html", {"request": request, "beach": None})
 
 
 @router.post("/beach/new")
+@limiter.limit("20/minute")
 async def create_beach(
     request: Request,
     db: Session = Depends(get_db),
@@ -149,12 +153,14 @@ async def create_beach(
 
 
 @router.get("/beach/{beach_id}/edit", response_class=HTMLResponse)
+@limiter.limit("20/minute")
 def edit_beach_form(beach_id: int, request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beach = db.query(Beach).filter(Beach.id == beach_id).first()
     return templates.TemplateResponse("beach_form.html", {"request": request, "beach": beach})
 
 
 @router.post("/beach/{beach_id}/edit")
+@limiter.limit("20/minute")
 async def update_beach(
     beach_id: int,
     request: Request,
@@ -218,7 +224,8 @@ async def update_beach(
 
 
 @router.post("/beach/{beach_id}/delete")
-def delete_beach(beach_id: int, db: Session = Depends(get_db), _=Depends(_require_admin)):
+@limiter.limit("20/minute")
+def delete_beach(beach_id: int, request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
     beach = db.query(Beach).filter(Beach.id == beach_id).first()
     if beach:
         db.delete(beach)
