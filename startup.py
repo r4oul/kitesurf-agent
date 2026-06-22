@@ -96,13 +96,21 @@ if dawlish and any(d in (dawlish.wind_directions or []) for d in ["SW", "S"]):
     db.commit()
     print("Fixed Dawlish Warren wind directions.")
 
-# One-time fix: add WhatsApp group for Portland Harbour
+# Fix: remove WhatsApp group incorrectly added to Portland Harbour
 portland = db.query(Beach).filter(Beach.name == "Portland Harbour").first()
-if portland and not any(g.get("invite_link", "").startswith("https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4") for g in (portland.whatsapp_groups or [])):
-    portland.whatsapp_groups = [{"name": "Portland Harbour Kiters", "invite_link": "https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4"}]
+if portland and any(g.get("invite_link", "").startswith("https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4") for g in (portland.whatsapp_groups or [])):
+    portland.whatsapp_groups = []
     flag_modified(portland, "whatsapp_groups")
     db.commit()
-    print("Added Portland Harbour WhatsApp group.")
+    print("Removed incorrect WhatsApp group from Portland Harbour.")
+
+# One-time fix: add WhatsApp group for Westward Ho!
+westward_ho = db.query(Beach).filter(Beach.name == "Westward Ho!").first()
+if westward_ho and not any(g.get("invite_link", "").startswith("https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4") for g in (westward_ho.whatsapp_groups or [])):
+    westward_ho.whatsapp_groups = [{"name": "Westward Ho! Kiters", "invite_link": "https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4"}]
+    flag_modified(westward_ho, "whatsapp_groups")
+    db.commit()
+    print("Added Westward Ho! WhatsApp group.")
 
 db.close()
 print("Startup complete.")

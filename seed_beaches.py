@@ -128,7 +128,7 @@ beaches = [
         "rider_levels": ["beginner", "intermediate", "advanced"],
         "hazards": "Boat traffic in harbour, stay within designated kite zones",
         "notes": "Olympic sailing venue. Flat water inside harbour. Works in most wind directions. Best flat water spot in Dorset.",
-        "whatsapp_groups": [{"name": "Portland Harbour Kiters", "invite_link": "https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4"}],
+        "whatsapp_groups": [],
     },
     {
         "name": "Weymouth Beach",
