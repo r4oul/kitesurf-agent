@@ -96,5 +96,13 @@ if dawlish and any(d in (dawlish.wind_directions or []) for d in ["SW", "S"]):
     db.commit()
     print("Fixed Dawlish Warren wind directions.")
 
+# One-time fix: add WhatsApp group for Portland Harbour
+portland = db.query(Beach).filter(Beach.name == "Portland Harbour").first()
+if portland and not any(g.get("invite_link", "").startswith("https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4") for g in (portland.whatsapp_groups or [])):
+    portland.whatsapp_groups = [{"name": "Portland Harbour Kiters", "invite_link": "https://chat.whatsapp.com/KKUAkjNw5zYKkmPmkpTcE4"}]
+    flag_modified(portland, "whatsapp_groups")
+    db.commit()
+    print("Added Portland Harbour WhatsApp group.")
+
 db.close()
 print("Startup complete.")
