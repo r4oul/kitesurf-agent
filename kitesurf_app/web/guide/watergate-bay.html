@@ -178,8 +178,8 @@
             <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">12–35 knots</div></div>
             <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-cyan">Intermediate</span><span class="chip chip-red">Advanced</span></div></div>
         </div>
-        <h2>Live Conditions</h2>
-        <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div>
+        <h2>Current Forecast &amp; Tides</h2>
+        <div id="live-report"></div>
         <h2>About this spot</h2>
         <p>Watergate Bay is a wide, mile-long Atlantic-facing beach on the north Cornish coast, about three miles north of Newquay. It is one of Cornwall's most celebrated kitesurf spots — a consistent, exposed bay that catches swell and wind from a broad arc, with the annual 'Legend of the Bay' kite competition held here every year.</p>
         <p>The defining session is a north-westerly with a running Atlantic swell: clean, cross-shore wind and long, well-defined wave faces that let you work the entire beach. Westerlies bring powerful swell of 3 metres or more alongside flat-water channels between the breaking waves. Southerly winds produce clean walls but are the riskiest direction because the wind pushes you towards the rocks and cliffs at the north end — those days should only be approached on a dropping tide, a couple of hours before low.</p>
@@ -213,36 +213,6 @@
         <a href="https://southwestkitesurf.co.uk" class="btn btn-primary btn-large">Open live forecast →</a>
     </div>
 </div>
-<script>
-(function(){
-  var LAT=50.447,LON=-5.054;
-  var el=document.getElementById('marine-conditions');
-  if(!el)return;
-  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
-  fetch(url).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(!d.hourly||!d.hourly.time)throw new Error('no data');
-    var now=new Date();
-    var h=now.toISOString().slice(0,13);
-    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
-    if(idx===-1){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';return;}
-    var wh=d.hourly.wave_height[idx];
-    var wp=d.hourly.wave_period[idx];
-    var wd=d.hourly.wave_direction[idx];
-    var wt=d.hourly.sea_surface_temperature[idx];
-    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'--';
-    el.innerHTML='<div class="marine-grid">'
-      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'C':'--')+'</div></div>'
-      +'</div>';
-  }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
-})();
-</script>
 
 <script>
 (function(){
@@ -260,5 +230,8 @@
     .catch(function(){el.style.display='none';});
 })();
 </script>
+
+<script src="/guide/live-report.js"></script>
+<script>initLiveReport(50.447, -5.054);</script>
 </body>
 </html>

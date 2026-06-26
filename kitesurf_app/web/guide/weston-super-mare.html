@@ -169,8 +169,8 @@
             <div class="fact"><div class="fact-label">Wind range</div><div class="fact-value">12–32 knots</div></div>
             <div class="fact"><div class="fact-label">Rider level</div><div class="fact-value"><span class="chip chip-cyan">Intermediate</span><span class="chip chip-red">Advanced</span></div></div>
         </div>
-        <h2>Live Conditions</h2>
-        <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div>
+        <h2>Current Forecast &amp; Tides</h2>
+        <div id="live-report"></div>
         <h2>About this spot</h2>
         <p>Weston-super-Mare sits on the Somerset coast at the mouth of the Bristol Channel — an environment defined by one of the most extreme tidal ranges anywhere in the world. The Bristol Channel tidal range reaches 10 metres or more at Weston, which is the second greatest rise and fall of tide globally after the Bay of Fundy in Canada. This single fact shapes every aspect of kitesurfing here: at low water the sea retreats to a distant horizon and the beach becomes a vast expanse of firm sand and mudflat. At high water, a usable stretch of sea opens up and the wind picks up off the channel. Sessions must be planned entirely around the tide.</p>
         <p>The best kiting area is at the southern, Uphill end of the beach, where North Somerset Council has designated a formal kite zone. This zone is managed in partnership with the local Wind, Wheels &amp; Waves club (affiliated with the BKSA), and users must hold either club membership or a BKSA membership card as proof of insurance. The main town beach is too busy with holidaymakers in summer for practical kiting.</p>
@@ -204,36 +204,6 @@
 </div>
 <script>
 (function(){
-  var LAT=51.3478,LON=-2.9842;
-  var el=document.getElementById('marine-conditions');
-  if(!el)return;
-  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
-  fetch(url).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(!d.hourly||!d.hourly.time)throw new Error('no data');
-    var now=new Date();
-    var h=now.toISOString().slice(0,13);
-    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
-    if(idx===-1){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';return;}
-    var wh=d.hourly.wave_height[idx];
-    var wp=d.hourly.wave_period[idx];
-    var wd=d.hourly.wave_direction[idx];
-    var wt=d.hourly.sea_surface_temperature[idx];
-    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'--';
-    el.innerHTML='<div class="marine-grid">'
-      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'C':'--')+'</div></div>'
-      +'</div>';
-  }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
-})();
-</script>
-<script>
-(function(){
   var el=document.getElementById('wq-live');
   if(!el)return;
   fetch('https://web-production-7cfa1.up.railway.app/forecast/sewage/location?lat=51.3478&lon=-2.9842')
@@ -248,5 +218,8 @@
     .catch(function(){el.style.display='none';});
 })();
 </script>
+
+<script src="/guide/live-report.js"></script>
+<script>initLiveReport(51.3478, -2.9842);</script>
 </body>
 </html>

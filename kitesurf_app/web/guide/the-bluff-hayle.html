@@ -243,8 +243,8 @@
             </div>
         </div>
 
-                <h2>Live Conditions</h2>
-        <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div>
+                <h2>Current Forecast &amp; Tides</h2>
+        <div id="live-report"></div>
         <h2>About this spot</h2>
         <p>The Bluff sits at the eastern mouth of the Hayle estuary where it opens into St Ives Bay — one of Cornwall's best-known and most accessible kitesurf venues. It is a genuinely sheltered spot by Cornish standards, tucked inside the estuary arm so that the open Atlantic swell is blocked and the water remains relatively flat even when Gwithian next door is pumping. This makes it an excellent option for lighter winds, freestyle practice, and progression sessions.</p>
         <p>As the tide drops it exposes a series of sandy lagoons and sandbanks between the estuary channels. These shallow, ankle-to-knee-deep flats are perfect for unhooking, freestyle tricks, and boosting. When a south-westerly blows, small to moderate swell wraps into the estuary mouth and provides down-the-line wave riding nearer the open bay. Northerly and north-westerly winds give the cleanest flat-water conditions and the most consistent experience for most riders.</p>
@@ -286,36 +286,6 @@
     </div>
 </div>
 
-<script>
-(function(){
-  var LAT=50.1865,LON=-5.4253;
-  var el=document.getElementById('marine-conditions');
-  if(!el)return;
-  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
-  fetch(url).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(!d.hourly||!d.hourly.time)throw new Error('no data');
-    var now=new Date();
-    var h=now.toISOString().slice(0,13);
-    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
-    if(idx===-1){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';return;}
-    var wh=d.hourly.wave_height[idx];
-    var wp=d.hourly.wave_period[idx];
-    var wd=d.hourly.wave_direction[idx];
-    var wt=d.hourly.sea_surface_temperature[idx];
-    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'--';
-    el.innerHTML='<div class="marine-grid">'
-      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'C':'--')+'</div></div>'
-      +'</div>';
-  }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
-})();
-</script>
 
 <script>
 (function(){
@@ -333,5 +303,8 @@
     .catch(function(){el.style.display='none';});
 })();
 </script>
+
+<script src="/guide/live-report.js"></script>
+<script>initLiveReport(50.1865, -5.4253);</script>
 </body>
 </html>

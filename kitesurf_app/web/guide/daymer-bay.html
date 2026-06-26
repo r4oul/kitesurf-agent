@@ -243,8 +243,8 @@
             </div>
         </div>
 
-                <h2>Live Conditions</h2>
-        <div id="marine-conditions" style="color:#B0BEC5;font-size:0.85rem;padding:0.4rem 0;">Loading live conditions…</div>
+                <h2>Current Forecast &amp; Tides</h2>
+        <div id="live-report"></div>
         <h2>About this spot</h2>
         <p>Daymer Bay is a beautiful, sheltered crescent of sand on the southern side of the Camel Estuary near Rock — arguably the most scenic kitesurf location in Cornwall. The bay faces north-east into the estuary mouth, and at low water the sand extends in a sweeping arc down towards Rock village, with views across the river to the historic town of Padstow on the far bank. On the right tide and in the right wind it is an exceptionally enjoyable spot, with flat to slightly choppy water and reliable wind.</p>
         <p>The estuary location means the bay is sheltered from direct Atlantic swell and the water state is generally much calmer than the exposed north Cornish beaches a few miles away. North and north-west winds blow straight in from the sea and are the cleanest and most consistent. South-westerlies also reach the bay but they cross the land before arriving and can be gusty and variable. W is straight onshore and not suitable. S and SE should be avoided.</p>
@@ -286,36 +286,6 @@
     </div>
 </div>
 
-<script>
-(function(){
-  var LAT=50.5642,LON=-4.9208;
-  var el=document.getElementById('marine-conditions');
-  if(!el)return;
-  var url='https://marine-api.open-meteo.com/v1/marine?latitude='+LAT+'&longitude='+LON+'&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
-  fetch(url).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(d){
-    if(!d.hourly||!d.hourly.time)throw new Error('no data');
-    var now=new Date();
-    var h=now.toISOString().slice(0,13);
-    var idx=d.hourly.time.findIndex(function(t){return t.startsWith(h);});
-    if(idx===-1){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';return;}
-    var wh=d.hourly.wave_height[idx];
-    var wp=d.hourly.wave_period[idx];
-    var wd=d.hourly.wave_direction[idx];
-    var wt=d.hourly.sea_surface_temperature[idx];
-    var dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-    var wds=wd!=null?dirs[Math.round(wd/22.5)%16]:'--';
-    el.innerHTML='<div class="marine-grid">'
-      +'<div class="marine-item"><div class="marine-label">Wave height</div><div class="marine-value">'+(wh!=null?wh.toFixed(1)+'m':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave period</div><div class="marine-value">'+(wp!=null?Math.round(wp)+'s':'--')+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Wave direction</div><div class="marine-value">'+wds+'</div></div>'
-      +'<div class="marine-item"><div class="marine-label">Water temp</div><div class="marine-value">'+(wt!=null?wt.toFixed(1)+'C':'--')+'</div></div>'
-      +'</div>';
-  }).catch(function(e){el.innerHTML='<span style="color:#B0BEC5;font-size:0.85rem;">Conditions unavailable</span>';});
-})();
-</script>
 
 <script>
 (function(){
@@ -333,5 +303,8 @@
     .catch(function(){el.style.display='none';});
 })();
 </script>
+
+<script src="/guide/live-report.js"></script>
+<script>initLiveReport(50.5642, -4.9208);</script>
 </body>
 </html>

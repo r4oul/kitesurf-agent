@@ -22,6 +22,13 @@ async def sewage_by_location(lat: float = Query(...), lon: float = Query(...)):
     return await get_sewage_status(lat, lon)
 
 
+@router.get("/tides/location")
+async def tides_by_location(lat: float = Query(...), lon: float = Query(...)):
+    """Return tide extremes for a lat/lon — used by beach guide pages."""
+    tides = await get_tides(lat, lon)
+    return {"tide_extremes": tides["extremes"][:28]}
+
+
 @router.get("/sewage")
 async def all_sewage(db: Session = Depends(get_db)):
     """Return sewage status for all beaches in a single parallel request."""
