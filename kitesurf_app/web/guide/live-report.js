@@ -177,11 +177,11 @@
     var el = document.getElementById('live-report');
     if (!el) return;
     addStyles();
-    el.innerHTML = '<span style="color:#B0BEC5;font-size:.85rem">Loading live conditions…</span>';
+    el.innerHTML = '<span style="color:#B0BEC5;font-size:.85rem">Loading forecast…</span>';
 
     var windUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon
       + '&hourly=windspeed_10m,winddirection_10m,windgusts_10m'
-      + '&windspeed_unit=mph&forecast_days=1&timezone=auto';
+      + '&windspeed_unit=kn&forecast_days=1&timezone=auto';
     var tidesUrl = API + '/forecast/tides/location?lat=' + lat + '&lon=' + lon;
     var marineUrl = 'https://marine-api.open-meteo.com/v1/marine?latitude=' + lat + '&longitude=' + lon
       + '&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
@@ -191,6 +191,7 @@
       fetch(tidesUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch(marineUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
     ]).then(function (res) {
+      try {
       var wData = res[0], tData = res[1], mData = res[2];
 
       var now = new Date();
@@ -212,7 +213,7 @@
       var waterT = mIdx >= 0 ? mData.hourly.sea_surface_temperature[mIdx] : null;
       var waveDirStr = waveD !== null ? DIRS[Math.round(waveD / 22.5) % 16] : null;
 
-      var MAX = 50;
+      var MAX = 60;
       var html = '';
 
       // Wind
@@ -225,14 +226,14 @@
       if (spd !== null) {
         html += '<div class="lr-gr"><span class="lr-gl">Wind</span>'
           + '<div class="lr-gt"><div class="lr-gf" style="width:' + Math.min(100, spd / MAX * 100).toFixed(1) + '%"></div></div>'
-          + '<span class="lr-gv">' + spd + ' mph</span></div>';
+          + '<span class="lr-gv">' + spd + ' kts</span></div>';
       }
       if (gst !== null) {
         html += '<div class="lr-gr"><span class="lr-gl">Gust</span>'
           + '<div class="lr-gt"><div class="lr-gf gust" style="width:' + Math.min(100, gst / MAX * 100).toFixed(1) + '%"></div></div>'
-          + '<span class="lr-gv">' + gst + ' mph</span></div>';
+          + '<span class="lr-gv">' + gst + ' kts</span></div>';
       }
-      html += '<div class="lr-gscale"><span>0</span><span>50 mph</span></div>';
+      html += '<div class="lr-gscale"><span>0</span><span>60 kts</span></div>';
       html += '</div></div>';
 
       // Attribution — clearly labelled as forecast, not live station reading
@@ -269,8 +270,13 @@
       }
 
       el.innerHTML = html || '<span style="color:#B0BEC5;font-size:.85rem">Conditions unavailable</span>';
-    }).catch(function () {
-      el.innerHTML = '<span style="color:#B0BEC5;font-size:.85rem">Live conditions unavailable</span>';
+      } catch (err) {
+        console.error('[live-report] render error:', err);
+        el.innerHTML = '<span style="color:#fc8181;font-size:.85rem">Widget error: ' + err.message + '</span>';
+      }
+    }).catch(function (err) {
+      console.error('[live-report] fetch error:', err);
+      el.innerHTML = '<span style="color:#B0BEC5;font-size:.85rem">Forecast unavailable</span>';
     });
   };
 }());
