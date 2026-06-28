@@ -88,19 +88,32 @@ def predict_extremes(constituents: dict, start: datetime, days: int = 5) -> list
         t += step
 
     extremes = []
-    for i in range(1, len(heights) - 1):
-        prev, curr, nxt = heights[i - 1], heights[i], heights[i + 1]
+    n = len(heights)
+    i = 1
+    while i < n - 1:
+        curr = heights[i]
+        prev = heights[i - 1]
+
+        # Advance j past any flat plateau (M4 shallow-water constituent can
+        # produce a near-flat peak that rounds to equal heights at 10-min steps)
+        j = i
+        while j + 1 < n - 1 and heights[j + 1] == curr:
+            j += 1
+        nxt = heights[j + 1] if j + 1 < n else curr
+
+        mid = (i + j) // 2  # midpoint of plateau → best time estimate
         if curr > prev and curr > nxt:
             extremes.append({
-                "time": times[i].replace(tzinfo=None).isoformat() + "Z",
+                "time": times[mid].replace(tzinfo=None).isoformat() + "Z",
                 "type": "High",
                 "height_m": curr,
             })
         elif curr < prev and curr < nxt:
             extremes.append({
-                "time": times[i].replace(tzinfo=None).isoformat() + "Z",
+                "time": times[mid].replace(tzinfo=None).isoformat() + "Z",
                 "type": "Low",
                 "height_m": curr,
             })
+        i = j + 1  # jump past plateau
 
     return extremes
