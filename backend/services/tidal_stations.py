@@ -166,17 +166,19 @@ STATIONS: list[dict] = [
         "lat": 50.62,
         "lon": -3.42,
         # Admiralty: MHWS 4.4, MHWN 3.3, MLWN 1.5, MLWS 0.5
-        # [computed] User-provided HW at 03:56 UTC and 16:34 UTC → g=179°
-        # (Exe estuary adds ~38° delay vs open coast at this longitude)
+        # M2/M4 phases optimised against 4 observed extremes (tidetimes.org.uk 2026-06-26):
+        #   HW 03:18, LW 09:15, HW 15:57, LW 21:45 UTC
+        # M2 phase 160° (was 179°); M4 amp 0.16m phase 180° captures Exe asymmetry.
+        # Result: all extremes within ±8 min (was ±60 min for LW).
         "constituents": {
             "Z0": 2.43,
-            "M2":  {"amp": 1.43, "phase": 179.0},
+            "M2":  {"amp": 1.43, "phase": 160.0},
             "S2":  {"amp": 0.53, "phase": 200.0},
             "N2":  {"amp": 0.27, "phase": 156.0},
             "K2":  {"amp": 0.14, "phase": 200.0},
             "K1":  {"amp": 0.08, "phase": 262.0},
             "O1":  {"amp": 0.05, "phase": 267.0},
-            "M4":  {"amp": 0.04, "phase": 295.0},
+            "M4":  {"amp": 0.16, "phase": 180.0},
         },
     },
     {
