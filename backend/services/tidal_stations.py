@@ -168,8 +168,8 @@ STATIONS: list[dict] = [
         # Admiralty: MHWS 4.4, MHWN 3.3, MLWN 1.5, MLWS 0.5
         # M2/M4 phases optimised against 4 observed extremes (tidetimes.org.uk 2026-06-26):
         #   HW 03:18, LW 09:15, HW 15:57, LW 21:45 UTC
-        # M2 phase 160° (was 179°); M4 amp 0.16m phase 180° captures Exe asymmetry.
-        # Result: all extremes within ±8 min (was ±60 min for LW).
+        # M2 phase 160°; M4 amp 0.11m / phase 171° captures Exe asymmetry (shorter ebb).
+        # All 4 extremes within ±8 min; M4 capped at 0.11m to avoid missing any HW/LW.
         "constituents": {
             "Z0": 2.43,
             "M2":  {"amp": 1.43, "phase": 160.0},
@@ -178,7 +178,7 @@ STATIONS: list[dict] = [
             "K2":  {"amp": 0.14, "phase": 200.0},
             "K1":  {"amp": 0.08, "phase": 262.0},
             "O1":  {"amp": 0.05, "phase": 267.0},
-            "M4":  {"amp": 0.16, "phase": 180.0},
+            "M4":  {"amp": 0.11, "phase": 171.0},
         },
     },
     {
