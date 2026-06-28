@@ -40,11 +40,29 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
     _load();
   }
 
-  // Backend harmonic phases were calibrated from local (BST) observation times,
-  // so the Z-suffix timestamps already represent local clock time.
-  // Strip Z and parse as unspecified (local) to display without conversion.
+  // Flutter web's toLocal() / timeZoneOffset unreliable in dart2js.
+  // Deterministic UK BST rule: last Sun Mar 01:00 UTC → last Sun Oct 01:00 UTC.
   static DateTime _utcToLocal(String iso) {
-    return DateTime.parse(iso.replaceAll('Z', ''));
+    final utc = DateTime.parse(iso).toUtc();
+    return utc.add(Duration(hours: _ukOffsetHours(utc)));
+  }
+
+  static int _ukOffsetHours(DateTime utc) {
+    if (utc.month < 3 || utc.month > 10) return 0;
+    if (utc.month > 3 && utc.month < 10) return 1;
+    int lastSunday = DateTime(utc.year, utc.month + 1, 0).day;
+    while (DateTime(utc.year, utc.month, lastSunday).weekday != DateTime.sunday) {
+      lastSunday--;
+    }
+    if (utc.month == 3) {
+      if (utc.day > lastSunday) return 1;
+      if (utc.day == lastSunday && utc.hour >= 1) return 1;
+      return 0;
+    } else {
+      if (utc.day < lastSunday) return 1;
+      if (utc.day == lastSunday && utc.hour < 1) return 1;
+      return 0;
+    }
   }
 
   Future<void> _load() async {
@@ -467,7 +485,7 @@ class _TidePainter extends CustomPainter {
   }
 
   static double _localMs(String iso) =>
-      DateTime.parse(iso.replaceAll('Z', '')).millisecondsSinceEpoch.toDouble();
+      DateTime.parse(iso).toUtc().millisecondsSinceEpoch.toDouble();
 
   double? _tideAt(double ms) {
     for (int i = 0; i < extremes.length - 1; i++) {

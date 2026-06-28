@@ -8,14 +8,11 @@
   function degToCompass(d) { return DIRS[Math.round(d / 22.5) % 16]; }
 
   function fmtLocal(iso) {
-    // Backend harmonic phases are calibrated to local clock time —
-    // strip Z and display HH:MM directly without timezone conversion.
-    return iso.slice(11, 16);
+    return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   }
 
   function parseLocalMs(iso) {
-    // Parse as local time (strip Z so Date() treats it as local, not UTC).
-    return new Date(iso.replace('Z', '')).getTime();
+    return new Date(iso).getTime();
   }
 
   function fmtCoord(lat, lon) {
@@ -24,11 +21,12 @@
   }
 
   function isLocalDay(iso, dayOffset) {
-    // Compare YYYY-MM-DD of the backend string (local clock) against today+offset.
-    var d = new Date();
-    d.setDate(d.getDate() + dayOffset);
-    var refDate = d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
-    return iso.slice(0, 10) === refDate;
+    var d = new Date(iso);
+    var ref = new Date();
+    ref.setDate(ref.getDate() + dayOffset);
+    return d.getFullYear() === ref.getFullYear()
+      && d.getMonth() === ref.getMonth()
+      && d.getDate() === ref.getDate();
   }
 
   function cosInterp(t, t1, h1, t2, h2) {
