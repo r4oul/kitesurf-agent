@@ -8,7 +8,14 @@
   function degToCompass(d) { return DIRS[Math.round(d / 22.5) % 16]; }
 
   function fmtLocal(iso) {
-    return new Date(iso).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    // Backend harmonic phases are calibrated to local clock time —
+    // strip Z and display HH:MM directly without timezone conversion.
+    return iso.slice(11, 16);
+  }
+
+  function parseLocalMs(iso) {
+    // Parse as local time (strip Z so Date() treats it as local, not UTC).
+    return new Date(iso.replace('Z', '')).getTime();
   }
 
   function fmtCoord(lat, lon) {
@@ -17,12 +24,11 @@
   }
 
   function isLocalDay(iso, dayOffset) {
-    var d = new Date(iso);
-    var ref = new Date();
-    ref.setDate(ref.getDate() + dayOffset);
-    return d.getFullYear() === ref.getFullYear()
-      && d.getMonth() === ref.getMonth()
-      && d.getDate() === ref.getDate();
+    // Compare YYYY-MM-DD of the backend string (local clock) against today+offset.
+    var d = new Date();
+    d.setDate(d.getDate() + dayOffset);
+    var refDate = d.toLocaleDateString('en-CA'); // YYYY-MM-DD in local tz
+    return iso.slice(0, 10) === refDate;
   }
 
   function cosInterp(t, t1, h1, t2, h2) {
@@ -31,8 +37,8 @@
 
   function tideAt(ms, exts) {
     for (var i = 0; i < exts.length - 1; i++) {
-      var t1 = new Date(exts[i].time).getTime();
-      var t2 = new Date(exts[i + 1].time).getTime();
+      var t1 = parseLocalMs(exts[i].time);
+      var t2 = parseLocalMs(exts[i + 1].time);
       if (ms >= t1 && ms <= t2) return cosInterp(ms, t1, exts[i].height_m, t2, exts[i + 1].height_m);
     }
     return null;
@@ -40,10 +46,10 @@
 
   function tideStateText(exts) {
     var now = Date.now();
-    var past = exts.filter(function (e) { return new Date(e.time).getTime() <= now; });
+    var past = exts.filter(function (e) { return parseLocalMs(e.time) <= now; });
     if (!past.length) return '';
     var last = past[past.length - 1];
-    var mins = Math.round((now - new Date(last.time).getTime()) / 60000);
+    var mins = Math.round((now - parseLocalMs(last.time)) / 60000);
     var arrow = last.type === 'High' ? '▲' : '▼';
     var label = last.type === 'High' ? 'High' : 'Low';
     if (mins < 5) return '≈ ' + arrow + ' ' + label + ' Tide now';
@@ -118,7 +124,7 @@
     svg += '<text x="' + xOf(t0 + 12 * 3600000).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#B0BEC5" font-size="10" font-family="sans-serif">Today</text>';
     svg += '<text x="' + xOf(t0 + 36 * 3600000).toFixed(1) + '" y="' + (H - 5) + '" text-anchor="middle" fill="#B0BEC5" font-size="10" font-family="sans-serif">Tomorrow</text>';
     exts.forEach(function (e) {
-      var ems = new Date(e.time).getTime();
+      var ems = parseLocalMs(e.time);
       var ex = xOf(ems), ey = yOf(e.height_m);
       if (ex >= pL && ex <= W - pR) {
         svg += '<circle cx="' + ex.toFixed(1) + '" cy="' + ey.toFixed(1) + '" r="3" fill="' + (e.type === 'High' ? '#00D4FF' : '#F6A800') + '"/>';

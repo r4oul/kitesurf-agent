@@ -26,6 +26,7 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
   List<ForecastWindow> _windows = [];
   List<dynamic> _tideExtremes = [];
   String _sewageStatus = 'unknown';
+  String? _dischargeEnded;
   double? _waveHeightM;
   int? _wavePeriodS;
   String? _waveDirection;
@@ -39,11 +40,11 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
     _load();
   }
 
-  // Flutter web's toLocal() doesn't always apply DST correctly.
-  // Adding the offset explicitly is reliable in both native and web.
+  // Backend harmonic phases were calibrated from local (BST) observation times,
+  // so the Z-suffix timestamps already represent local clock time.
+  // Strip Z and parse as unspecified (local) to display without conversion.
   static DateTime _utcToLocal(String iso) {
-    final utc = DateTime.parse(iso).toUtc();
-    return utc.add(DateTime.now().timeZoneOffset);
+    return DateTime.parse(iso.replaceAll('Z', ''));
   }
 
   Future<void> _load() async {
@@ -53,6 +54,7 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
         _windows = data['windows'];
         _tideExtremes = data['tide_extremes'];
         _sewageStatus = data['sewage_status'] ?? 'unknown';
+        _dischargeEnded = data['discharge_ended'] as String?;
         _waveHeightM = (data['wave_height_m'] as num?)?.toDouble();
         _wavePeriodS = data['wave_period_s'] as int?;
         _waveDirection = data['wave_direction'] as String?;
@@ -221,6 +223,16 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
   }
 
   Widget _buildRecentSpillBanner() {
+    String endedText = '';
+    if (_dischargeEnded != null) {
+      try {
+        final ended = DateTime.parse(_dischargeEnded!).toLocal();
+        final hrs = DateTime.now().difference(ended).inHours;
+        endedText = hrs < 24
+            ? ' (ended ${hrs}h ago)'
+            : ' (ended ${DateFormat('EEE HH:mm').format(ended)})';
+      } catch (_) {}
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -237,9 +249,9 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Recent sewage spill nearby — avoid entering the water for 48hrs',
-                  style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                Text(
+                  'Recent sewage spill nearby$endedText — check SAS for current status',
+                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 4),
                 _sasLink(const Color(0xFFFFE0B2)),
@@ -454,10 +466,13 @@ class _TidePainter extends CustomPainter {
     return (h1 + h2) / 2 + (h1 - h2) / 2 * cos(pi * (t - t1) / (t2 - t1));
   }
 
+  static double _localMs(String iso) =>
+      DateTime.parse(iso.replaceAll('Z', '')).millisecondsSinceEpoch.toDouble();
+
   double? _tideAt(double ms) {
     for (int i = 0; i < extremes.length - 1; i++) {
-      final t1 = DateTime.parse(extremes[i]['time']).millisecondsSinceEpoch.toDouble();
-      final t2 = DateTime.parse(extremes[i + 1]['time']).millisecondsSinceEpoch.toDouble();
+      final t1 = _localMs(extremes[i]['time'] as String);
+      final t2 = _localMs(extremes[i + 1]['time'] as String);
       if (ms >= t1 && ms <= t2) {
         return _cosInterp(ms, t1, (extremes[i]['height_m'] as num).toDouble(),
             t2, (extremes[i + 1]['height_m'] as num).toDouble());
@@ -545,7 +560,7 @@ class _TidePainter extends CustomPainter {
 
     // Extreme dots
     for (final e in extremes) {
-      final ems = DateTime.parse(e['time']).millisecondsSinceEpoch.toDouble();
+      final ems = _localMs(e['time'] as String);
       final ex = xOf(ems);
       if (ex < 0 || ex > size.width) continue;
       canvas.drawCircle(

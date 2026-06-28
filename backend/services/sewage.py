@@ -14,7 +14,7 @@ SEARCH_RADIUS_M       = 8000  # find monitors within 8km (for coverage + nearest
 FLAG_RADIUS_ACTIVE_M  = 8000  # raise 'discharging' alert for active (status=1) within 8km
 FLAG_RADIUS_RECENT_M  = 2000  # raise 'recent_spill' alert for stopped (status=0) within 2km only
 BBOX_DEG = 0.08               # ~8km bounding box half-width (fetched from ArcGIS)
-RECENT_HOURS = 48
+RECENT_HOURS = 24
 
 # Per-location cache keyed by (company, rounded_lat, rounded_lon)
 _cache: dict = {}
