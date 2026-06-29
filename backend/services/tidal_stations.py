@@ -27,16 +27,17 @@ STATIONS: list[dict] = [
         "lat": 50.83,
         "lon": -0.77,
         # Admiralty: MHWS 4.6, MHWN 3.8, MLWN 1.8, MLWS 0.4
-        # [estimated] Portsmouth-based + harbour entry delay ~30 min
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   L 05:20, H 12:10, L 17:30; RMS 2.9 min.
         "constituents": {
             "Z0": 2.65,
-            "M2":  {"amp": 1.55, "phase": 315.0},
+            "M2":  {"amp": 1.55, "phase": 322.0},
             "S2":  {"amp": 0.55, "phase": 340.0},
             "N2":  {"amp": 0.29, "phase": 292.0},
             "K2":  {"amp": 0.15, "phase": 340.0},
             "K1":  {"amp": 0.07, "phase": 258.0},
             "O1":  {"amp": 0.05, "phase": 265.0},
-            "M4":  {"amp": 0.08, "phase": 258.0},
+            "M4":  {"amp": 0.10, "phase": 40.0},
         },
     },
     {
@@ -44,16 +45,17 @@ STATIONS: list[dict] = [
         "lat": 50.80,
         "lon": -1.11,
         # Admiralty: MHWS 4.7, MHWN 3.8, MLWN 1.9, MLWS 0.8
-        # [computed] HW at 09:02 UTC and 21:30 UTC on 2026-05-14 → g=300°
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   L 05:06, H 12:16, L 17:24; RMS 15.4 min (errs +14,-16,+16).
         "constituents": {
             "Z0": 2.80,
-            "M2":  {"amp": 1.45, "phase": 300.0},
+            "M2":  {"amp": 1.45, "phase": 323.0},
             "S2":  {"amp": 0.50, "phase": 328.0},
             "N2":  {"amp": 0.28, "phase": 277.0},
             "K2":  {"amp": 0.14, "phase": 328.0},
             "K1":  {"amp": 0.07, "phase": 259.0},
             "O1":  {"amp": 0.05, "phase": 267.0},
-            "M4":  {"amp": 0.10, "phase": 262.0},
+            "M4":  {"amp": 0.10, "phase": 30.0},
             "MS4": {"amp": 0.06, "phase": 316.0},
         },
     },
@@ -62,11 +64,13 @@ STATIONS: list[dict] = [
         "lat": 50.90,
         "lon": -1.40,
         # Admiralty: MHWS 4.5, MHWN 3.7, MLWN 2.0, MLWS 1.1
-        # Double HW — large M4/MS4 terms
-        # [computed] HW at 08:13 UTC and 20:43 UTC on 2026-05-14 → g=276°
+        # Double HW — large M4/MS4 terms create 5-extreme/day pattern our model can't fully
+        # reproduce. g=37° derived from observed HW 01:31 BST Jun29 (M2-only fit).
+        # S2/N2/K2/M4/MS4 phases kept from original calibration (changing only M2).
+        # Gives HW ±10 min; LW ~2.5h off (inherent limitation without M6/2MN4 harmonics).
         "constituents": {
             "Z0": 2.83,
-            "M2":  {"amp": 1.28, "phase": 276.0},
+            "M2":  {"amp": 1.28, "phase": 37.0},
             "S2":  {"amp": 0.43, "phase": 307.0},
             "N2":  {"amp": 0.24, "phase": 253.0},
             "K2":  {"amp": 0.12, "phase": 307.0},
@@ -81,18 +85,16 @@ STATIONS: list[dict] = [
         "lat": 50.71,
         "lon": -1.50,
         # Admiralty: MHWS 3.0, MHWN 2.4, MLWN 1.2, MLWS 0.5
-        # [estimated] Used for western Solent/Christchurch Bay mainland beaches (Lepe, Mudeford).
-        # HW at this longitude on mainland ≈ 2h before Portsmouth → g ≈ 300 - 2×28.98 = 242°.
-        # Compromise between Lepe (~264°) and Mudeford/Christchurch (~210°).
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   L 04:40, H 11:19, L 16:58, H 23:24; RMS 5.5 min (errs 0,-9,+2,+6).
         "constituents": {
             "Z0": 1.78,
-            "M2":  {"amp": 0.93, "phase": 242.0},
+            "M2":  {"amp": 0.93, "phase": 314.0},
             "S2":  {"amp": 0.33, "phase": 263.0},
             "N2":  {"amp": 0.18, "phase": 219.0},
             "K1":  {"amp": 0.06, "phase": 255.0},
             "O1":  {"amp": 0.04, "phase": 262.0},
-            "M4":  {"amp": 0.16, "phase": 215.0},
-            "MS4": {"amp": 0.09, "phase": 258.0},
+            "M4":  {"amp": 0.08, "phase": 300.0},
         },
     },
     {
@@ -101,15 +103,16 @@ STATIONS: list[dict] = [
         "lon": -1.99,
         # Admiralty: MHWS 2.0, MHWN 1.5, MLWN 1.0, MLWS 0.6
         # Double HW — large M4 term relative to M2
-        # [estimated] Interpolated between Portland (164°) and Southampton (276°)
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC;
+        #   HW-only matching (double HW complex); RMS 19.4 min.
         "constituents": {
             "Z0": 1.28,
-            "M2":  {"amp": 0.45, "phase": 220.0},
+            "M2":  {"amp": 0.45, "phase": 244.0},
             "S2":  {"amp": 0.13, "phase": 242.0},
             "N2":  {"amp": 0.09, "phase": 197.0},
             "K1":  {"amp": 0.05, "phase": 250.0},
             "O1":  {"amp": 0.04, "phase": 260.0},
-            "M4":  {"amp": 0.13, "phase": 202.0},
+            "M4":  {"amp": 0.08, "phase": 150.0},
             "MS4": {"amp": 0.08, "phase": 245.0},
         },
     },
@@ -118,14 +121,16 @@ STATIONS: list[dict] = [
         "lat": 50.61,
         "lon": -1.95,
         # Admiralty: MHWS 2.1, MHWN 1.6, MLWN 0.8, MLWS 0.4
-        # [estimated] Between Portland (164°) and Poole (220°)
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   4 extremes; RMS 26 min (errs -28,-31,-13,+28 — LW asymmetry limits accuracy).
         "constituents": {
             "Z0": 1.23,
-            "M2":  {"amp": 0.53, "phase": 184.0},
+            "M2":  {"amp": 0.53, "phase": 263.0},
             "S2":  {"amp": 0.19, "phase": 206.0},
             "N2":  {"amp": 0.10, "phase": 161.0},
             "K1":  {"amp": 0.06, "phase": 254.0},
             "O1":  {"amp": 0.04, "phase": 262.0},
+            "M4":  {"amp": 0.10, "phase": 60.0},
         },
     },
     {
@@ -133,16 +138,17 @@ STATIONS: list[dict] = [
         "lat": 50.57,
         "lon": -2.44,
         # Admiralty Standard Port: MHWS 2.1, MHWN 1.4, MLWN 0.5, MLWS 0.1
-        # [computed] HW at 04:13 UTC and 16:55 UTC on 2026-05-14 → g=164°
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   3 extremes; RMS 14.7 min (errs -9,+22,-9).
         "constituents": {
             "Z0": 1.03,
-            "M2":  {"amp": 0.73, "phase": 164.0},
+            "M2":  {"amp": 0.73, "phase": 169.0},
             "S2":  {"amp": 0.24, "phase": 184.0},
             "N2":  {"amp": 0.14, "phase": 141.0},
             "K2":  {"amp": 0.06, "phase": 184.0},
             "K1":  {"amp": 0.07, "phase": 275.0},
             "O1":  {"amp": 0.04, "phase": 277.0},
-            "M4":  {"amp": 0.02, "phase": 285.0},
+            "M4":  {"amp": 0.10, "phase": 90.0},
         },
     },
     {
@@ -150,15 +156,17 @@ STATIONS: list[dict] = [
         "lat": 50.72,
         "lon": -2.94,
         # Admiralty: MHWS 4.1, MHWN 2.9, MLWN 1.3, MLWS 0.5
-        # [computed] HW at 04:09 UTC and 16:47 UTC on 2026-05-14 → g=161°
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   4 extremes; RMS 8.4 min (errs -1,-13,+7,-8).
         "constituents": {
             "Z0": 2.20,
-            "M2":  {"amp": 1.30, "phase": 161.0},
+            "M2":  {"amp": 1.30, "phase": 170.0},
             "S2":  {"amp": 0.50, "phase": 182.0},
             "N2":  {"amp": 0.25, "phase": 138.0},
             "K2":  {"amp": 0.14, "phase": 182.0},
             "K1":  {"amp": 0.07, "phase": 268.0},
             "O1":  {"amp": 0.05, "phase": 272.0},
+            "M4":  {"amp": 0.10, "phase": 120.0},
         },
     },
     {
