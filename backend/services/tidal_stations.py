@@ -247,6 +247,28 @@ STATIONS: list[dict] = [
             "M4":  {"amp": 0.02, "phase": 275.0},
         },
     },
+    {
+        "name": "Ilfracombe",
+        "lat": 51.21,
+        "lon": -4.12,
+        # Admiralty: MHWS 8.3, MHWN 6.1, MLWN 2.9, MLWS 1.0
+        # Z0 = (MHWS+MHWN+MLWN+MLWS)/4 = 4.575m
+        # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
+        # [computed] M2 phase grid-searched against tidetimes 2026-06-28 (BST→UTC):
+        #   HW 04:43, LW 10:47, HW 17:06 — all within ±6 min; RMS 4.2 min.
+        # Serves as reference for Saunton Sands, Westward Ho!, Bideford Bay.
+        # M4 moderate: Bristol Channel has resonance but Ilfracombe is near entrance.
+        "constituents": {
+            "Z0": 4.575,
+            "M2":  {"amp": 2.625, "phase": 159.0},
+            "S2":  {"amp": 1.025, "phase": 187.0},
+            "N2":  {"amp": 0.499, "phase": 136.0},
+            "K2":  {"amp": 0.277, "phase": 187.0},
+            "K1":  {"amp": 0.10,  "phase": 337.0},
+            "O1":  {"amp": 0.07,  "phase": 290.0},
+            "M4":  {"amp": 0.06,  "phase": 200.0},
+        },
+    },
 ]
 
 
