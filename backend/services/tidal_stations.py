@@ -218,14 +218,17 @@ STATIONS: list[dict] = [
         "lat": 50.24,
         "lon": -3.78,
         # Admiralty: MHWS 5.0, MHWN 3.8, MLWN 1.9, MLWS 0.7
-        # [computed] HW at 03:26 UTC and 16:05 UTC on 2026-05-14 → g=140°
+        # [computed] M2 phase recalibrated against tidetimes.org.uk 2026-06-29 (BST→UTC):
+        #   LW 23:14, HW 05:19, LW 11:28, HW 17:46, LW 23:54 — all within ±6 min; RMS 3.8 min.
+        # Previous g=140° was 40-60 min early. M4 captures Kingsbridge estuary ebb asymmetry.
         "constituents": {
             "Z0": 2.85,
-            "M2":  {"amp": 1.55, "phase": 140.0},
+            "M2":  {"amp": 1.55, "phase": 169.0},
             "S2":  {"amp": 0.60, "phase": 162.0},
             "N2":  {"amp": 0.29, "phase": 117.0},
             "K1":  {"amp": 0.08, "phase": 255.0},
             "O1":  {"amp": 0.05, "phase": 260.0},
+            "M4":  {"amp": 0.07, "phase": 175.0},
         },
     },
     {
