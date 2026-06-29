@@ -259,6 +259,27 @@ STATIONS: list[dict] = [
         },
     },
     {
+        "name": "Weston-super-Mare",
+        "lat": 51.35,
+        "lon": -2.97,
+        # Admiralty: MHWS 12.3, MHWN 9.1, MLWN 3.6, MLWS 0.9  (second largest range in world)
+        # Z0 = (12.3+9.1+3.6+0.9)/4 = 6.725m
+        # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
+        #   LW 00:32, HW 07:04, LW 12:53, HW 19:24 — RMS 7.0 min (errs +8,+1,+7,-9).
+        # Serves Weston-super-Mare and Brean Sands guide pages.
+        "constituents": {
+            "Z0": 6.725,
+            "M2":  {"amp": 4.225, "phase": 174.0},
+            "S2":  {"amp": 1.475, "phase": 220.0},
+            "N2":  {"amp": 0.803, "phase": 151.0},
+            "K2":  {"amp": 0.398, "phase": 220.0},
+            "K1":  {"amp": 0.120, "phase": 334.0},
+            "O1":  {"amp": 0.080, "phase": 308.0},
+            "M4":  {"amp": 0.300, "phase": 190.0},
+        },
+    },
+    {
         "name": "Ilfracombe",
         "lat": 51.21,
         "lon": -4.12,
