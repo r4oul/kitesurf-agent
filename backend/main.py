@@ -54,3 +54,8 @@ app.include_router(admin_router)
 @app.get("/")
 def root():
     return {"status": "ok", "message": "South Coast Kitesurf Agent API"}
+
+
+@app.get("/healthz", include_in_schema=False)
+def healthz():
+    return {"status": "ok"}
