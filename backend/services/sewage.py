@@ -14,7 +14,9 @@ SEARCH_RADIUS_M       = 8000  # find monitors within 8km (for coverage + nearest
 FLAG_RADIUS_ACTIVE_M  = 8000  # raise 'discharging' alert for active (status=1) within 8km
 FLAG_RADIUS_RECENT_M  = 2000  # raise 'recent_spill' alert for stopped (status=0) within 2km only
 BBOX_DEG = 0.08               # ~8km bounding box half-width (fetched from ArcGIS)
-RECENT_HOURS = 48
+RECENT_HOURS = 12             # window for stopped spills (< MAJOR_SPILL_DURATION_H)
+MAJOR_SPILL_HOURS = 48        # extended window for significant events
+MAJOR_SPILL_DURATION_H = 4    # threshold: ≥4h continuous discharge = major
 
 # Per-location cache keyed by (company, rounded_lat, rounded_lon)
 _cache: dict = {}
@@ -137,7 +139,12 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
             ref_ts = event_end if event_end else event_start
             if ref_ts:
                 ref_dt = datetime.fromtimestamp(ref_ts / 1000, tz=timezone.utc)
-                if (now - ref_dt) < timedelta(hours=RECENT_HOURS):
+                duration_h = 0
+                if event_start and event_end:
+                    start_dt = datetime.fromtimestamp(event_start / 1000, tz=timezone.utc)
+                    duration_h = (ref_dt - start_dt).total_seconds() / 3600
+                window = MAJOR_SPILL_HOURS if duration_h >= MAJOR_SPILL_DURATION_H else RECENT_HOURS
+                if (now - ref_dt) < timedelta(hours=window):
                     recent_spill = True
                     if event_end:
                         discharge_ended = ref_dt.isoformat()

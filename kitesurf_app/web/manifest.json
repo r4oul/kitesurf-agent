@@ -1,11 +1,11 @@
 {
-    "name": "kitesurf_app",
-    "short_name": "kitesurf_app",
+    "name": "South West Kitesurf",
+    "short_name": "SW Kitesurf",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Developed by Kitesurfers for Kitesurfers. Live wind, tide and sewage forecasts for 27 beaches across the South West.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
