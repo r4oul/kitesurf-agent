@@ -186,17 +186,27 @@
     var windUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon
       + '&hourly=windspeed_10m,winddirection_10m,windgusts_10m'
       + '&windspeed_unit=kn&forecast_days=1&timezone=auto';
-    var tidesUrl = API + '/forecast/tides/location?lat=' + lat + '&lon=' + lon;
+    var guideUrl = API + '/forecast/guide/location?lat=' + lat + '&lon=' + lon;
     var marineUrl = 'https://marine-api.open-meteo.com/v1/marine?latitude=' + lat + '&longitude=' + lon
       + '&hourly=wave_height,wave_direction,wave_period,sea_surface_temperature&timezone=UTC&forecast_days=2';
 
     Promise.all([
       fetch(windUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
-      fetch(tidesUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
+      fetch(guideUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
       fetch(marineUrl).then(function (r) { return r.json(); }).catch(function () { return null; }),
     ]).then(function (res) {
       try {
       var wData = res[0], tData = res[1], mData = res[2];
+
+      // Render water quality widget if present on this page
+      var wqEl = document.getElementById('wq-live');
+      if (wqEl && tData) {
+        var s = tData.sewage_status;
+        if (s === 'clear')          wqEl.innerHTML = '<span style="color:#48c78e;font-weight:600;">&#128167; Water quality: clear</span>';
+        else if (s === 'recent_spill') wqEl.innerHTML = '<span style="color:#f5a623;font-weight:600;">&#9888;&#65039; Recent sewage spill</span>';
+        else if (s === 'discharging')  wqEl.innerHTML = '<span style="color:#fc8181;font-weight:600;">&#128683; Active sewage discharge</span>';
+        else wqEl.style.display = 'none';
+      }
 
       var now = new Date();
       var hStr = now.toISOString().slice(0, 13);

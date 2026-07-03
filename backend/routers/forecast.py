@@ -29,6 +29,16 @@ async def tides_by_location(lat: float = Query(...), lon: float = Query(...)):
     return {"tide_extremes": tides["extremes"][:28]}
 
 
+@router.get("/guide/location")
+async def guide_by_location(lat: float = Query(...), lon: float = Query(...)):
+    """Combined tides + sewage in one call — halves Railway round trips from guide pages."""
+    tides, sewage = await asyncio.gather(
+        get_tides(lat, lon),
+        get_sewage_status(lat, lon),
+    )
+    return {"tide_extremes": tides["extremes"][:28], **sewage}
+
+
 @router.get("/sewage")
 async def all_sewage(db: Session = Depends(get_db)):
     """Return sewage status for all beaches in a single parallel request."""

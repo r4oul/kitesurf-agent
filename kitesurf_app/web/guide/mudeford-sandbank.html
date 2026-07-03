@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://web-production-7cfa1.up.railway.app">
+    <link rel="preconnect" href="https://api.open-meteo.com">
+    <link rel="preconnect" href="https://marine-api.open-meteo.com">
     <title>Kitesurfing at Mudeford Sandbank | South West Kitesurf Guide</title>
     <meta name="description" content="Guide to kitesurfing at Mudeford Sandbank, Dorset. Wind directions, tide conditions, hazards and local tips. Live water quality and sewage alerts. Check live forecasts.">
     <link rel="canonical" href="https://southwestkitesurf.co.uk/guide/mudeford-sandbank">
@@ -224,22 +227,6 @@
     </div>
 </div>
 
-<script>
-(function(){
-  var el=document.getElementById('wq-live');
-  if(!el)return;
-  fetch('https://web-production-7cfa1.up.railway.app/forecast/sewage/location?lat=50.722&lon=-1.739')
-    .then(function(r){return r.json();})
-    .then(function(d){
-      var s=d.sewage_status;
-      if(s==='clear')          el.innerHTML='<span style="color:#48c78e;font-weight:600;">&#128167; Water quality: clear</span>';
-      else if(s==='recent_spill') el.innerHTML='<span style="color:#f5a623;font-weight:600;">&#9888;&#65039; Recent sewage spill</span>';
-      else if(s==='discharging')  el.innerHTML='<span style="color:#fc8181;font-weight:600;">&#128683; Active sewage discharge</span>';
-      else el.style.display='none';
-    })
-    .catch(function(){el.style.display='none';});
-})();
-</script>
 
 <script src="/guide/live-report.js"></script>
 <script>initLiveReport(50.722, -1.739);</script>

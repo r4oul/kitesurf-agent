@@ -9,7 +9,7 @@ ENDPOINTS = {
     "wessex": "https://services.arcgis.com/3SZ6e0uCvPROr4mS/arcgis/rest/services/Wessex_Water_Storm_Overflow_Activity/FeatureServer/0/query",
 }
 
-CACHE_TTL_MINUTES = 5
+CACHE_TTL_MINUTES = 30
 SEARCH_RADIUS_M       = 8000  # find monitors within 8km (for coverage + nearest_overflow_m)
 FLAG_RADIUS_ACTIVE_M  = 8000  # raise 'discharging' alert for active (status=1) within 8km
 FLAG_RADIUS_RECENT_M  = 2000  # raise 'recent_spill' alert for stopped (status=0) within 2km only
