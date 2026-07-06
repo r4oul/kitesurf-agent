@@ -174,19 +174,19 @@ STATIONS: list[dict] = [
         "lat": 50.62,
         "lon": -3.42,
         # Admiralty: MHWS 4.4, MHWN 3.3, MLWN 1.5, MLWS 0.5
-        # Phases calibrated against tidetimes.org.uk 2026-06-28 (BST→UTC):
-        #   HW 05:14, LW 11:00, HW 17:38, LW 23:32 UTC
-        # M2=171°, M4 amp=0.09m / phase=153° captures Exe flood asymmetry.
-        # All 4 extremes within ±14 min; RMS 15.7 min.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-28 + 2026-07-06:
+        #   Jun28: HW 05:14, LW 11:00, HW 17:38, LW 23:32 UTC
+        #   Jul06: LW 04:00, LW 16:10 UTC
+        # M2=169°, M4=0.07m/157°; RMS 8.4 min across 6 observations.
         "constituents": {
             "Z0": 2.43,
-            "M2":  {"amp": 1.43, "phase": 171.0},
+            "M2":  {"amp": 1.43, "phase": 169.0},
             "S2":  {"amp": 0.53, "phase": 200.0},
             "N2":  {"amp": 0.27, "phase": 156.0},
             "K2":  {"amp": 0.14, "phase": 200.0},
             "K1":  {"amp": 0.08, "phase": 262.0},
             "O1":  {"amp": 0.05, "phase": 267.0},
-            "M4":  {"amp": 0.09, "phase": 153.0},
+            "M4":  {"amp": 0.07, "phase": 157.0},
         },
     },
     {
