@@ -2,7 +2,7 @@ import httpx
 from datetime import datetime, timezone, timedelta
 
 MARINE_URL = "https://marine-api.open-meteo.com/v1/marine"
-CACHE_TTL_MINUTES = 60
+CACHE_TTL_MINUTES = 360  # 6h — sea temp/swell change slowly; avoids mass-expiry stampede
 
 _cache: dict = {}
 
@@ -23,10 +23,12 @@ def _degrees_to_compass(degrees: float) -> str:
 
 async def get_marine(lat: float, lon: float) -> dict:
     key = _cache_key(lat, lon)
+    stale = None
     if key in _cache:
         fetched_at, data = _cache[key]
         if _is_fresh(fetched_at):
             return data
+        stale = data  # keep stale value as fallback
 
     params = {
         "latitude": lat,
@@ -40,11 +42,11 @@ async def get_marine(lat: float, lon: float) -> dict:
         async with httpx.AsyncClient(timeout=15.0) as client:
             response = await client.get(MARINE_URL, params=params)
             if response.status_code != 200:
-                return {}
+                return stale or {}
             data = response.json()
     except Exception as e:
         print(f"Marine API error: {e}")
-        return {}
+        return stale or {}
 
     hourly = data.get("hourly", {})
     times      = hourly.get("time", [])
@@ -54,7 +56,7 @@ async def get_marine(lat: float, lon: float) -> dict:
     temps      = hourly.get("sea_surface_temperature", [])
 
     if not times:
-        return {}
+        return stale or {}
 
     now_prefix = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H")
     idx = next((i for i, t in enumerate(times) if t.startswith(now_prefix)), None)
