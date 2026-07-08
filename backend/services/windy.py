@@ -1,3 +1,4 @@
+import asyncio
 import httpx
 import math
 from datetime import datetime, timezone, timedelta
@@ -6,7 +7,7 @@ OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 METNO_URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact"
 METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agent"}
 
-CACHE_TTL_MINUTES = 30
+CACHE_TTL_MINUTES = 60
 
 MODELS = [
     ("ukmo_seamless", "UK Met Office"),
@@ -60,7 +61,7 @@ async def _fetch_model(lat: float, lon: float, model: str) -> tuple[list, bool]:
         "models": model,
     }
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=6.0) as client:
             response = await client.get(OPEN_METEO_URL, params=params)
             if response.status_code != 200:
                 print(f"Open-Meteo {model} error {response.status_code}: {response.text[:200]}")
@@ -105,7 +106,7 @@ async def _fetch_model(lat: float, lon: float, model: str) -> tuple[list, bool]:
 async def _fetch_metno(lat: float, lon: float) -> tuple[list, bool]:
     """Fetch from Met.no Locationforecast 2.0. Returns (forecasts, success)."""
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=6.0) as client:
             response = await client.get(
                 METNO_URL,
                 params={"lat": round(lat, 4), "lon": round(lon, 4)},
@@ -169,25 +170,24 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             wind_model_label = label
             return forecasts
 
-    # Try Open-Meteo models in order, skipping any that are circuit-broken
-    forecasts, label = [], MODELS[0][1]
-    for model, model_label in MODELS:
-        if not _model_available(model):
-            continue
-        forecasts, ok = await _fetch_model(lat, lon, model)
-        if ok:
-            label = model_label
-            break
-        else:
-            _model_failures[model] = datetime.now(timezone.utc)
+    # Try all available Open-Meteo models in parallel; pick highest-priority success.
+    # Previously sequential (30s timeout each = up to 120s worst case), now parallel
+    # so all three fire at once and we pick the best that came back clean.
+    available = [(m, l) for m, l in MODELS if _model_available(m)]
+    if available:
+        model_results = await asyncio.gather(*[_fetch_model(lat, lon, m) for m, _ in available])
+        for (model, label), (forecasts, ok) in zip(available, model_results):
+            if ok and forecasts:
+                _cache[key] = (datetime.now(timezone.utc), forecasts, label)
+                wind_model_label = label
+                return forecasts
+            else:
+                _model_failures[model] = datetime.now(timezone.utc)
 
     # Fall back to Met.no if all Open-Meteo models failed
-    if not forecasts:
-        forecasts, ok = await _fetch_metno(lat, lon)
-        label = METNO_LABEL
-
+    forecasts, ok = await _fetch_metno(lat, lon)
+    label = METNO_LABEL
     if forecasts:
         _cache[key] = (datetime.now(timezone.utc), forecasts, label)
-
     wind_model_label = label
     return forecasts

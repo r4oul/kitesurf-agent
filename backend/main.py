@@ -15,23 +15,27 @@ from admin.router import router as admin_router
 from backend.database import SessionLocal
 from backend.models.beach import Beach
 from backend.services.marine import get_marine
+from backend.services.windy import get_wind_forecast
 
 
-async def _warm_marine_cache():
-    """Pre-fetch marine data for all beaches so cold-start doesn't serve blank chips."""
+async def _warm_caches():
+    """Pre-fetch wind and marine data for all beaches so cold-start doesn't serve slow responses."""
     try:
         db = SessionLocal()
         all_beaches = db.query(Beach).all()
         db.close()
-        await asyncio.gather(*[get_marine(b.latitude, b.longitude) for b in all_beaches])
-        print(f"Marine cache warmed for {len(all_beaches)} beaches.")
+        await asyncio.gather(
+            *[get_wind_forecast(b.latitude, b.longitude) for b in all_beaches],
+            *[get_marine(b.latitude, b.longitude) for b in all_beaches],
+        )
+        print(f"Wind + marine caches warmed for {len(all_beaches)} beaches.")
     except Exception as e:
-        print(f"Marine cache warm-up failed (non-fatal): {e}")
+        print(f"Cache warm-up failed (non-fatal): {e}")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    asyncio.create_task(_warm_marine_cache())
+    asyncio.create_task(_warm_caches())
     yield
 
 
