@@ -101,22 +101,23 @@ async def get_recommendations(
         reference = beaches[len(beaches) // 2]
         ref_lat, ref_lon = reference.latitude, reference.longitude
 
-    # Fetch reference conditions + per-beach wind + per-beach tide — all in parallel.
-    # Tide is local harmonic computation (free). Wind is cached per location.
+    # Fetch everything in one parallel gather — wind, tides, marine, and sewage together.
+    n = len(beaches)
     all_results = await asyncio.gather(
-        get_wind_forecast(ref_lat, ref_lon),                          # ref conditions card
-        get_tides(ref_lat, ref_lon),                                  # ref conditions card
+        get_wind_forecast(ref_lat, ref_lon),                                                    # ref conditions card
+        get_tides(ref_lat, ref_lon),                                                            # ref conditions card
         *[get_wind_forecast(b.latitude, b.longitude) for b in beaches],
         *[get_tides(b.latitude, b.longitude, constituents=b.tide_constituents) for b in beaches],
         *[get_marine(b.latitude, b.longitude) for b in beaches],
+        *[get_sewage_status(b.latitude, b.longitude) for b in beaches],
     )
 
-    ref_wind_data = all_results[0]
-    ref_tide_data = all_results[1]
-    n = len(beaches)
-    beach_wind_data  = all_results[2:2 + n]
-    beach_tide_data  = all_results[2 + n:2 + 2 * n]
-    beach_marine_data = all_results[2 + 2 * n:]
+    ref_wind_data     = all_results[0]
+    ref_tide_data     = all_results[1]
+    beach_wind_data   = all_results[2:2 + n]
+    beach_tide_data   = all_results[2 + n:2 + 2 * n]
+    beach_marine_data = all_results[2 + 2 * n:2 + 3 * n]
+    beach_sewage_data = all_results[2 + 3 * n:]
 
     if not ref_wind_data:
         return {"error": "Could not fetch wind forecast"}
@@ -130,7 +131,9 @@ async def get_recommendations(
 
     # Score each beach against its own local wind and tide
     recommendations = []
-    for beach, wind_data, tide_data, marine_data in zip(beaches, beach_wind_data, beach_tide_data, beach_marine_data):
+    for beach, wind_data, tide_data, marine_data, sewage_data in zip(
+        beaches, beach_wind_data, beach_tide_data, beach_marine_data, beach_sewage_data
+    ):
         if not wind_data:
             continue
         current_wind = wind_data[0]
@@ -146,16 +149,10 @@ async def get_recommendations(
             rider_level=rider_level,
         )
         rec.update(marine_data)
+        rec.update(sewage_data)
         recommendations.append(rec)
 
     recommendations.sort(key=lambda x: x["score"], reverse=True)
-
-    # Fetch sewage status for all beaches in parallel
-    sewage_results = await asyncio.gather(
-        *[get_sewage_status(r["latitude"], r["longitude"]) for r in recommendations]
-    )
-    for rec, sewage in zip(recommendations, sewage_results):
-        rec.update(sewage)
 
     return {
         "conditions": {
