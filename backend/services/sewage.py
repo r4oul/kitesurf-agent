@@ -11,7 +11,7 @@ ENDPOINTS = {
 
 CACHE_TTL_MINUTES = 30
 SEARCH_RADIUS_M       = 8000  # find monitors within 8km (for coverage + nearest_overflow_m)
-FLAG_RADIUS_ACTIVE_M  = 8000  # raise 'discharging' alert for active (status=1) within 8km
+FLAG_RADIUS_ACTIVE_M  = 3000  # raise 'discharging' alert for active (status=1) within 3km
 FLAG_RADIUS_RECENT_M  = 2000  # raise 'recent_spill' alert for stopped (status=0) within 2km only
 BBOX_DEG = 0.08               # ~8km bounding box half-width (fetched from ArcGIS)
 RECENT_HOURS = 12             # window for stopped spills (< MAJOR_SPILL_DURATION_H)
@@ -94,8 +94,7 @@ async def get_sewage_status(lat: float, lon: float) -> dict:
 
     Three-tier radius system:
     - SEARCH_RADIUS_M (8km): finds monitors to confirm coverage exists.
-    - FLAG_RADIUS_ACTIVE_M (8km): raises 'discharging' for any status=1 within 8km.
-      Active discharges affect water quality over a wide area via tidal/river flow.
+    - FLAG_RADIUS_ACTIVE_M (3km): raises 'discharging' for any status=1 within 3km.
     - FLAG_RADIUS_RECENT_M (2km): raises 'recent_spill' for stopped status=0 within 2km only.
       Tight radius avoids false positives from inland streams 2-5km away.
     - 'clear'   = monitors found within 8km, none flagged.
