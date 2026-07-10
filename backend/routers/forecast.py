@@ -136,6 +136,8 @@ async def get_recommendations(
     ):
         if not wind_data:
             continue
+        if rider_level not in (beach.rider_levels or []):
+            continue
         current_wind = wind_data[0]
         h_entry = next((h for h in tide_data["heights"] if h["time"].startswith(now_hour)), None)
         height = h_entry["height_m"] if h_entry else 1.5
