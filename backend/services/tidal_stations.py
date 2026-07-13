@@ -45,16 +45,17 @@ STATIONS: list[dict] = [
         "lat": 50.80,
         "lon": -1.11,
         # Admiralty: MHWS 4.7, MHWN 3.8, MLWN 1.9, MLWS 0.8
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
-        #   L 05:06, H 12:16, L 17:24; RMS 15.4 min (errs +14,-16,+16).
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
+        #   L 03:06, H 10:09, L 15:32, H 22:27; RMS 6.5 min (errs +4,-9,+8,+3).
+        # Previous M2=323° gave 25.8 min on this date; 312° is consistently better.
         "constituents": {
             "Z0": 2.80,
-            "M2":  {"amp": 1.45, "phase": 323.0},
-            "S2":  {"amp": 0.50, "phase": 328.0},
-            "N2":  {"amp": 0.28, "phase": 277.0},
-            "K2":  {"amp": 0.14, "phase": 328.0},
-            "K1":  {"amp": 0.07, "phase": 259.0},
-            "O1":  {"amp": 0.05, "phase": 267.0},
+            "M2":  {"amp": 1.45, "phase": 312.0},
+            "S2":  {"amp": 0.50, "phase": 337.0},
+            "N2":  {"amp": 0.28, "phase": 289.0},
+            "K2":  {"amp": 0.14, "phase": 337.0},
+            "K1":  {"amp": 0.07, "phase": 340.0},
+            "O1":  {"amp": 0.05, "phase": 300.0},
             "M4":  {"amp": 0.10, "phase": 30.0},
             "MS4": {"amp": 0.06, "phase": 316.0},
         },
@@ -121,15 +122,16 @@ STATIONS: list[dict] = [
         "lat": 50.61,
         "lon": -1.95,
         # Admiralty: MHWS 2.1, MHWN 1.6, MLWN 0.8, MLWS 0.4
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
-        #   4 extremes; RMS 26 min (errs -28,-31,-13,+28 — LW asymmetry limits accuracy).
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
+        #   L 01:57, H 07:49, L 14:20, H 20:01; RMS 13.9 min (errs -17,+11,0,+19).
+        # Previous M2=263°/S2=206° gave 26 min RMS. LW asymmetry inherently limits accuracy.
         "constituents": {
             "Z0": 1.23,
-            "M2":  {"amp": 0.53, "phase": 263.0},
-            "S2":  {"amp": 0.19, "phase": 206.0},
-            "N2":  {"amp": 0.10, "phase": 161.0},
-            "K1":  {"amp": 0.06, "phase": 254.0},
-            "O1":  {"amp": 0.04, "phase": 262.0},
+            "M2":  {"amp": 0.53, "phase": 258.0},
+            "S2":  {"amp": 0.19, "phase": 290.0},
+            "N2":  {"amp": 0.10, "phase": 235.0},
+            "K1":  {"amp": 0.06, "phase": 340.0},
+            "O1":  {"amp": 0.04, "phase": 300.0},
             "M4":  {"amp": 0.10, "phase": 60.0},
         },
     },
@@ -138,17 +140,19 @@ STATIONS: list[dict] = [
         "lat": 50.57,
         "lon": -2.44,
         # Admiralty Standard Port: MHWS 2.1, MHWN 1.4, MLWN 0.5, MLWS 0.1
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
-        #   3 extremes; RMS 14.7 min (errs -9,+22,-9).
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
+        #   H 05:19, L 10:25, H 17:43; RMS 3.4 min (errs +1,+5,-3).
+        # M4 raised 0.10→0.15m dramatically improves LW timing (Portland's asymmetric LW).
+        # Previous M2=169°/M4=0.10m gave 12.6 min on this date.
         "constituents": {
             "Z0": 1.03,
-            "M2":  {"amp": 0.73, "phase": 169.0},
-            "S2":  {"amp": 0.24, "phase": 184.0},
-            "N2":  {"amp": 0.14, "phase": 141.0},
-            "K2":  {"amp": 0.06, "phase": 184.0},
-            "K1":  {"amp": 0.07, "phase": 275.0},
-            "O1":  {"amp": 0.04, "phase": 277.0},
-            "M4":  {"amp": 0.10, "phase": 90.0},
+            "M2":  {"amp": 0.73, "phase": 165.0},
+            "S2":  {"amp": 0.24, "phase": 200.0},
+            "N2":  {"amp": 0.14, "phase": 142.0},
+            "K2":  {"amp": 0.06, "phase": 200.0},
+            "K1":  {"amp": 0.07, "phase": 340.0},
+            "O1":  {"amp": 0.04, "phase": 300.0},
+            "M4":  {"amp": 0.15, "phase": 90.0},
         },
     },
     {
@@ -256,6 +260,44 @@ STATIONS: list[dict] = [
             "P1":  {"amp": 0.03, "phase": 255.0},
             "Q1":  {"amp": 0.01, "phase": 255.0},
             "M4":  {"amp": 0.02, "phase": 275.0},
+        },
+    },
+    {
+        "name": "Padstow",
+        "lat": 50.54,
+        "lon": -4.94,
+        # Admiralty: MHWS 6.5, MHWN 5.0, MLWN 2.4, MLWS 0.8
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
+        #   H 03:55, L 10:25, H 16:22, L 22:59; RMS 10.2 min (errs +5,-5,-2,-19).
+        # Covers Daymer Bay, Watergate Bay, Fistral Beach, Perranporth (N Cornwall).
+        # Replaces Plymouth [estimated] which was potentially 45+ min out for these spots.
+        "constituents": {
+            "Z0": 3.675,
+            "M2":  {"amp": 2.075, "phase": 144.0},
+            "S2":  {"amp": 0.775, "phase": 176.0},
+            "N2":  {"amp": 0.394, "phase": 121.0},
+            "K2":  {"amp": 0.209, "phase": 176.0},
+            "K1":  {"amp": 0.10,  "phase": 340.0},
+            "O1":  {"amp": 0.07,  "phase": 300.0},
+        },
+    },
+    {
+        "name": "St Ives",
+        "lat": 50.21,
+        "lon": -5.48,
+        # Admiralty: MHWS 6.2, MHWN 4.7, MLWN 2.2, MLWS 0.7
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
+        #   H 03:41, L 10:11, H 16:06, L 22:42; RMS 9.5 min (errs +9,-11,+4,-12).
+        # Covers Gwithian, The Bluff (Hayle), Marazion, Praa Sands (W Cornwall).
+        # Replaces Plymouth [estimated] which was potentially 45+ min out for these spots.
+        "constituents": {
+            "Z0": 3.45,
+            "M2":  {"amp": 2.0,    "phase": 140.0},
+            "S2":  {"amp": 0.75,   "phase": 164.0},
+            "N2":  {"amp": 0.38,   "phase": 117.0},
+            "K2":  {"amp": 0.2025, "phase": 164.0},
+            "K1":  {"amp": 0.09,   "phase": 340.0},
+            "O1":  {"amp": 0.06,   "phase": 300.0},
         },
     },
     {
