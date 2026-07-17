@@ -178,19 +178,19 @@ STATIONS: list[dict] = [
         "lat": 50.62,
         "lon": -3.42,
         # Admiralty: MHWS 4.4, MHWN 3.3, MLWN 1.5, MLWS 0.5
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-28 + 2026-07-06:
-        #   Jun28: HW 05:14, LW 11:00, HW 17:38, LW 23:32 UTC
-        #   Jul06: LW 04:00, LW 16:10 UTC
-        # M2=169°, M4=0.07m/157°; RMS 8.4 min across 6 observations.
+        # Original grid-search phases were 72 min early vs observed (2026-07-17: predicted
+        # 07:50 UTC vs actual 09:02 UTC). Each phase corrected by +speed*1.2h to shift
+        # all predictions later by 72 min: M2+34.8°, S2+36°, N2+34.1°, K2+36.1°,
+        # K1+18.1°, O1+16.7°, M4+69.6°.
         "constituents": {
             "Z0": 2.43,
-            "M2":  {"amp": 1.43, "phase": 169.0},
-            "S2":  {"amp": 0.53, "phase": 200.0},
-            "N2":  {"amp": 0.27, "phase": 156.0},
-            "K2":  {"amp": 0.14, "phase": 200.0},
-            "K1":  {"amp": 0.08, "phase": 262.0},
-            "O1":  {"amp": 0.05, "phase": 267.0},
-            "M4":  {"amp": 0.07, "phase": 157.0},
+            "M2":  {"amp": 1.43, "phase": 203.8},
+            "S2":  {"amp": 0.53, "phase": 236.0},
+            "N2":  {"amp": 0.27, "phase": 190.1},
+            "K2":  {"amp": 0.14, "phase": 236.1},
+            "K1":  {"amp": 0.08, "phase": 280.1},
+            "O1":  {"amp": 0.05, "phase": 283.7},
+            "M4":  {"amp": 0.07, "phase": 226.6},
         },
     },
     {
