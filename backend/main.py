@@ -19,15 +19,22 @@ from backend.services.windy import get_wind_forecast
 
 
 async def _warm_caches():
-    """Pre-fetch wind and marine data for all beaches so cold-start doesn't serve slow responses."""
+    """Pre-fetch wind and marine data in small batches to avoid Open-Meteo 429 rate limits."""
     try:
         db = SessionLocal()
         all_beaches = db.query(Beach).all()
         db.close()
-        await asyncio.gather(
-            *[get_wind_forecast(b.latitude, b.longitude) for b in all_beaches],
-            *[get_marine(b.latitude, b.longitude) for b in all_beaches],
-        )
+
+        batch_size = 5
+        for i in range(0, len(all_beaches), batch_size):
+            batch = all_beaches[i:i + batch_size]
+            await asyncio.gather(
+                *[get_wind_forecast(b.latitude, b.longitude) for b in batch],
+                *[get_marine(b.latitude, b.longitude) for b in batch],
+            )
+            if i + batch_size < len(all_beaches):
+                await asyncio.sleep(1)
+
         print(f"Wind + marine caches warmed for {len(all_beaches)} beaches.")
     except Exception as e:
         print(f"Cache warm-up failed (non-fatal): {e}")
