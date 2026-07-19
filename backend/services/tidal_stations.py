@@ -45,19 +45,20 @@ STATIONS: list[dict] = [
         "lat": 50.80,
         "lon": -1.11,
         # Admiralty: MHWS 4.7, MHWN 3.8, MLWN 1.9, MLWS 0.8
-        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
-        #   L 03:06, H 10:09, L 15:32, H 22:27; RMS 6.5 min (errs +4,-9,+8,+3).
-        # Previous M2=323° gave 25.8 min on this date; 312° is consistently better.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC.
+        # Phases shifted +44 min (2026-07-19: predicted 02:50 BST vs actual 03:34 BST).
+        # +44 min → M2+21.3°, S2+22.0°, N2+20.9°, K2+22.1°, K1+11.0°, O1+10.2°,
+        # M4+42.5°, MS4+43.3°.
         "constituents": {
             "Z0": 2.80,
-            "M2":  {"amp": 1.45, "phase": 312.0},
-            "S2":  {"amp": 0.50, "phase": 337.0},
-            "N2":  {"amp": 0.28, "phase": 289.0},
-            "K2":  {"amp": 0.14, "phase": 337.0},
-            "K1":  {"amp": 0.07, "phase": 340.0},
-            "O1":  {"amp": 0.05, "phase": 300.0},
-            "M4":  {"amp": 0.10, "phase": 30.0},
-            "MS4": {"amp": 0.06, "phase": 316.0},
+            "M2":  {"amp": 1.45, "phase": 333.3},
+            "S2":  {"amp": 0.50, "phase": 359.0},
+            "N2":  {"amp": 0.28, "phase": 309.9},
+            "K2":  {"amp": 0.14, "phase": 359.1},
+            "K1":  {"amp": 0.07, "phase": 351.0},
+            "O1":  {"amp": 0.05, "phase": 310.2},
+            "M4":  {"amp": 0.10, "phase": 72.5},
+            "MS4": {"amp": 0.06, "phase": 359.3},
         },
     },
     {
@@ -140,19 +141,18 @@ STATIONS: list[dict] = [
         "lat": 50.57,
         "lon": -2.44,
         # Admiralty Standard Port: MHWS 2.1, MHWN 1.4, MLWN 0.5, MLWS 0.1
-        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC:
-        #   H 05:19, L 10:25, H 17:43; RMS 3.4 min (errs +1,+5,-3).
-        # M4 raised 0.10→0.15m dramatically improves LW timing (Portland's asymmetric LW).
-        # Previous M2=169°/M4=0.10m gave 12.6 min on this date.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC.
+        # Phases shifted +30 min (2026-07-19: predicted 10:50 BST vs actual 11:20 BST).
+        # +30 min → M2+14.5°, S2+15.0°, N2+14.2°, K2+15.0°, K1+7.5°, O1+7.0°, M4+29.0°.
         "constituents": {
             "Z0": 1.03,
-            "M2":  {"amp": 0.73, "phase": 165.0},
-            "S2":  {"amp": 0.24, "phase": 200.0},
-            "N2":  {"amp": 0.14, "phase": 142.0},
-            "K2":  {"amp": 0.06, "phase": 200.0},
-            "K1":  {"amp": 0.07, "phase": 340.0},
-            "O1":  {"amp": 0.04, "phase": 300.0},
-            "M4":  {"amp": 0.15, "phase": 90.0},
+            "M2":  {"amp": 0.73, "phase": 179.5},
+            "S2":  {"amp": 0.24, "phase": 215.0},
+            "N2":  {"amp": 0.14, "phase": 156.2},
+            "K2":  {"amp": 0.06, "phase": 215.0},
+            "K1":  {"amp": 0.07, "phase": 347.5},
+            "O1":  {"amp": 0.04, "phase": 307.0},
+            "M4":  {"amp": 0.15, "phase": 119.0},
         },
     },
     {
@@ -160,17 +160,18 @@ STATIONS: list[dict] = [
         "lat": 50.72,
         "lon": -2.94,
         # Admiralty: MHWS 4.1, MHWN 2.9, MLWN 1.3, MLWS 0.5
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
-        #   4 extremes; RMS 8.4 min (errs -1,-13,+7,-8).
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
+        # Phases shifted +36 min (2026-07-19: predicted 10:20 BST vs actual 10:56 BST).
+        # +36 min → M2+17.4°, S2+18.0°, N2+17.1°, K2+18.0°, K1+9.0°, O1+8.4°, M4+34.8°.
         "constituents": {
             "Z0": 2.20,
-            "M2":  {"amp": 1.30, "phase": 170.0},
-            "S2":  {"amp": 0.50, "phase": 182.0},
-            "N2":  {"amp": 0.25, "phase": 138.0},
-            "K2":  {"amp": 0.14, "phase": 182.0},
-            "K1":  {"amp": 0.07, "phase": 268.0},
-            "O1":  {"amp": 0.05, "phase": 272.0},
-            "M4":  {"amp": 0.10, "phase": 120.0},
+            "M2":  {"amp": 1.30, "phase": 187.4},
+            "S2":  {"amp": 0.50, "phase": 200.0},
+            "N2":  {"amp": 0.25, "phase": 155.1},
+            "K2":  {"amp": 0.14, "phase": 200.1},
+            "K1":  {"amp": 0.07, "phase": 277.0},
+            "O1":  {"amp": 0.05, "phase": 280.4},
+            "M4":  {"amp": 0.10, "phase": 154.8},
         },
     },
     {
@@ -230,17 +231,17 @@ STATIONS: list[dict] = [
         "lat": 50.24,
         "lon": -3.78,
         # Admiralty: MHWS 5.0, MHWN 3.8, MLWN 1.9, MLWS 0.7
-        # [computed] M2 phase recalibrated against tidetimes.org.uk 2026-06-29 (BST→UTC):
-        #   LW 23:14, HW 05:19, LW 11:28, HW 17:46, LW 23:54 — all within ±6 min; RMS 3.8 min.
-        # Previous g=140° was 40-60 min early. M4 captures Kingsbridge estuary ebb asymmetry.
+        # [computed] M2 phase recalibrated against tidetimes.org.uk 2026-06-29 (BST→UTC).
+        # Phases shifted +38 min (2026-07-19: predicted 09:50 BST vs actual 10:28 BST).
+        # +38 min → M2+18.4°, S2+19.0°, N2+18.0°, K1+9.5°, O1+8.8°, M4+36.7°.
         "constituents": {
             "Z0": 2.85,
-            "M2":  {"amp": 1.55, "phase": 169.0},
-            "S2":  {"amp": 0.60, "phase": 162.0},
-            "N2":  {"amp": 0.29, "phase": 117.0},
-            "K1":  {"amp": 0.08, "phase": 255.0},
-            "O1":  {"amp": 0.05, "phase": 260.0},
-            "M4":  {"amp": 0.07, "phase": 175.0},
+            "M2":  {"amp": 1.55, "phase": 187.4},
+            "S2":  {"amp": 0.60, "phase": 181.0},
+            "N2":  {"amp": 0.29, "phase": 135.0},
+            "K1":  {"amp": 0.08, "phase": 264.5},
+            "O1":  {"amp": 0.05, "phase": 268.8},
+            "M4":  {"amp": 0.07, "phase": 211.7},
         },
     },
     {
@@ -307,18 +308,18 @@ STATIONS: list[dict] = [
         # Admiralty: MHWS 12.3, MHWN 9.1, MLWN 3.6, MLWS 0.9  (second largest range in world)
         # Z0 = (12.3+9.1+3.6+0.9)/4 = 6.725m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
-        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC:
-        #   LW 00:32, HW 07:04, LW 12:53, HW 19:24 — RMS 7.0 min (errs +8,+1,+7,-9).
-        # Serves Weston-super-Mare and Brean Sands guide pages.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
+        # Phases shifted +53 min (2026-07-19: predicted 10:20 BST vs actual 11:13 BST).
+        # +53 min → M2+25.6°, S2+26.5°, N2+25.1°, K2+26.6°, K1+13.3°, O1+12.3°, M4+51.2°.
         "constituents": {
             "Z0": 6.725,
-            "M2":  {"amp": 4.225, "phase": 174.0},
-            "S2":  {"amp": 1.475, "phase": 220.0},
-            "N2":  {"amp": 0.803, "phase": 151.0},
-            "K2":  {"amp": 0.398, "phase": 220.0},
-            "K1":  {"amp": 0.120, "phase": 334.0},
-            "O1":  {"amp": 0.080, "phase": 308.0},
-            "M4":  {"amp": 0.300, "phase": 190.0},
+            "M2":  {"amp": 4.225, "phase": 199.6},
+            "S2":  {"amp": 1.475, "phase": 246.5},
+            "N2":  {"amp": 0.803, "phase": 176.1},
+            "K2":  {"amp": 0.398, "phase": 246.6},
+            "K1":  {"amp": 0.120, "phase": 347.3},
+            "O1":  {"amp": 0.080, "phase": 320.3},
+            "M4":  {"amp": 0.300, "phase": 241.2},
         },
     },
     {
@@ -328,19 +329,18 @@ STATIONS: list[dict] = [
         # Admiralty: MHWS 8.3, MHWN 6.1, MLWN 2.9, MLWS 1.0
         # Z0 = (MHWS+MHWN+MLWN+MLWS)/4 = 4.575m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
-        # [computed] M2 phase grid-searched against tidetimes 2026-06-28 (BST→UTC):
-        #   HW 04:43, LW 10:47, HW 17:06 — all within ±6 min; RMS 4.2 min.
-        # Serves as reference for Saunton Sands, Westward Ho!, Bideford Bay.
-        # M4 moderate: Bristol Channel has resonance but Ilfracombe is near entrance.
+        # [computed] M2 phase grid-searched against tidetimes 2026-06-28 (BST→UTC).
+        # Phases shifted +33 min (2026-07-19: predicted 09:50 BST vs actual 10:23 BST).
+        # +33 min → M2+15.9°, S2+16.5°, N2+15.6°, K2+16.5°, K1+8.3°, O1+7.7°, M4+31.9°.
         "constituents": {
             "Z0": 4.575,
-            "M2":  {"amp": 2.625, "phase": 159.0},
-            "S2":  {"amp": 1.025, "phase": 187.0},
-            "N2":  {"amp": 0.499, "phase": 136.0},
-            "K2":  {"amp": 0.277, "phase": 187.0},
-            "K1":  {"amp": 0.10,  "phase": 337.0},
-            "O1":  {"amp": 0.07,  "phase": 290.0},
-            "M4":  {"amp": 0.06,  "phase": 200.0},
+            "M2":  {"amp": 2.625, "phase": 174.9},
+            "S2":  {"amp": 1.025, "phase": 203.5},
+            "N2":  {"amp": 0.499, "phase": 151.6},
+            "K2":  {"amp": 0.277, "phase": 203.5},
+            "K1":  {"amp": 0.10,  "phase": 345.3},
+            "O1":  {"amp": 0.07,  "phase": 297.7},
+            "M4":  {"amp": 0.06,  "phase": 231.9},
         },
     },
 ]

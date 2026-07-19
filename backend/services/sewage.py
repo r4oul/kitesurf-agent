@@ -76,16 +76,21 @@ async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
     }
     try:
         headers = {"User-Agent": "Mozilla/5.0 (compatible; SouthWestKitesurf/1.0; +https://southwestkitesurf.co.uk)"}
-        async with httpx.AsyncClient(timeout=10.0, headers=headers) as client:
+        async with httpx.AsyncClient(timeout=15.0, headers=headers) as client:
             resp = await client.get(ENDPOINTS[company], params=params)
             if resp.status_code != 200:
+                print(f"Sewage fetch HTTP {resp.status_code} ({company} near {lat},{lon}): {resp.text[:200]}")
                 return _cache.get(cache_key, (None, []))[1] or []
             data = resp.json()
+            if data.get("error"):
+                print(f"Sewage fetch ArcGIS error ({company} near {lat},{lon}): {data['error']}")
+                return _cache.get(cache_key, (None, []))[1] or []
         features = [f["attributes"] for f in data.get("features", [])]
+        print(f"Sewage fetch OK ({company} near {lat:.2f},{lon:.2f}): {len(features)} monitors")
         _cache[cache_key] = (now, features)
         return features
     except Exception as e:
-        print(f"Sewage fetch failed ({company} near {lat},{lon}): {e}")
+        print(f"Sewage fetch exception ({company} near {lat},{lon}): {type(e).__name__}: {e}")
         return _cache.get(cache_key, (None, []))[1] or []
 
 
