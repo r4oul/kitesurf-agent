@@ -141,18 +141,18 @@ STATIONS: list[dict] = [
         "lat": 50.57,
         "lon": -2.44,
         # Admiralty Standard Port: MHWS 2.1, MHWN 1.4, MLWN 0.5, MLWS 0.1
-        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC.
-        # Phases shifted +30 min (2026-07-19: predicted 10:50 BST vs actual 11:20 BST).
-        # +30 min → M2+14.5°, S2+15.0°, N2+14.2°, K2+15.0°, K1+7.5°, O1+7.0°, M4+29.0°.
+        # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC: RMS 3.4 min.
+        # Single-day +30 min correction (Jul 19) was reverted: oscillated to +62 min on Jul 21.
+        # Spring-neap S2 beat causes ±30 min natural oscillation — M2 phase is correct on average.
         "constituents": {
             "Z0": 1.03,
-            "M2":  {"amp": 0.73, "phase": 179.5},
-            "S2":  {"amp": 0.24, "phase": 215.0},
-            "N2":  {"amp": 0.14, "phase": 156.2},
-            "K2":  {"amp": 0.06, "phase": 215.0},
-            "K1":  {"amp": 0.07, "phase": 347.5},
-            "O1":  {"amp": 0.04, "phase": 307.0},
-            "M4":  {"amp": 0.15, "phase": 119.0},
+            "M2":  {"amp": 0.73, "phase": 165.0},
+            "S2":  {"amp": 0.24, "phase": 200.0},
+            "N2":  {"amp": 0.14, "phase": 142.0},
+            "K2":  {"amp": 0.06, "phase": 200.0},
+            "K1":  {"amp": 0.07, "phase": 340.0},
+            "O1":  {"amp": 0.04, "phase": 300.0},
+            "M4":  {"amp": 0.15, "phase": 90.0},
         },
     },
     {
@@ -161,17 +161,17 @@ STATIONS: list[dict] = [
         "lon": -2.94,
         # Admiralty: MHWS 4.1, MHWN 2.9, MLWN 1.3, MLWS 0.5
         # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
-        # Phases shifted +36 min (2026-07-19: predicted 10:20 BST vs actual 10:56 BST).
-        # +36 min → M2+17.4°, S2+18.0°, N2+17.1°, K2+18.0°, K1+9.0°, O1+8.4°, M4+34.8°.
+        # Single-day +36 min correction (Jul 19) was reverted: oscillated to +49 min on Jul 21.
+        # Spring-neap S2 beat causes ±35 min natural oscillation — M2 phase is correct on average.
         "constituents": {
             "Z0": 2.20,
-            "M2":  {"amp": 1.30, "phase": 187.4},
-            "S2":  {"amp": 0.50, "phase": 200.0},
-            "N2":  {"amp": 0.25, "phase": 155.1},
-            "K2":  {"amp": 0.14, "phase": 200.1},
-            "K1":  {"amp": 0.07, "phase": 277.0},
-            "O1":  {"amp": 0.05, "phase": 280.4},
-            "M4":  {"amp": 0.10, "phase": 154.8},
+            "M2":  {"amp": 1.30, "phase": 170.0},
+            "S2":  {"amp": 0.50, "phase": 182.0},
+            "N2":  {"amp": 0.25, "phase": 138.0},
+            "K2":  {"amp": 0.14, "phase": 182.0},
+            "K1":  {"amp": 0.07, "phase": 268.0},
+            "O1":  {"amp": 0.05, "phase": 272.0},
+            "M4":  {"amp": 0.10, "phase": 120.0},
         },
     },
     {
@@ -232,16 +232,16 @@ STATIONS: list[dict] = [
         "lon": -3.78,
         # Admiralty: MHWS 5.0, MHWN 3.8, MLWN 1.9, MLWS 0.7
         # [computed] M2 phase recalibrated against tidetimes.org.uk 2026-06-29 (BST→UTC).
-        # Phases shifted +38 min (2026-07-19: predicted 09:50 BST vs actual 10:28 BST).
-        # +38 min → M2+18.4°, S2+19.0°, N2+18.0°, K1+9.5°, O1+8.8°, M4+36.7°.
+        # Single-day +38 min correction (Jul 19) was reverted: oscillated to +85 min on Jul 21.
+        # Spring-neap S2 beat causes ±47 min natural oscillation — M2 phase is correct on average.
         "constituents": {
             "Z0": 2.85,
-            "M2":  {"amp": 1.55, "phase": 187.4},
-            "S2":  {"amp": 0.60, "phase": 181.0},
-            "N2":  {"amp": 0.29, "phase": 135.0},
-            "K1":  {"amp": 0.08, "phase": 264.5},
-            "O1":  {"amp": 0.05, "phase": 268.8},
-            "M4":  {"amp": 0.07, "phase": 211.7},
+            "M2":  {"amp": 1.55, "phase": 169.0},
+            "S2":  {"amp": 0.60, "phase": 162.0},
+            "N2":  {"amp": 0.29, "phase": 117.0},
+            "K1":  {"amp": 0.08, "phase": 255.0},
+            "O1":  {"amp": 0.05, "phase": 260.0},
+            "M4":  {"amp": 0.07, "phase": 175.0},
         },
     },
     {
@@ -309,17 +309,17 @@ STATIONS: list[dict] = [
         # Z0 = (12.3+9.1+3.6+0.9)/4 = 6.725m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
         # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
-        # Phases shifted +53 min (2026-07-19: predicted 10:20 BST vs actual 11:13 BST).
-        # +53 min → M2+25.6°, S2+26.5°, N2+25.1°, K2+26.6°, K1+13.3°, O1+12.3°, M4+51.2°.
+        # Two-point averaged correction: Jul 19 error -53 min, Jul 21 error -38 min → avg +45.5 min.
+        # +45.5 min → M2+22.0°, S2+22.8°, N2+21.6°, K2+22.8°, K1+11.4°, O1+10.6°, M4+44.0°.
         "constituents": {
             "Z0": 6.725,
-            "M2":  {"amp": 4.225, "phase": 199.6},
-            "S2":  {"amp": 1.475, "phase": 246.5},
-            "N2":  {"amp": 0.803, "phase": 176.1},
-            "K2":  {"amp": 0.398, "phase": 246.6},
-            "K1":  {"amp": 0.120, "phase": 347.3},
-            "O1":  {"amp": 0.080, "phase": 320.3},
-            "M4":  {"amp": 0.300, "phase": 241.2},
+            "M2":  {"amp": 4.225, "phase": 196.0},
+            "S2":  {"amp": 1.475, "phase": 242.8},
+            "N2":  {"amp": 0.803, "phase": 172.5},
+            "K2":  {"amp": 0.398, "phase": 242.8},
+            "K1":  {"amp": 0.120, "phase": 345.4},
+            "O1":  {"amp": 0.080, "phase": 318.6},
+            "M4":  {"amp": 0.300, "phase": 234.0},
         },
     },
     {
@@ -330,17 +330,17 @@ STATIONS: list[dict] = [
         # Z0 = (MHWS+MHWN+MLWN+MLWS)/4 = 4.575m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
         # [computed] M2 phase grid-searched against tidetimes 2026-06-28 (BST→UTC).
-        # Phases shifted +33 min (2026-07-19: predicted 09:50 BST vs actual 10:23 BST).
-        # +33 min → M2+15.9°, S2+16.5°, N2+15.6°, K2+16.5°, K1+8.3°, O1+7.7°, M4+31.9°.
+        # Two-point averaged correction: Jul 19 error -33 min, Jul 21 error -16 min → avg +24.5 min.
+        # +24.5 min → M2+11.8°, S2+12.3°, N2+11.6°, K2+12.3°, K1+6.1°, O1+5.7°, M4+23.7°.
         "constituents": {
             "Z0": 4.575,
-            "M2":  {"amp": 2.625, "phase": 174.9},
-            "S2":  {"amp": 1.025, "phase": 203.5},
-            "N2":  {"amp": 0.499, "phase": 151.6},
-            "K2":  {"amp": 0.277, "phase": 203.5},
-            "K1":  {"amp": 0.10,  "phase": 345.3},
-            "O1":  {"amp": 0.07,  "phase": 297.7},
-            "M4":  {"amp": 0.06,  "phase": 231.9},
+            "M2":  {"amp": 2.625, "phase": 170.8},
+            "S2":  {"amp": 1.025, "phase": 199.3},
+            "N2":  {"amp": 0.499, "phase": 147.6},
+            "K2":  {"amp": 0.277, "phase": 199.3},
+            "K1":  {"amp": 0.10,  "phase": 343.1},
+            "O1":  {"amp": 0.07,  "phase": 295.7},
+            "M4":  {"amp": 0.06,  "phase": 223.7},
         },
     },
 ]
