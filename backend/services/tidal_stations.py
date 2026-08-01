@@ -161,17 +161,18 @@ STATIONS: list[dict] = [
         "lon": -2.94,
         # Admiralty: MHWS 4.1, MHWN 2.9, MLWN 1.3, MLWS 0.5
         # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
-        # Single-day +36 min correction (Jul 19) was reverted: oscillated to +49 min on Jul 21.
-        # Spring-neap S2 beat causes ±35 min natural oscillation — M2 phase is correct on average.
+        # Three-point calibration (Jul-19 -36, Jul-21 back-calc +13, Aug-01 -51):
+        # midpoint systematic bias = -19 min → +19 min correction applied.
+        # Irreducible spring-neap S2 beat residual = ±32 min (BODC constants needed for fix).
         "constituents": {
             "Z0": 2.20,
-            "M2":  {"amp": 1.30, "phase": 170.0},
-            "S2":  {"amp": 0.50, "phase": 182.0},
-            "N2":  {"amp": 0.25, "phase": 138.0},
-            "K2":  {"amp": 0.14, "phase": 182.0},
-            "K1":  {"amp": 0.07, "phase": 268.0},
-            "O1":  {"amp": 0.05, "phase": 272.0},
-            "M4":  {"amp": 0.10, "phase": 120.0},
+            "M2":  {"amp": 1.30, "phase": 179.2},
+            "S2":  {"amp": 0.50, "phase": 191.5},
+            "N2":  {"amp": 0.25, "phase": 147.0},
+            "K2":  {"amp": 0.14, "phase": 191.5},
+            "K1":  {"amp": 0.07, "phase": 272.8},
+            "O1":  {"amp": 0.05, "phase": 276.4},
+            "M4":  {"amp": 0.10, "phase": 138.4},
         },
     },
     {
