@@ -10,9 +10,9 @@ METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agen
 CACHE_TTL_MINUTES = 60
 
 MODELS = [
-    ("ukmo_seamless", "UK Met Office"),
     ("icon_eu",       "DWD ICON EU"),
     ("gfs_seamless",  "GFS"),
+    ("ukmo_seamless", "UK Met Office"),
 ]
 METNO_LABEL = "Met.no"
 
