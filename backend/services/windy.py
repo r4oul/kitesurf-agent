@@ -7,7 +7,7 @@ OPEN_METEO_URL = "https://api.open-meteo.com/v1/forecast"
 METNO_URL = "https://api.met.no/weatherapi/locationforecast/2.0/compact"
 METNO_HEADERS = {"User-Agent": "KitesurfAgent/1.0 github.com/r4oul/kitesurf-agent"}
 
-CACHE_TTL_MINUTES = 60
+CACHE_TTL_MINUTES = 180  # 3h — model runs only update every 6h; cuts Open-Meteo call volume 3x
 
 MODELS = [
     ("icon_eu",       "DWD ICON EU"),
