@@ -170,9 +170,17 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             wind_model_label = label
             return forecasts
 
-    # Try all available Open-Meteo models in parallel; pick highest-priority success.
-    # Previously sequential (30s timeout each = up to 120s worst case), now parallel
-    # so all three fire at once and we pick the best that came back clean.
+    # Met.no first: rate-limited per application (20 req/s, identified by our
+    # User-Agent), not the shared-IP daily cap Open-Meteo's free tier hits on
+    # Railway. One request instead of racing three models cuts our Open-Meteo
+    # usage to only when Met.no itself is down.
+    forecasts, ok = await _fetch_metno(lat, lon)
+    if ok and forecasts:
+        _cache[key] = (datetime.now(timezone.utc), forecasts, METNO_LABEL)
+        wind_model_label = METNO_LABEL
+        return forecasts
+
+    # Fall back to Open-Meteo models in parallel; pick highest-priority success.
     available = [(m, l) for m, l in MODELS if _model_available(m)]
     if available:
         model_results = await asyncio.gather(*[_fetch_model(lat, lon, m) for m, _ in available])
@@ -184,10 +192,5 @@ async def get_wind_forecast(lat: float, lon: float) -> list[dict]:
             else:
                 _model_failures[model] = datetime.now(timezone.utc)
 
-    # Fall back to Met.no if all Open-Meteo models failed
-    forecasts, ok = await _fetch_metno(lat, lon)
-    label = METNO_LABEL
-    if forecasts:
-        _cache[key] = (datetime.now(timezone.utc), forecasts, label)
-    wind_model_label = label
-    return forecasts
+    wind_model_label = METNO_LABEL
+    return []
