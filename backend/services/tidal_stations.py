@@ -46,19 +46,21 @@ STATIONS: list[dict] = [
         "lon": -1.11,
         # Admiralty: MHWS 4.7, MHWN 3.8, MLWN 1.9, MLWS 0.8
         # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC.
-        # Phases shifted +44 min (2026-07-19: predicted 02:50 BST vs actual 03:34 BST).
-        # +44 min → M2+21.3°, S2+22.0°, N2+20.9°, K2+22.1°, K1+11.0°, O1+10.2°,
-        # M4+42.5°, MS4+43.3°.
+        # Jul-19 correction (+44 min) overshot: 2026-08-25 check showed predictions
+        # running +22 to +39 min LATE (avg +29) vs tidetimes.org.uk across all 4
+        # daily extremes. Phases shifted -29 min to compensate.
+        # -29 min → M2-14.0°, S2-14.5°, N2-13.7°, K2-14.5°, K1-7.3°, O1-6.7°,
+        # M4-28.0°, MS4-28.5°. Single-day snapshot — second data point pending.
         "constituents": {
             "Z0": 2.80,
-            "M2":  {"amp": 1.45, "phase": 333.3},
-            "S2":  {"amp": 0.50, "phase": 359.0},
-            "N2":  {"amp": 0.28, "phase": 309.9},
-            "K2":  {"amp": 0.14, "phase": 359.1},
-            "K1":  {"amp": 0.07, "phase": 351.0},
-            "O1":  {"amp": 0.05, "phase": 310.2},
-            "M4":  {"amp": 0.10, "phase": 72.5},
-            "MS4": {"amp": 0.06, "phase": 359.3},
+            "M2":  {"amp": 1.45, "phase": 319.3},
+            "S2":  {"amp": 0.50, "phase": 344.5},
+            "N2":  {"amp": 0.28, "phase": 296.2},
+            "K2":  {"amp": 0.14, "phase": 344.6},
+            "K1":  {"amp": 0.07, "phase": 343.7},
+            "O1":  {"amp": 0.05, "phase": 303.5},
+            "M4":  {"amp": 0.10, "phase": 44.5},
+            "MS4": {"amp": 0.06, "phase": 330.8},
         },
     },
     {
@@ -180,19 +182,22 @@ STATIONS: list[dict] = [
         "lat": 50.62,
         "lon": -3.42,
         # Admiralty: MHWS 4.4, MHWN 3.3, MLWN 1.5, MLWS 0.5
-        # Original grid-search phases were 72 min early vs observed (2026-07-17: predicted
-        # 07:50 UTC vs actual 09:02 UTC). Each phase corrected by +speed*1.2h to shift
-        # all predictions later by 72 min: M2+34.8°, S2+36°, N2+34.1°, K2+36.1°,
-        # K1+18.1°, O1+16.7°, M4+69.6°.
+        # Jul-17 correction (+72 min) overshot badly: 2026-08-25 check showed
+        # predictions running +58 to +85 min LATE (avg +68.5) vs tidetimes.org.uk
+        # (Exmouth Dock) across all 4 daily extremes — the original single-point
+        # fix looks to have been based on a bad reading. Phases shifted -68.5 min.
+        # -68.5 min → M2-33.1°, S2-34.2°, N2-32.5°, K2-34.3°, K1-17.2°, O1-15.9°,
+        # M4-66.2°. Single-day snapshot — second data point pending; also feeds
+        # Dawlish Warren and Duckpond (Exmouth) via nearest-station fallback.
         "constituents": {
             "Z0": 2.43,
-            "M2":  {"amp": 1.43, "phase": 203.8},
-            "S2":  {"amp": 0.53, "phase": 236.0},
-            "N2":  {"amp": 0.27, "phase": 190.1},
-            "K2":  {"amp": 0.14, "phase": 236.1},
-            "K1":  {"amp": 0.08, "phase": 280.1},
-            "O1":  {"amp": 0.05, "phase": 283.7},
-            "M4":  {"amp": 0.07, "phase": 226.6},
+            "M2":  {"amp": 1.43, "phase": 170.7},
+            "S2":  {"amp": 0.53, "phase": 201.8},
+            "N2":  {"amp": 0.27, "phase": 157.6},
+            "K2":  {"amp": 0.14, "phase": 201.8},
+            "K1":  {"amp": 0.08, "phase": 262.9},
+            "O1":  {"amp": 0.05, "phase": 267.8},
+            "M4":  {"amp": 0.07, "phase": 160.4},
         },
     },
     {
@@ -310,17 +315,21 @@ STATIONS: list[dict] = [
         # Z0 = (12.3+9.1+3.6+0.9)/4 = 6.725m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
         # [computed] Grid-searched against tidetimes.org.uk 2026-06-29 BST→UTC.
-        # Two-point averaged correction: Jul 19 error -53 min, Jul 21 error -38 min → avg +45.5 min.
-        # +45.5 min → M2+22.0°, S2+22.8°, N2+21.6°, K2+22.8°, K1+11.4°, O1+10.6°, M4+44.0°.
+        # Two-point averaged correction (+45.5 min) applied Jul 21 didn't hold:
+        # 2026-08-25 check showed predictions running +45 to +64 min LATE (avg
+        # +51.75) again — either continued drift or a wider beat swing than the
+        # ±30-47 min assumed elsewhere. Phases shifted a further -51.75 min.
+        # -51.75 min → M2-25.0°, S2-25.9°, N2-24.5°, K2-25.9°, K1-13.0°, O1-12.0°,
+        # M4-50.0°. Single-day snapshot — second data point pending.
         "constituents": {
             "Z0": 6.725,
-            "M2":  {"amp": 4.225, "phase": 196.0},
-            "S2":  {"amp": 1.475, "phase": 242.8},
-            "N2":  {"amp": 0.803, "phase": 172.5},
-            "K2":  {"amp": 0.398, "phase": 242.8},
-            "K1":  {"amp": 0.120, "phase": 345.4},
-            "O1":  {"amp": 0.080, "phase": 318.6},
-            "M4":  {"amp": 0.300, "phase": 234.0},
+            "M2":  {"amp": 4.225, "phase": 171.0},
+            "S2":  {"amp": 1.475, "phase": 216.9},
+            "N2":  {"amp": 0.803, "phase": 148.0},
+            "K2":  {"amp": 0.398, "phase": 216.9},
+            "K1":  {"amp": 0.120, "phase": 332.4},
+            "O1":  {"amp": 0.080, "phase": 306.6},
+            "M4":  {"amp": 0.300, "phase": 184.0},
         },
     },
     {
@@ -331,17 +340,20 @@ STATIONS: list[dict] = [
         # Z0 = (MHWS+MHWN+MLWN+MLWS)/4 = 4.575m
         # M2/S2 from tidal range formula; N2 = M2×0.19, K2 = S2×0.27.
         # [computed] M2 phase grid-searched against tidetimes 2026-06-28 (BST→UTC).
-        # Two-point averaged correction: Jul 19 error -33 min, Jul 21 error -16 min → avg +24.5 min.
-        # +24.5 min → M2+11.8°, S2+12.3°, N2+11.6°, K2+12.3°, K1+6.1°, O1+5.7°, M4+23.7°.
+        # Two-point averaged correction (+24.5 min) applied Jul 21 didn't hold:
+        # 2026-08-25 check showed predictions running +20 to +31 min LATE (avg
+        # +27.5) again in the same direction. Phases shifted a further -27.5 min.
+        # -27.5 min → M2-13.3°, S2-13.8°, N2-13.0°, K2-13.8°, K1-6.9°, O1-6.4°,
+        # M4-26.6°. Single-day snapshot — second data point pending.
         "constituents": {
             "Z0": 4.575,
-            "M2":  {"amp": 2.625, "phase": 170.8},
-            "S2":  {"amp": 1.025, "phase": 199.3},
-            "N2":  {"amp": 0.499, "phase": 147.6},
-            "K2":  {"amp": 0.277, "phase": 199.3},
-            "K1":  {"amp": 0.10,  "phase": 343.1},
-            "O1":  {"amp": 0.07,  "phase": 295.7},
-            "M4":  {"amp": 0.06,  "phase": 223.7},
+            "M2":  {"amp": 2.625, "phase": 157.5},
+            "S2":  {"amp": 1.025, "phase": 185.6},
+            "N2":  {"amp": 0.499, "phase": 134.6},
+            "K2":  {"amp": 0.277, "phase": 185.5},
+            "K1":  {"amp": 0.10,  "phase": 336.2},
+            "O1":  {"amp": 0.07,  "phase": 289.3},
+            "M4":  {"amp": 0.06,  "phase": 197.1},
         },
     },
 ]
