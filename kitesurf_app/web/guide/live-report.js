@@ -132,6 +132,55 @@
     return svg;
   }
 
+  function windChartSVG(times, speeds, gusts) {
+    var W = 600, H = 130;
+    var pL = 26, pR = 6, pT = 8, pB = 20;
+    var plotW = W - pL - pR, plotH = H - pT - pB;
+
+    // Today's daylight hours only (06:00–21:00), matching the app's forecast screen.
+    var pts = [];
+    for (var i = 0; i < times.length; i++) {
+      if (!isLocalDay(times[i], 0)) continue;
+      var d = new Date(times[i]);
+      var hr = d.getHours();
+      if (hr < 6 || hr >= 21) continue;
+      pts.push({ t: d, speed: speeds[i], gust: gusts[i] });
+    }
+    if (pts.length < 2) return '';
+
+    var maxGust = Math.max.apply(null, pts.map(function (p) { return p.gust; }));
+    var maxY = Math.max(10, Math.ceil(maxGust / 5) * 5);
+
+    function xOf(i) { return pL + plotW * i / (pts.length - 1); }
+    function yOf(v) { return pT + plotH * (1 - v / maxY); }
+
+    var speedPts = pts.map(function (p, i) { return xOf(i).toFixed(1) + ',' + yOf(p.speed).toFixed(1); });
+    var gustPts = pts.map(function (p, i) { return xOf(i).toFixed(1) + ',' + yOf(p.gust).toFixed(1); });
+    var speedPath = 'M ' + speedPts.join(' L ');
+    var gustPath = 'M ' + gustPts.join(' L ');
+    var areaPath = speedPath + ' L ' + xOf(pts.length - 1).toFixed(1) + ',' + (pT + plotH)
+      + ' L ' + xOf(0).toFixed(1) + ',' + (pT + plotH) + ' Z';
+
+    var svg = '<svg class="lr-wind-svg" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">';
+    svg += '<rect width="' + W + '" height="' + H + '" fill="#0A1520" rx="6"/>';
+    for (var g = 1; g <= 4; g++) {
+      var gy = pT + plotH * (1 - g / 4);
+      svg += '<line x1="' + pL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - pR) + '" y2="' + gy.toFixed(1) + '" stroke="#1E3A50" stroke-width="1"/>';
+      svg += '<text x="' + (pL - 6) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end" fill="#B0BEC5" font-size="9" font-family="sans-serif">' + Math.round(maxY * g / 4) + '</text>';
+    }
+    svg += '<path d="' + areaPath + '" fill="rgba(0,212,255,0.08)"/>';
+    svg += '<path d="' + gustPath + '" fill="none" stroke="#007A99" stroke-width="1.5"/>';
+    svg += '<path d="' + speedPath + '" fill="none" stroke="#00D4FF" stroke-width="2"/>';
+    var labelEvery = pts.length <= 6 ? 1 : (pts.length <= 12 ? 2 : 3);
+    pts.forEach(function (p, i) {
+      if (i % labelEvery !== 0) return;
+      svg += '<text x="' + xOf(i).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="middle" fill="#B0BEC5" font-size="9" font-family="sans-serif">'
+        + p.t.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) + '</text>';
+    });
+    svg += '</svg>';
+    return svg;
+  }
+
   function tideTableHTML(exts, dayOffset) {
     var rows = exts.filter(function (e) { return isLocalDay(e.time, dayOffset); });
     if (!rows.length) return '';
@@ -162,6 +211,9 @@
       '.lr-gv{font-size:.82rem;font-weight:700;color:#fff;min-width:46px}' +
       '.lr-gscale{display:flex;justify-content:space-between;font-size:.62rem;color:#4A6070;padding:0 0 .1rem}' +
       '.lr-attr{font-size:.7rem;color:#B0BEC5;margin:.35rem 0 .75rem}' +
+      '.lr-wchart-legend{display:flex;align-items:center;gap:.3rem;font-size:.72rem;color:#B0BEC5;margin-bottom:.35rem}' +
+      '.lr-dot{width:8px;height:8px;border-radius:50%;display:inline-block}' +
+      '.lr-wind-svg{width:100%;height:auto;display:block;border-radius:6px;margin-bottom:.75rem}' +
       '.lr-tstate{font-size:.88rem;color:#00D4FF;font-weight:600;margin-bottom:.45rem}' +
       '.lr-tide-svg{width:100%;height:auto;display:block;border-radius:6px;margin-bottom:.75rem}' +
       '.lr-tcols{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:.5rem}' +
@@ -249,6 +301,15 @@
       }
       html += '<div class="lr-gscale"><span>0</span><span>60 kts</span></div>';
       html += '</div></div>';
+
+      // Today's hourly trend — same speed/gust chart as the app's forecast screen
+      var windChart = (wData && wData.hourly && wData.hourly.time)
+        ? windChartSVG(wData.hourly.time, wData.hourly.windspeed_10m, wData.hourly.windgusts_10m) : '';
+      if (windChart) {
+        html += '<div class="lr-wchart-legend"><span class="lr-dot" style="background:#00D4FF"></span> Speed'
+          + '&nbsp;&nbsp;<span class="lr-dot" style="background:#007A99"></span> Gust</div>';
+        html += windChart;
+      }
 
       // Attribution — clearly labelled as forecast, not live station reading
       html += '<div class="lr-attr">Open-Meteo hourly forecast · ' + fmtCoord(lat, lon) + '</div>';
