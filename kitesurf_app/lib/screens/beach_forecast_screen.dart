@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/forecast_window.dart';
 import '../services/api.dart';
+import '../widgets/wind_chart.dart';
 
 class BeachForecastScreen extends StatefulWidget {
   final int beachId;
@@ -416,6 +417,15 @@ class _BeachForecastScreenState extends State<BeachForecastScreen> {
             ],
           ),
         ),
+        Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 14, 16, 4),
+            child: WindChart(windows: windows),
+          ),
+        ),
+        const SizedBox(height: 8),
         Card(
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
