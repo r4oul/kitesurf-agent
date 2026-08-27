@@ -169,7 +169,7 @@
       svg += '<text x="' + (pL - 6) + '" y="' + (gy + 3).toFixed(1) + '" text-anchor="end" fill="#B0BEC5" font-size="9" font-family="sans-serif">' + Math.round(maxY * g / 4) + '</text>';
     }
     svg += '<path d="' + areaPath + '" fill="rgba(0,212,255,0.08)"/>';
-    svg += '<path d="' + gustPath + '" fill="none" stroke="#007A99" stroke-width="1.5"/>';
+    svg += '<path d="' + gustPath + '" fill="none" stroke="#B0BEC5" stroke-width="1.5"/>';
     svg += '<path d="' + speedPath + '" fill="none" stroke="#00D4FF" stroke-width="2"/>';
     var labelEvery = pts.length <= 6 ? 1 : (pts.length <= 12 ? 2 : 3);
     pts.forEach(function (p, i) {
@@ -307,7 +307,7 @@
         ? windChartSVG(wData.hourly.time, wData.hourly.windspeed_10m, wData.hourly.windgusts_10m) : '';
       if (windChart) {
         html += '<div class="lr-wchart-legend"><span class="lr-dot" style="background:#00D4FF"></span> Speed'
-          + '&nbsp;&nbsp;<span class="lr-dot" style="background:#007A99"></span> Gust</div>';
+          + '&nbsp;&nbsp;<span class="lr-dot" style="background:#B0BEC5"></span> Gust</div>';
         html += windChart;
       }
 
