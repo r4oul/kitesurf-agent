@@ -10,7 +10,7 @@ class WindChart extends StatelessWidget {
   const WindChart({super.key, required this.windows});
 
   static const _speedColor = Color(0xFF0077B6);
-  static const _gustColor = Color(0xFFB0BEC5);
+  static const _gustColor = Color(0xFFF6A800);
   static const _gridColor = Color(0xFFE2E8F0);
   static const _labelColor = Color(0xFF718096);
 
