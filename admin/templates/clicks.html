@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+    <h2>Outbound Clicks — Kite School Links</h2>
+    <p style="color:#718096;font-size:0.9rem;margin-bottom:1rem;">
+        Tracks clicks on the local kite-school link in each beach guide's "Lessons" section —
+        use the monthly figures below to tell a school how many visitors a page sent their way.
+    </p>
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-value">{{ totals.last_month }}</div>
+            <div class="stat-label">{{ last_month_label }}</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ totals.this_month }}</div>
+            <div class="stat-label">This month (to date)</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">{{ totals.all_time }}</div>
+            <div class="stat-label">All time</div>
+        </div>
+    </div>
+
+    {% if rows %}
+    <table>
+        <thead>
+            <tr>
+                <th>Guide page</th>
+                <th>School</th>
+                <th>Destination</th>
+                <th>{{ last_month_label }}</th>
+                <th>This month</th>
+                <th>All time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in rows %}
+            <tr>
+                <td><a href="https://southwestkitesurf.co.uk/guide/{{ r.page_slug }}" target="_blank">{{ r.page_slug }}</a></td>
+                <td>{{ r.link_label or "—" }}</td>
+                <td><a href="{{ r.link_url }}" target="_blank" rel="noopener">{{ r.link_url }}</a></td>
+                <td class="num">{{ r.last_month }}</td>
+                <td class="num">{{ r.this_month }}</td>
+                <td class="num">{{ r.all_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty">No outbound clicks recorded yet — they'll appear here once visitors start clicking through to school pages.</p>
+    {% endif %}
+</div>
+{% endblock %}

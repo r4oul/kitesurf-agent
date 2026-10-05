@@ -11,6 +11,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from backend.limiter import limiter
 from backend.routers import beaches
 from backend.routers.forecast import router as forecast_router
+from backend.routers.clicks import router as clicks_router
 from admin.router import router as admin_router
 from backend.database import SessionLocal
 from backend.models.beach import Beach
@@ -60,6 +61,7 @@ app.add_middleware(
 
 app.include_router(beaches.router)
 app.include_router(forecast_router)
+app.include_router(clicks_router)
 app.include_router(admin_router)
 
 @app.get("/")

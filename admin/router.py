@@ -12,6 +12,7 @@ from typing import List, Optional
 from backend.database import get_db
 from backend.models.beach import Beach
 from backend.models.event import ApiEvent
+from backend.models.click import OutboundClick
 from backend.services.tidal_stations import find_nearest_station
 from backend.limiter import limiter
 
@@ -83,6 +84,54 @@ def admin_home(request: Request, db: Session = Depends(get_db), _=Depends(_requi
     }
 
     return templates.TemplateResponse("beach_list.html", {"request": request, "beaches": beaches, "stats": stats})
+
+
+@router.get("/clicks", response_class=HTMLResponse)
+@limiter.limit("20/minute")
+def admin_clicks(request: Request, db: Session = Depends(get_db), _=Depends(_require_admin)):
+    now = datetime.now(timezone.utc)
+    this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    last_month_end = this_month_start
+    last_month_start = (this_month_start - timedelta(days=1)).replace(day=1)
+
+    group_cols = (OutboundClick.page_slug, OutboundClick.link_label, OutboundClick.link_url)
+
+    def grouped_counts(start=None, end=None):
+        q = db.query(*group_cols, func.count(OutboundClick.id).label("clicks"))
+        if start is not None:
+            q = q.filter(OutboundClick.created_at >= start)
+        if end is not None:
+            q = q.filter(OutboundClick.created_at < end)
+        q = q.group_by(*group_cols)
+        return {(r[0], r[1], r[2]): r.clicks for r in q.all()}
+
+    all_time = grouped_counts()
+    this_month = grouped_counts(start=this_month_start)
+    last_month = grouped_counts(start=last_month_start, end=last_month_end)
+
+    keys = sorted(all_time.keys(), key=lambda k: -all_time[k])
+    rows = [
+        {
+            "page_slug": k[0],
+            "link_label": k[1],
+            "link_url": k[2],
+            "all_time": all_time[k],
+            "this_month": this_month.get(k, 0),
+            "last_month": last_month.get(k, 0),
+        }
+        for k in keys
+    ]
+
+    totals = {
+        "all_time": sum(all_time.values()),
+        "this_month": sum(this_month.values()),
+        "last_month": sum(last_month.values()),
+    }
+
+    return templates.TemplateResponse("clicks.html", {
+        "request": request, "rows": rows, "totals": totals,
+        "last_month_label": last_month_start.strftime("%B %Y"),
+    })
 
 
 @router.get("/beach/new", response_class=HTMLResponse)
