@@ -12,20 +12,19 @@
   }
 
   function track(url, label) {
+    // Tracked links all open in a new tab (target="_blank"), so this page never
+    // unloads — a plain cross-origin fetch is correct here. (sendBeacon is NOT:
+    // its cross-origin requests can only use CORS-"simple" content types —
+    // text/plain, multipart/form-data, application/x-www-form-urlencoded — and
+    // silently drop anything else, including application/json, with no error.)
     var payload = JSON.stringify({ page: pageSlug(), url: url, label: label || '' });
-    try {
-      if (navigator.sendBeacon) {
-        var blob = new Blob([payload], { type: 'application/json' });
-        navigator.sendBeacon(ENDPOINT, blob);
-        return;
-      }
-    } catch (e) { /* fall through to fetch */ }
     try {
       fetch(ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: payload,
         keepalive: true,
+        mode: 'cors',
       }).catch(function () {});
     } catch (e) { /* no-op — tracking must never break the link */ }
   }
