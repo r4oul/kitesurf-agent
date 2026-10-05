@@ -3,7 +3,10 @@
 
 {% if stats %}
 <div class="card">
-    <h2>Usage</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h2 style="margin-bottom:0;">Usage</h2>
+        <a href="/admin/clicks" class="btn btn-secondary">Outbound Clicks Report →</a>
+    </div>
     <div class="stats-grid">
         <div class="stat-box">
             <div class="stat-value">{{ stats.total_requests }}</div>
