@@ -18,6 +18,13 @@ Stations marked [estimated] used interpolation from neighbouring computed ports 
 S2 g = M2 g + local_S2_offset (≈ 21-31°, consistent across UK south coast).
 N2 g ≈ M2 g − 23°.
 K1, O1 phases kept from BODC reference values (diurnal, small amplitude, stable).
+
+2026-11-01: tidal_predictor.py added standard nodal (f, u) corrections for the
+18.6-year lunar nodal cycle (previously hardcoded to f=1, u=0). All phase
+values below are fit/verified against the model WITH nodal correction active.
+Nodal correction shifts predictions by only a few minutes at most — it does
+NOT explain the larger per-station errors found by periodic recalibration;
+those are calibration drift, tracked per-station below.
 """
 import math
 
@@ -166,15 +173,20 @@ STATIONS: list[dict] = [
         # Three-point calibration (Jul-19 -36, Jul-21 back-calc +13, Aug-01 -51):
         # midpoint systematic bias = -19 min → +19 min correction applied.
         # Irreducible spring-neap S2 beat residual = ±32 min (BODC constants needed for fix).
+        # 2026-11-01 check vs tidetimes.co.uk: predictions running +28 to +44 min
+        # LATE (avg +35.5) — the +19 min fix above had decayed/was insufficient.
+        # Consistent direction across all 4 extremes (clean phase-shift case,
+        # unlike the Bristol Channel stations) → further -35.5 min correction
+        # applied. Post-correction residual ≤14 min on same data.
         "constituents": {
             "Z0": 2.20,
-            "M2":  {"amp": 1.30, "phase": 179.2},
-            "S2":  {"amp": 0.50, "phase": 191.5},
-            "N2":  {"amp": 0.25, "phase": 147.0},
-            "K2":  {"amp": 0.14, "phase": 191.5},
-            "K1":  {"amp": 0.07, "phase": 272.8},
-            "O1":  {"amp": 0.05, "phase": 276.4},
-            "M4":  {"amp": 0.10, "phase": 138.4},
+            "M2":  {"amp": 1.30, "phase": 162.1},
+            "S2":  {"amp": 0.50, "phase": 173.8},
+            "N2":  {"amp": 0.25, "phase": 130.2},
+            "K2":  {"amp": 0.14, "phase": 173.7},
+            "K1":  {"amp": 0.07, "phase": 263.9},
+            "O1":  {"amp": 0.05, "phase": 268.2},
+            "M4":  {"amp": 0.10, "phase": 104.1},
         },
     },
     {
@@ -189,6 +201,12 @@ STATIONS: list[dict] = [
         # -68.5 min → M2-33.1°, S2-34.2°, N2-32.5°, K2-34.3°, K1-17.2°, O1-15.9°,
         # M4-66.2°. Single-day snapshot — second data point pending; also feeds
         # Dawlish Warren and Duckpond (Exmouth) via nearest-station fallback.
+        # 2026-11-01 check vs tidetimes.co.uk (Exmouth Dock): lows +18 to +28
+        # min late, highs -9 to -14 min early — alternating sign, same
+        # shallow-water pattern as the Bristol Channel stations (milder here).
+        # Numerically verified a blanket phase shift does NOT improve the
+        # residual — needs M4 amplitude/phase re-tuning against multi-day
+        # data, not another single-point phase nudge. Phases left unchanged.
         "constituents": {
             "Z0": 2.43,
             "M2":  {"amp": 1.43, "phase": 170.7},
@@ -240,6 +258,12 @@ STATIONS: list[dict] = [
         # [computed] M2 phase recalibrated against tidetimes.org.uk 2026-06-29 (BST→UTC).
         # Single-day +38 min correction (Jul 19) was reverted: oscillated to +85 min on Jul 21.
         # Spring-neap S2 beat causes ±47 min natural oscillation — M2 phase is correct on average.
+        # 2026-11-01 check vs tidetimes.co.uk: lows +21 to +23 min late, highs
+        # +3 to +8 min late — same direction but uneven magnitude (mild
+        # asymmetry), within the documented ±47 min oscillation band. Treated
+        # as further evidence of that beat pattern, not new drift — phases
+        # left unchanged per this station's established "don't chase
+        # single-day noise" policy.
         "constituents": {
             "Z0": 2.85,
             "M2":  {"amp": 1.55, "phase": 169.0},
@@ -255,18 +279,22 @@ STATIONS: list[dict] = [
         "lat": 50.37,
         "lon": -4.14,
         # Admiralty Standard Port: MHWS 5.5, MHWN 4.4, MLWN 2.2, MLWS 0.8
-        # [estimated] Similar to Salcombe; Plymouth Sound adds slight delay vs open coast
+        # [computed] First real calibration — previously [estimated] only.
+        # 2026-11-01 check vs tidetimes.co.uk (Plymouth Devonport): predictions
+        # running -20 to -29 min EARLY (avg -25.25) across all 4 daily extremes,
+        # consistent in direction — a clean phase-shift case. +25.25 min
+        # correction applied. Post-correction residual ≤10 min on same data.
         "constituents": {
             "Z0": 3.23,
-            "M2":  {"amp": 1.73, "phase": 140.0},
-            "S2":  {"amp": 0.63, "phase": 161.0},
-            "N2":  {"amp": 0.33, "phase": 117.0},
-            "K2":  {"amp": 0.17, "phase": 161.0},
-            "K1":  {"amp": 0.08, "phase": 255.0},
-            "O1":  {"amp": 0.05, "phase": 260.0},
-            "P1":  {"amp": 0.03, "phase": 255.0},
-            "Q1":  {"amp": 0.01, "phase": 255.0},
-            "M4":  {"amp": 0.02, "phase": 275.0},
+            "M2":  {"amp": 1.73, "phase": 152.2},
+            "S2":  {"amp": 0.63, "phase": 173.6},
+            "N2":  {"amp": 0.33, "phase": 129.0},
+            "K2":  {"amp": 0.17, "phase": 173.7},
+            "K1":  {"amp": 0.08, "phase": 261.3},
+            "O1":  {"amp": 0.05, "phase": 265.9},
+            "P1":  {"amp": 0.03, "phase": 261.3},
+            "Q1":  {"amp": 0.01, "phase": 260.6},
+            "M4":  {"amp": 0.02, "phase": 299.4},
         },
     },
     {
@@ -321,6 +349,15 @@ STATIONS: list[dict] = [
         # ±30-47 min assumed elsewhere. Phases shifted a further -51.75 min.
         # -51.75 min → M2-25.0°, S2-25.9°, N2-24.5°, K2-25.9°, K1-13.0°, O1-12.0°,
         # M4-50.0°. Single-day snapshot — second data point pending.
+        # 2026-11-01 check vs tidetimes.co.uk: lows +13 to +19 min late while
+        # highs run -46 to -47 min EARLY — opposite signs, not a uniform phase
+        # error. This alternating low/high pattern (also at Ilfracombe,
+        # Salcombe, milder at Exmouth) points to a shallow-water amplitude-
+        # ratio problem (M4 too large or wrongly phased vs M2), not residual
+        # M2 phase drift — expected given this station's exceptional tidal
+        # range. Numerically verified a blanket phase shift does NOT resolve
+        # it. Needs amplitude/M4 re-tuning against multi-day data, not
+        # another single-point phase nudge. Phases left unchanged.
         "constituents": {
             "Z0": 6.725,
             "M2":  {"amp": 4.225, "phase": 171.0},
@@ -345,6 +382,13 @@ STATIONS: list[dict] = [
         # +27.5) again in the same direction. Phases shifted a further -27.5 min.
         # -27.5 min → M2-13.3°, S2-13.8°, N2-13.0°, K2-13.8°, K1-6.9°, O1-6.4°,
         # M4-26.6°. Single-day snapshot — second data point pending.
+        # 2026-11-01 check vs tidetimes.co.uk: lows +4 to -3 min (~on time)
+        # while highs run -19 to -25 min EARLY — same alternating low/high
+        # pattern as Weston-super-Mare (both Bristol Channel, large tidal
+        # range) — a shallow-water amplitude-ratio (M4) issue, not pure phase
+        # drift. Numerically verified a blanket phase shift only partially
+        # helps (residual still ±15 min, same oscillating character) — left
+        # phases unchanged pending proper amplitude re-tuning.
         "constituents": {
             "Z0": 4.575,
             "M2":  {"amp": 2.625, "phase": 157.5},

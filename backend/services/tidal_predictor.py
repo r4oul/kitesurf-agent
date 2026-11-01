@@ -1,13 +1,19 @@
 """
 Harmonic tidal prediction.
 Constituent data sourced from BODC National Tidal and Sea Level Facility (NTSLF).
-Simplified method (nodal corrections f=1, u=0) — accurate to ±15cm and ±15min.
+Includes standard first-order nodal corrections (f, u) for the 18.6-year lunar
+nodal cycle — see nodal_factors() below. Still a simplified method relative to
+full Doodson/Schureman harmonic analysis — accurate to roughly ±15cm and ±15min
+even with nodal correction applied; per-station phase drift beyond that is a
+calibration issue (see tidal_stations.py comments), not something nodal
+correction fixes.
 """
 import math
 from datetime import datetime, timezone, timedelta
 
 # Reference epoch: 2000-01-01 00:00 UTC
 EPOCH = datetime(2000, 1, 1, 0, 0, 0, tzinfo=timezone.utc)
+JULIAN_CENTURY_DAYS = 36525.0
 
 # Angular speeds in degrees per hour
 SPEEDS: dict[str, float] = {
@@ -46,16 +52,59 @@ def _hours_since_epoch(dt: datetime) -> float:
     return (dt - EPOCH).total_seconds() / 3600.0
 
 
+def _lunar_node_longitude(T_hours: float) -> float:
+    """Longitude of the Moon's ascending node N (degrees), at T hours since EPOCH.
+
+    N regresses ~19.34°/year (full cycle 18.6 years). Standard formula
+    (e.g. Meeus, Schureman): N = 125.04452 - 1934.136261° per Julian century,
+    T in Julian centuries since J2000.0. The ~12hr offset between our EPOCH
+    (2000-01-01 00:00 UTC) and the standard J2000.0 epoch (2000-01-01 12:00 TT)
+    is negligible for an 18.6-year-period quantity.
+    """
+    T_centuries = (T_hours / 24.0) / JULIAN_CENTURY_DAYS
+    N = 125.04452 - 1934.136261 * T_centuries
+    return N % 360.0
+
+
+# Standard first-order nodal factor coefficients (Schureman 1958-style linear
+# approximation in cos(N)/sin(N)) for the constituents in this model.
+# f = amplitude scale factor, u = phase adjustment in degrees.
+# S2 and P1 are purely solar — no lunar nodal modulation (f=1, u=0).
+def nodal_factors(name: str, N_deg: float) -> tuple[float, float]:
+    """Return (f, u_degrees) nodal correction for constituent `name` at node
+    longitude N_deg. M4/MS4 (compound shallow-water terms) derive from M2/S2."""
+    n = math.radians(N_deg)
+    cos_n, sin_n = math.cos(n), math.sin(n)
+
+    if name in ("M2", "N2"):
+        return 1.0 - 0.037 * cos_n, -2.1 * sin_n
+    if name == "K2":
+        return 1.024 + 0.286 * cos_n, -17.7 * sin_n
+    if name == "K1":
+        return 1.006 + 0.115 * cos_n, -8.9 * sin_n
+    if name in ("O1", "Q1"):
+        return 1.009 + 0.187 * cos_n, 10.8 * sin_n
+    if name == "M4":
+        f_m2, u_m2 = nodal_factors("M2", N_deg)
+        return f_m2 * f_m2, 2.0 * u_m2
+    if name == "MS4":
+        f_m2, u_m2 = nodal_factors("M2", N_deg)
+        return f_m2, u_m2  # MS4 = M2 + S2; S2 contributes f=1, u=0
+    return 1.0, 0.0  # S2, P1 — purely solar, no nodal modulation
+
+
 def predict_height(constituents: dict, dt: datetime) -> float:
     """Predict tide height (metres above chart datum) at the given UTC datetime."""
     T = _hours_since_epoch(dt)
+    N_deg = _lunar_node_longitude(T)
     h = float(constituents.get("Z0", 0.0))
     for name, speed in SPEEDS.items():
         if name in constituents:
             amp = constituents[name]["amp"]
             g = constituents[name]["phase"]
-            angle = V0_AT_EPOCH.get(name, 0.0) + speed * T - g
-            h += amp * math.cos(math.radians(angle))
+            f, u = nodal_factors(name, N_deg)
+            angle = V0_AT_EPOCH.get(name, 0.0) + speed * T + u - g
+            h += f * amp * math.cos(math.radians(angle))
     return round(h, 3)
 
 
