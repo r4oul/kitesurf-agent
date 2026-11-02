@@ -207,6 +207,12 @@ STATIONS: list[dict] = [
         # Numerically verified a blanket phase shift does NOT improve the
         # residual — needs M4 amplitude/phase re-tuning against multi-day
         # data, not another single-point phase nudge. Phases left unchanged.
+        # 2026-11-02 weekly drift check vs tidetimes.org.uk: avg +30.3 min
+        # (+46, +16, +29) — all same sign this time, unlike the Nov-1 reading
+        # (which alternated sign between highs and lows). Flagged as noise/
+        # inconsistent with the documented baseline rather than confirmed new
+        # drift — a single day's reading isn't enough to tell which pattern
+        # is representative. Phases left unchanged; worth a third data point.
         "constituents": {
             "Z0": 2.43,
             "M2":  {"amp": 1.43, "phase": 170.7},
@@ -264,6 +270,10 @@ STATIONS: list[dict] = [
         # as further evidence of that beat pattern, not new drift — phases
         # left unchanged per this station's established "don't chase
         # single-day noise" policy.
+        # 2026-11-02 weekly drift check vs tidetimes.org.uk: avg +34 min
+        # (+42, +30, +30) — same direction as the Nov-1 reading, still inside
+        # the documented ±47 min spring-neap band. Flagged as noise again,
+        # not new drift. Phases left unchanged.
         "constituents": {
             "Z0": 2.85,
             "M2":  {"amp": 1.55, "phase": 169.0},
