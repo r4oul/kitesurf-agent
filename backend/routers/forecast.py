@@ -41,9 +41,23 @@ async def guide_by_location(lat: float = Query(...), lon: float = Query(...)):
 
 @router.get("/sewage")
 async def all_sewage(db: Session = Depends(get_db)):
-    """Return sewage status for all beaches in a single parallel request."""
+    """Return sewage status for all beaches.
+
+    Fetched in small staggered batches rather than all at once — firing every
+    beach's request simultaneously sends ~14 concurrent requests to the same
+    South West Water ArcGIS org (it covers more beaches than Southern/Wessex),
+    which was tripping an upstream per-IP rate limit and causing every SWW
+    beach to come back "unknown" at once.
+    """
     beaches = db.query(Beach).all()
-    results = await asyncio.gather(*[get_sewage_status(b.latitude, b.longitude) for b in beaches])
+    results = []
+    batch_size = 5
+    for i in range(0, len(beaches), batch_size):
+        batch = beaches[i:i + batch_size]
+        batch_results = await asyncio.gather(*[get_sewage_status(b.latitude, b.longitude) for b in batch])
+        results.extend(batch_results)
+        if i + batch_size < len(beaches):
+            await asyncio.sleep(1)
     return [
         {"id": b.id, "name": b.name, "sewage_status": r.get("sewage_status"), "nearest_overflow_m": r.get("nearest_overflow_m")}
         for b, r in zip(beaches, results)

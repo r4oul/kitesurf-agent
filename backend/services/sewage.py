@@ -85,7 +85,13 @@ async def _fetch_nearby(company: str, lat: float, lon: float) -> list:
                 return _cache.get(cache_key, (None, []))[1] or []
         features = [f["attributes"] for f in data.get("features", [])]
         print(f"Sewage fetch OK ({company} near {lat:.2f},{lon:.2f}): {len(features)} monitors")
-        _cache[cache_key] = (now, features)
+        if features:
+            _cache[cache_key] = (now, features)
+        # Don't cache an empty result — the SWW/Southern/Wessex monitor networks
+        # are dense enough that zero features within 8km almost always means a
+        # transient upstream glitch, not genuine no-coverage. Caching it for the
+        # full TTL would otherwise lock every beach sharing this rounded
+        # coordinate into "unknown" for up to 30 minutes on a single bad response.
         return features
     except Exception as e:
         print(f"Sewage fetch exception ({company} near {lat},{lon}): {type(e).__name__}: {e}")
