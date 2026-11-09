@@ -213,6 +213,12 @@ STATIONS: list[dict] = [
         # inconsistent with the documented baseline rather than confirmed new
         # drift — a single day's reading isn't enough to tell which pattern
         # is representative. Phases left unchanged; worth a third data point.
+        # 2026-11-09 weekly drift check vs tidetimes.org.uk (Exmouth Dock):
+        # avg -31.3 min (-30, -29, -35) — predictions running EARLY this time,
+        # the opposite sign to the Nov-2 reading (avg +30.3, LATE). A sign
+        # flip between consecutive weekly checks is further confirmation this
+        # is noise/oscillation rather than consistent directional drift.
+        # Phases left unchanged; still no stable direction across 3 readings.
         "constituents": {
             "Z0": 2.43,
             "M2":  {"amp": 1.43, "phase": 170.7},
@@ -294,17 +300,23 @@ STATIONS: list[dict] = [
         # running -20 to -29 min EARLY (avg -25.25) across all 4 daily extremes,
         # consistent in direction — a clean phase-shift case. +25.25 min
         # correction applied. Post-correction residual ≤10 min on same data.
+        # 2026-11-09 weekly drift check vs tidetimes.org.uk: predictions again
+        # running -17 to -31 min EARLY (avg -25.0) across all 4 daily extremes —
+        # essentially the same error as the pre-Nov-1 problem, same direction as
+        # that baseline, so this is confirmed residual drift rather than noise
+        # (the Nov-1 "≤10 min residual" claim didn't hold). Further +25.0 min
+        # correction applied. Post-correction residual ≤5 min on same data.
         "constituents": {
             "Z0": 3.23,
-            "M2":  {"amp": 1.73, "phase": 152.2},
-            "S2":  {"amp": 0.63, "phase": 173.6},
-            "N2":  {"amp": 0.33, "phase": 129.0},
-            "K2":  {"amp": 0.17, "phase": 173.7},
-            "K1":  {"amp": 0.08, "phase": 261.3},
-            "O1":  {"amp": 0.05, "phase": 265.9},
-            "P1":  {"amp": 0.03, "phase": 261.3},
-            "Q1":  {"amp": 0.01, "phase": 260.6},
-            "M4":  {"amp": 0.02, "phase": 299.4},
+            "M2":  {"amp": 1.73, "phase": 164.3},
+            "S2":  {"amp": 0.63, "phase": 186.1},
+            "N2":  {"amp": 0.33, "phase": 140.8},
+            "K2":  {"amp": 0.17, "phase": 186.2},
+            "K1":  {"amp": 0.08, "phase": 267.6},
+            "O1":  {"amp": 0.05, "phase": 271.7},
+            "P1":  {"amp": 0.03, "phase": 267.5},
+            "Q1":  {"amp": 0.01, "phase": 266.2},
+            "M4":  {"amp": 0.02, "phase": 323.6},
         },
     },
     {
@@ -368,6 +380,14 @@ STATIONS: list[dict] = [
         # range. Numerically verified a blanket phase shift does NOT resolve
         # it. Needs amplitude/M4 re-tuning against multi-day data, not
         # another single-point phase nudge. Phases left unchanged.
+        # 2026-11-09 weekly drift check vs tidetimes.org.uk: highs -31 to -32
+        # min EARLY, low -14 min EARLY (avg -25.7) — more uniform in sign
+        # than the Nov-1 reading (which alternated), but highs and the low
+        # still differ in magnitude by >15 min, the same highs-vs-lows
+        # mismatch character as before. Consistent with the documented
+        # shallow-water M4 amplitude-ratio issue, not a clean phase-drift
+        # case a blanket correction could fix. Phases left unchanged;
+        # still needs proper amplitude/M4 re-tuning against multi-day data.
         "constituents": {
             "Z0": 6.725,
             "M2":  {"amp": 4.225, "phase": 171.0},
@@ -399,6 +419,12 @@ STATIONS: list[dict] = [
         # drift. Numerically verified a blanket phase shift only partially
         # helps (residual still ±15 min, same oscillating character) — left
         # phases unchanged pending proper amplitude re-tuning.
+        # 2026-11-09 weekly drift check vs tidetimes.org.uk: highs -23 to -27
+        # min EARLY, lows -3 to -13 min (avg -16.5) — highs still running
+        # about as early as the Nov-1 reading (-19 to -25) while lows stay
+        # much closer to on-time, the same highs-vs-lows mismatch pointing to
+        # the documented M4 amplitude-ratio issue rather than phase drift.
+        # Phases left unchanged pending proper amplitude re-tuning.
         "constituents": {
             "Z0": 4.575,
             "M2":  {"amp": 2.625, "phase": 157.5},
