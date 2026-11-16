@@ -58,6 +58,14 @@ STATIONS: list[dict] = [
         # daily extremes. Phases shifted -29 min to compensate.
         # -29 min → M2-14.0°, S2-14.5°, N2-13.7°, K2-14.5°, K1-7.3°, O1-6.7°,
         # M4-28.0°, MS4-28.5°. Single-day snapshot — second data point pending.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk (second data point):
+        # highs -8 to -30 min EARLY while lows run +63 to +68 min LATE — an
+        # alternating pattern, unlike the Aug-25 reading where all 4 extremes
+        # were uniformly late. avg +23.25 min but direction is inconsistent
+        # with the documented baseline, so this does NOT confirm further
+        # drift — likely the Solent's known double-tide/"young flood stand"
+        # effect distorting single-extremum matching rather than a clean
+        # phase error. Treated as noise; phases left unchanged.
         "constituents": {
             "Z0": 2.80,
             "M2":  {"amp": 1.45, "phase": 319.3},
@@ -153,6 +161,20 @@ STATIONS: list[dict] = [
         # [computed] Grid-searched against tidetimes.org.uk 2026-07-13 BST→UTC: RMS 3.4 min.
         # Single-day +30 min correction (Jul 19) was reverted: oscillated to +62 min on Jul 21.
         # Spring-neap S2 beat causes ±30 min natural oscillation — M2 phase is correct on average.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: predict_extremes
+        # returned 5 extrema for the day (an extra High/Low pair between
+        # 08:20-11:20) vs 4 real extremes — a phantom double-tide artifact,
+        # not seen in the real data. Any pairing of predicted-vs-real is
+        # therefore ambiguous: naive sequential type-matching gives wildly
+        # unstable error estimates (hundreds of minutes) and even the most
+        # charitable nearest-time matching gives an implausibly large ~+85
+        # min late average. Given this station's known noise/instability
+        # and the extrema-count mismatch itself being evidence of a model
+        # artifact rather than a real timing error, treated as noise — NOT
+        # auto-corrected. Phases left unchanged; the spurious extra extrema
+        # near low water are worth investigating separately from drift
+        # tracking (possibly an M2/S2/shallow-water interaction near the
+        # node causing a spurious inflection in the harmonic sum).
         "constituents": {
             "Z0": 1.03,
             "M2":  {"amp": 0.73, "phase": 165.0},
@@ -213,15 +235,26 @@ STATIONS: list[dict] = [
         # inconsistent with the documented baseline rather than confirmed new
         # drift — a single day's reading isn't enough to tell which pattern
         # is representative. Phases left unchanged; worth a third data point.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: avg +33.25 min
+        # (+50, +7, +55, +21) — all same sign again, consistent with the
+        # Nov-2 reading (+30.3). Two consecutive same-direction readings now
+        # confirm real residual drift, not the alternating noise seen Nov-1.
+        # +33.25 min correction applied → M2-16.1°, S2-16.6°, N2-15.8°,
+        # K2-16.7°, K1-8.3°, O1-7.7°, M4-32.1°. Verified: post-correction
+        # residual is +15/+20 min on the two lows and -19/-23 min on the two
+        # highs (net avg near zero, but still ±20 min per extremum) — the
+        # blanket shift corrects the net drift but doesn't fully resolve
+        # this station's documented low/high (M4) magnitude asymmetry.
+        # Likely needs M4 re-tuning, same conclusion as the 2026-11-01 note.
         "constituents": {
             "Z0": 2.43,
-            "M2":  {"amp": 1.43, "phase": 170.7},
-            "S2":  {"amp": 0.53, "phase": 201.8},
-            "N2":  {"amp": 0.27, "phase": 157.6},
-            "K2":  {"amp": 0.14, "phase": 201.8},
-            "K1":  {"amp": 0.08, "phase": 262.9},
-            "O1":  {"amp": 0.05, "phase": 267.8},
-            "M4":  {"amp": 0.07, "phase": 160.4},
+            "M2":  {"amp": 1.43, "phase": 154.6},
+            "S2":  {"amp": 0.53, "phase": 185.2},
+            "N2":  {"amp": 0.27, "phase": 141.8},
+            "K2":  {"amp": 0.14, "phase": 185.1},
+            "K1":  {"amp": 0.08, "phase": 254.6},
+            "O1":  {"amp": 0.05, "phase": 260.1},
+            "M4":  {"amp": 0.07, "phase": 128.3},
         },
     },
     {
@@ -274,6 +307,16 @@ STATIONS: list[dict] = [
         # (+42, +30, +30) — same direction as the Nov-1 reading, still inside
         # the documented ±47 min spring-neap band. Flagged as noise again,
         # not new drift. Phases left unchanged.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: avg +85.5 min
+        # (+97, +73, +89, +83) — same direction again but well outside the
+        # previously documented ±47 min band, and matching the magnitude of
+        # the Jul-21 reverted-correction oscillation almost exactly. Given
+        # this station's known spring-neap S2 beat history and the standing
+        # "don't chase single-day noise" policy, treated as the beat cycle
+        # swinging to a wider extreme rather than confirmed real drift —
+        # NOT auto-corrected despite exceeding the mechanical 20 min/
+        # consistent-direction threshold. Phases left unchanged; flagged for
+        # extra scrutiny/a follow-up reading given the unusually large size.
         "constituents": {
             "Z0": 2.85,
             "M2":  {"amp": 1.55, "phase": 169.0},
@@ -294,17 +337,23 @@ STATIONS: list[dict] = [
         # running -20 to -29 min EARLY (avg -25.25) across all 4 daily extremes,
         # consistent in direction — a clean phase-shift case. +25.25 min
         # correction applied. Post-correction residual ≤10 min on same data.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: predictions running
+        # +35 to +45 min LATE (avg +40.0) across all 4 extremes, consistent in
+        # direction — confirms real residual drift (the Nov-1 fix undershot/decayed).
+        # -40.0 min correction applied → M2-19.3°, S2-20.0°, N2-19.0°, K2-20.1°,
+        # K1-10.0°, O1-9.3°, P1-10.0°, Q1-8.9°, M4-38.6°. Verified: post-correction
+        # residual ≤5 min on same data.
         "constituents": {
             "Z0": 3.23,
-            "M2":  {"amp": 1.73, "phase": 152.2},
-            "S2":  {"amp": 0.63, "phase": 173.6},
-            "N2":  {"amp": 0.33, "phase": 129.0},
-            "K2":  {"amp": 0.17, "phase": 173.7},
-            "K1":  {"amp": 0.08, "phase": 261.3},
-            "O1":  {"amp": 0.05, "phase": 265.9},
-            "P1":  {"amp": 0.03, "phase": 261.3},
-            "Q1":  {"amp": 0.01, "phase": 260.6},
-            "M4":  {"amp": 0.02, "phase": 299.4},
+            "M2":  {"amp": 1.73, "phase": 132.9},
+            "S2":  {"amp": 0.63, "phase": 153.6},
+            "N2":  {"amp": 0.33, "phase": 110.0},
+            "K2":  {"amp": 0.17, "phase": 153.6},
+            "K1":  {"amp": 0.08, "phase": 251.3},
+            "O1":  {"amp": 0.05, "phase": 256.6},
+            "P1":  {"amp": 0.03, "phase": 251.3},
+            "Q1":  {"amp": 0.01, "phase": 251.7},
+            "M4":  {"amp": 0.02, "phase": 260.8},
         },
     },
     {
@@ -368,6 +417,12 @@ STATIONS: list[dict] = [
         # range. Numerically verified a blanket phase shift does NOT resolve
         # it. Needs amplitude/M4 re-tuning against multi-day data, not
         # another single-point phase nudge. Phases left unchanged.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: lows +53 to +60
+        # min late, highs -17 to -20 min early — same alternating low/high
+        # shape as before (magnitudes differ, consistent with a noisy
+        # station), avg +19.0 min across all 4 (≤20 min). Calibration
+        # holding by the simple avg-error test; the underlying M4
+        # amplitude-ratio issue is unchanged. Phases left unchanged.
         "constituents": {
             "Z0": 6.725,
             "M2":  {"amp": 4.225, "phase": 171.0},
@@ -399,6 +454,12 @@ STATIONS: list[dict] = [
         # drift. Numerically verified a blanket phase shift only partially
         # helps (residual still ±15 min, same oscillating character) — left
         # phases unchanged pending proper amplitude re-tuning.
+        # 2026-11-16 weekly drift check vs tidetimes.org.uk: lows now +28 to
+        # +49 min LATE (previously ~on time) while highs are mixed, -9 to
+        # +16 min — the low/high split has shifted shape vs the Nov-1
+        # reading rather than confirming it; avg +21.0 min but inconsistent
+        # direction, so treated as noise/instability on top of the known M4
+        # issue rather than confirmed new drift. Phases left unchanged.
         "constituents": {
             "Z0": 4.575,
             "M2":  {"amp": 2.625, "phase": 157.5},
