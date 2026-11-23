@@ -368,6 +368,13 @@ STATIONS: list[dict] = [
         # range. Numerically verified a blanket phase shift does NOT resolve
         # it. Needs amplitude/M4 re-tuning against multi-day data, not
         # another single-point phase nudge. Phases left unchanged.
+        # 2026-11-23 weekly drift check vs tidetimes.org.uk: avg -25 min
+        # (highs -32/-36 EARLY, lows -15/-17 EARLY) — lows are now EARLY
+        # rather than LATE as on Nov-1, i.e. the sign flipped relative to
+        # that reading, so this isn't a repeat of the documented alternating
+        # low/high baseline. Treated as further noise from the same
+        # shallow-water amplitude-ratio complexity, not confirmed new drift.
+        # Phases left unchanged.
         "constituents": {
             "Z0": 6.725,
             "M2":  {"amp": 4.225, "phase": 171.0},
